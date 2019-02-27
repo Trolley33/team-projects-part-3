@@ -39,6 +39,8 @@ Repository to share the code/database for the Part 3 Deliverable of Wordpress we
 ## Git Info
 - Through the docker terminal you can run git commands without the GUI.
 - If you create a new branch using Github:
--- `git fetch` to get the up to date version of the repository.
--- `git checkout -b <new name of local branch> origin/<name of branch on Github>`
--- From here, you can make changes and push them to Github without affecting the main branch. To merge changes with the main website, you need to do a pull request from Github.
+  - `git fetch` to get the up to date version of the repository.
+  - `git checkout -b <new name of local branch> origin/<name of branch on Github>` to create a new local branch from the remote branch.
+  - From here, you can make changes and push them to Github without affecting the main branch. To merge changes with the main website, you need to do a pull request from Github.
+  - `git checkout master` takes you back to the original branch.
+  - `git rebase master` updates your branch to match `master`'s current state,
