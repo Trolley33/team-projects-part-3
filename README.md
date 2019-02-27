@@ -35,3 +35,10 @@ Repository to share the code/database for the Part 3 Deliverable of Wordpress we
 ## Links
 - [Local Server](http://192.168.99.100:8080)
 - [Local phpMyAdmin](http://192.168.99.100:8181)
+
+## Git Info
+- Through the docker terminal you can run git commands without the GUI.
+- If you create a new branch using Github:
+-- `git fetch` to get the up to date version of the repository.
+-- `git checkout -b <new name of local branch> origin/<name of branch on Github>`
+-- From here, you can make changes and push them to Github without affecting the main branch. To merge changes with the main website, you need to do a pull request from Github.
