@@ -23,7 +23,8 @@ Repository to share the code/database for the Part 3 Deliverable of Wordpress we
 
 # Information
 - To create your own account log in as (root, root) and add a new user for yourself, or ask another person to make one for you.
-- Changes in `html/` should be reflected on the server from here, the database is also downloaded.
+- Changes in `html/` should be reflected on the server from here.
+- When making changes to phpMyAdmin database, make sure your local database is up to date by deleting it and importing from the repository's `wordpress.sql`; then make any changes, export it into `wordpress.sql` and re-upload that. This works well enough, but I'm not sure this is the best way for us to manage the database. In reality it might be easier to change the server's database and then download that to everyone's computer.
 - No port forwarding or installation other than the above should be necessary!
 - After making a change be sure to to stage the changes (`git add`), commit them locally (`git commit`), and push them to Github (`git push`)! Ideally we would have a different branch for each developer so that changes are not made directly to the main branch without a approved pull request, which also allows things to be merged easier.
 
