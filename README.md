@@ -18,7 +18,7 @@ Repository to share the code/database for the Part 3 Deliverable of Wordpress we
 # Execution
 - From the docker terminal run `docker-compose up -d` to start a server on your computer.
 - Going to `IP:8080` you should see a wordpress site, and `IP:8181` phpMyAdmin.
-- Go to phpMyAdmin and when log in (wordpress, wordpress).
+- Go to phpMyAdmin and log in (wordpress, wordpress).
 - Import the `wordpress.sql` included to get the same database as current.
 
 # Information
