@@ -24,3 +24,6 @@ Vagrantfile
 
 # VS Code
 .history/
+
+# Other
+bash.exe.stackdump
