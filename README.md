@@ -40,6 +40,7 @@ in person.
 - When making changes to phpMyAdmin database, make sure your local database is up to date by deleting it and importing from the repository's `wordpress.sql`; then make any changes, export it into `wordpress.sql` and re-upload that. This works well enough, but I'm not sure this is the best way for us to manage the database. In reality it might be easier to change the server's database and then download that to everyone's computer.
 - No port forwarding or installation other than the above should be necessary!
 - After making a change be sure to to stage the changes (`git add`), commit them locally (`git commit`), and push them to Github (`git push`)! Ideally we would have a different branch for each developer so that changes are not made directly to the main branch without a approved pull request, which also allows things to be merged easier.
+- Themes are stored in the database, so if you change a theme it won't change for everyone until you export the database.
 
 ## Directories
 - html/: code served to website.
