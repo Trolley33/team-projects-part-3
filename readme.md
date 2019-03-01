@@ -36,7 +36,7 @@ in person.
 ## Links
 - [Local Server](http://localhost:8000)/[192. Server](http:192.168.99.100:8000)
 - [Local phpMyAdmin](http://localhost:8080)/[192. phpMyAdmin](http:192.168.99.100:8080)
-- [Actual Server](http://35.197.216.143)
+- [Actual Server](http://35.197.216.143)/(http://makeitall.ml/)
 
 ## Git Info
 - Through the docker terminal you can run git commands without the GUI.
