@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
   # Database
@@ -33,7 +33,7 @@ services:
       - db
     image: wordpress:latest
     ports:
-      - '8000:80'
+      - '80:80'
     restart: always
     volumes: ['./:/var/www/html']
     environment:
@@ -45,4 +45,4 @@ services:
 networks:
   wpsite:
 volumes:
-  db_data:
+  db_data: {}
