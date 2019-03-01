@@ -22,7 +22,7 @@ in person.
 
 # Execution
 - From the docker terminal run `docker-compose up -d` to start a server on your computer.
-- Going to `IP:8000` you should see a wordpress site, and `IP:8080` phpMyAdmin.
+- Going to `IP` you should see a wordpress site, and `IP:8080` phpMyAdmin.
 - Go to phpMyAdmin and log in (wordpress, wordpress).
 - ~~Import the `wordpress.sql` included to get the same database as current.~~
 
