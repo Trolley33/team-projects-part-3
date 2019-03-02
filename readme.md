@@ -27,16 +27,16 @@ in person.
 - ~~Import the `wordpress.sql` included to get the same database as current.~~
 
 # Information
- - ~~To create your own account log in as (root, root) and add a new user for yourself, or ask another person to make one for you.~~
- - ~~When making changes to phpMyAdmin database, make sure your local database is up to date by deleting it and importing from the repository's `wordpress.sql`; then make any changes, export it into `wordpress.sql` and re-upload that. This works well enough, but I'm not sure this is the best way for us to manage the database. In reality it might be easier to change the server's database and then download that to everyone's computer.~~
+ - To create your own account log in as (root, root) and add a new user for yourself, or ask another person to make one for you.
 - No port forwarding or installation other than the above should be necessary!
 - After making a change be sure to to stage the changes (`git add`), commit them locally (`git commit`), and push them to Github (`git push`)! Ideally we would have a different branch for each developer so that changes are not made directly to the main branch without a approved pull request, which also allows things to be merged easier.
 - Themes are stored in the database, so if you change a theme it won't change for everyone until you export the database.
 
 ## Links
 - [Local Server](http://localhost:8000)/[192. Server](http:192.168.99.100:8000)
-- [Local phpMyAdmin](http://localhost:8080)/[192. phpMyAdmin](http:192.168.99.100:8080)
+- [Local phpMyAdmin](http://localhost:443)/[192. phpMyAdmin](http:192.168.99.100:443)
 - [Actual Server IP](http://35.197.216.143)/[Actual Server Domain](http://makeitall.ml/)
+- [Actual Server phpMyAdmin](http://35.197.216.143:443)
 
 ## Git Info
 - Through the docker terminal you can run git commands without the GUI.
