@@ -9,6 +9,9 @@ class Deactivate
 {
 	public static function deactivate()
 	{
+		// Do something when plugin is deactivated.
+
+		// Flush database.
 		flush_rewrite_rules();
 	}
 }
