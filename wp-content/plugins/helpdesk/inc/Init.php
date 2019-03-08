@@ -27,16 +27,18 @@ final class Init
 		foreach (self::get_services() as $class) 
 		{
 			$service = self::instantiate($class);
-			if (method_exists($service, 'register'))
+            if (method_exists($service, 'register'))
 			{
 				$service->register();
 			}
 		}
 	}
-	/**
-	 * Initialise a class
-	 * @param class $class, class from services array.
-	 */
+
+    /**
+     * Initialise a class
+     * @param $class , class from services array.
+     * @return mixed
+     */
 	private static function instantiate($class)
 	{
 		return new $class();

@@ -14,20 +14,32 @@ License: GPLv2 or later
 Text Domain: helpdesk
 */
 
+// If accessed from anywhere except wordpress, stop.
 if (!defined('ABSPATH')) 
 {
 	die;
 }
 
+// If we have autoload installed, use it.
 if (file_exists(dirname(__FILE__). '/vendor/autoload.php'))
 {
 	require_once dirname(__FILE__). '/vendor/autoload.php';
 }
 
-define('PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-define('PLUGIN_URL', plugin_dir_url( __FILE__ ));
-define('PLUGIN', plugin_basename( __FILE__ ));
+// Register functions for
+function activate_helpdesk_plugin()
+{
+    Inc\Base\Activate::activate();
+}
+register_activation_hook(__FILE__, 'activate_helpdesk_plugin');
 
+function deactivate_helpdesk_plugin()
+{
+    Inc\Base\Deactivate::deactivate();
+}
+register_deactivation_hook(__FILE__, 'deactivate_helpdesk_plugin');
+
+// Run plugin register function.
 if (class_exists('Inc\\Init'))
 {
 	Inc\Init::register_services();

@@ -6,7 +6,7 @@
 
 namespace Inc\Base;
 
-class Enqueue
+class Enqueue extends BaseController
 {	
 	/**
 	 * Register script handler.
@@ -22,9 +22,9 @@ class Enqueue
 	function enqueue()
 	{
 		//enqueue all scripts
-		wp_enqueue_style( 'helpdesk_style', PLUGIN_URL . 'assets/style.css');
+		wp_enqueue_style( 'helpdesk_style', $this->plugin_url . 'assets/style.css');
 
-		wp_enqueue_script( 'helpdesk_script', PLUGIN_URL . 'assets/script.js');
+		wp_enqueue_script( 'helpdesk_script', $this->plugin_url . 'assets/script.js');
 	}
 
 }
