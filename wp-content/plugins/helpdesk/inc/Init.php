@@ -15,6 +15,7 @@ final class Init
 		return [
 			Pages\Admin::class,
 			Base\Enqueue::class,
+            Base\SettingLinks::class,
 
 		];
 	}
