@@ -8,6 +8,7 @@ namespace Inc\Api;
 class SettingsAPI
 {
     public $admin_pages = array();
+    public $admin_sub_pages = array();
 
     public function register()
     {
@@ -24,6 +25,39 @@ class SettingsAPI
         return $this;
     }
 
+    public function with_sub_page($title = null)
+    {
+        if (empty($this->admin_pages))
+            return $this;
+
+        $admin_page = $this->admin_pages[0];
+
+        // Template for sub pages.
+        $sub_pages = [
+            [
+                'parent_slug'=>$admin_page['menu_slug'],
+                'page_title'=>$admin_page['page_title'],
+                'menu_title'=> ($title) ? $title : $admin_page['menu_title'],
+                'capability'=>$admin_page['capability'],
+                'menu_slug'=>$admin_page['menu_slug'],
+                'callback'=> $admin_page['callback'],
+            ],
+        ];
+
+        $this->admin_sub_pages = $sub_pages;
+
+        return $this;
+    }
+
+    // Append sub pages to array.
+    public function add_sub_pages(array $pages)
+    {
+        $this->admin_sub_pages= array_merge($this->admin_sub_pages, $pages);
+
+        return $this;
+    }
+
+    // Add menus to WordPress admin bar.
     public function add_admin_menu()
     {
         foreach ($this->admin_pages as $page)
@@ -33,6 +67,14 @@ class SettingsAPI
                 $page['menu_slug'], $page['callback'], $page['icon_url'],
                 $page['position']
             );
+        }
+
+        foreach ($this->admin_sub_pages as $sub_page)
+        {
+            add_submenu_page(
+                $sub_page['parent_slug'],
+                $sub_page['page_title'], $sub_page['menu_title'], $sub_page['capability'],
+                $sub_page['menu_slug'], $sub_page['callback']);
         }
     }
 }
