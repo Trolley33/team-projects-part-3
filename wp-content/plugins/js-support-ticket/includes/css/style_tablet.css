@@ -1,0 +1,22 @@
+/*Dashboard*/
+	div#jsst-header div#jsst-header-heading{width: 100%;}
+	a.js-ticket-header-links{width: 100%;}
+	div#jsst-header div#jsst-tabs-wrp{width: 100%;}
+	div#jsst-header span.jsst-header-tab{width:auto;margin: 5px 5px;}
+	div#jsst-header span.jsst-header-tab a.js-cp-menu-link{width: 100%;}
+	div.js-menu-links-wrp a.js-ticket-dash-menu{width: calc(100% / 4 - 10px);}
+	/*Dashboard*/
+
+	/*New Ticket*/
+    div.js-ticket-add-form-wrapper div.js-ticket-from-field-wrp{width: calc(100% / 1 - 10px);}
+    div.tk_attachment_value_wrapperform span.tk_attachment_value_text{width: calc(100% / 2 - 10px);}
+    select.js-ticket-select-field{background: url(../images/selecticon.png) 98% / 2% no-repeat;}
+    /*New Ticket*/
+
+    /* My Ticket*/
+	div.js-ticket-search-wrp div.js-ticket-form-wrp form.js-filter-form div.js-filter-wrapper div.js-filter-form-fields-wrp{width: 90%;}
+	div#js-filter-wrapper-toggle-btn{width: calc(100% - 90% - 5px);}
+	div.js-ticket-sorting span.js-ticket-sorting-link{padding-right: 0px;padding-left: 0px;width: calc(100% / 3);display: inline-block;float: left;}
+	div.js-myticket-link{width: calc(100% / 3);}
+	div.js-ticket-sorting span.js-ticket-sorting-link{width: calc(100% / 6);}
+	div.js-ticket-wrapper div.js-ticket-data1{border-top: 1px solid #ccc;border-left: none !important;width: calc(100% - 20px);margin: 10px;}
