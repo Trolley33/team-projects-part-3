@@ -1,0 +1,134 @@
+# Translation of WPSP Conditional Agent Assign in Dutch
+# This file is distributed under the same license as the WPSP Conditional Agent Assign package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2017-12-15 10:38:37+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: nl\n"
+"Project-Id-Version: WPSP Conditional Agent Assign\n"
+
+#: includes/admin/add_caa_rule_html.php:13
+msgid "Add Condition"
+msgstr "Voorwaarden toevoegen"
+
+#: includes/admin/add_caa_rule_html.php:18 includes/admin/edit_setting.php:32
+#: includes/admin/view_settings.php:30
+msgid "Title"
+msgstr "Titel"
+
+#: includes/admin/add_caa_rule_html.php:28
+msgid "Save & Continue"
+msgstr "Opslaan & doorgaan"
+
+#: includes/admin/admin.php:33
+msgid "Please Enter Condition Name"
+msgstr "Voer de naam van de voorwaarde in"
+
+#: includes/admin/admin.php:35
+msgid "Add at least one condition!"
+msgstr "Selecteer minimaal één agent!"
+
+#: includes/admin/admin.php:34
+msgid "Please select at least one agent!"
+msgstr "Voeg minimaal één voorwaarde toe!"
+
+#: includes/admin/admin.php:45
+msgid "Conditional Assign Agents"
+msgstr "Agent al toegevoegd!"
+
+#: includes/admin/admin.php:36
+msgid "Agent already added!"
+msgstr "Toegewezenagenten - Voorwaardelijke"
+
+#: includes/admin/delete_setting.php:10
+#: includes/admin/wpsp_caa_functions.php:52
+msgid "Cheating huh?"
+msgstr "Vals aan het spelen ?"
+
+#: includes/admin/edit_setting.php:27
+msgid "Edit Condition"
+msgstr "Voorwaarde bewerken"
+
+#: includes/admin/edit_setting.php:43
+msgid "Select Agents"
+msgstr "Selecteer agenten"
+
+#: includes/admin/edit_setting.php:39
+msgid "Add Agents"
+msgstr "Agent toevoegen"
+
+#: includes/admin/edit_setting.php:49
+msgid "Search Agents..."
+msgstr "Zoek agenten..."
+
+#: includes/admin/edit_setting.php:53 includes/admin/edit_setting.php:104
+msgid "Add"
+msgstr "Voeg toe"
+
+#: includes/admin/edit_setting.php:94
+msgid "Select Field"
+msgstr "Selecteer Veld"
+
+#: includes/admin/edit_setting.php:90
+msgid "Add New"
+msgstr "Nieuwe toevoegen"
+
+#: includes/admin/edit_setting.php:86
+msgid "Conditions"
+msgstr "Voorwaarden"
+
+#: includes/admin/edit_setting.php:58 includes/admin/view_settings.php:31
+msgid "Assigned Agents"
+msgstr "Toegewezen Agenten"
+
+#: includes/admin/edit_setting.php:101 includes/admin/wpsp_caa_functions.php:56
+msgid "Select Option"
+msgstr "Selecteer een optie"
+
+#: includes/admin/edit_setting.php:124
+msgid "Same condition field match relation"
+msgstr "Gelijkwaardige voorwaarde veld match relatie"
+
+#: includes/admin/edit_setting.php:103
+msgid "Has Word"
+msgstr "Heeft woord"
+
+#: includes/admin/edit_setting.php:127 includes/admin/edit_setting.php:138
+msgid "Any one of them"
+msgstr "Ieder van hen"
+
+#: includes/admin/edit_setting.php:134
+msgid "Different condition field match relation"
+msgstr "Relatie tussen verschillende voorwaarden"
+
+#: includes/admin/edit_setting.php:128 includes/admin/edit_setting.php:137
+msgid "All of them"
+msgstr "Allemaal"
+
+#: includes/admin/edit_setting.php:144
+msgid "Please install Email Notification add-on"
+msgstr "Installeer de invoegtoepassing voor e-mailmeldingen"
+
+#: includes/admin/edit_setting.php:148
+msgid "Save Changes"
+msgstr "Wijzigingen opslaan"
+
+#: includes/admin/view_settings.php:20
+msgid "+ Add New Rule"
+msgstr "+ nieuwe voorwaarden toevoegen"
+
+#: includes/admin/view_settings.php:32
+msgid "Actions"
+msgstr "Acties"
+
+#: includes/admin/view_settings.php:49
+msgid "Delete"
+msgstr "Verwijder"
+
+#: includes/admin/view_settings.php:48
+msgid "Edit"
+msgstr "Bewerk"

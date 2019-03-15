@@ -1,0 +1,41 @@
+.wpsp-autocomplete-drop-down{
+    background: #f5f5f5 linear-gradient(to top, #f5f5f5, #fafafa) repeat scroll 0 0;
+    border-color: #dfdfdf;
+    border-style: solid;
+    border-width: 1px;
+    clear: both;
+    margin: 5px 0 0 0;
+    padding: 10px;
+    cursor: pointer;
+    width: 310px;
+}
+.wpsp-autocomplete-drop-down-panel{
+    border-color: #dfdfdf;
+    border-style: solid;
+    border-width: 1px;
+    clear: both;
+    padding: 10px;
+    width: 310px;
+}
+#wpsp-autocomplete-search-results{
+    border-color: #dfdfdf;
+    border-style: solid;
+    border-width: 1px;
+}
+.wpsp-autocomplete-result-item{
+    padding: 5px;
+    margin: 0;
+    cursor: pointer;
+}
+.wpsp-autocomplete-result-item-selected{
+    background-color: #0073aa;
+    color: #fff;
+}
+#wpsp_company_name{
+    width: 330px;
+    font-size: 14px;
+}
+#wpsp_selected_agents{border: 1px solid #cebcbc; border-collapse: collapse;}
+#wpsp_selected_agents th{border: 1px solid #cebcbc;padding: 5px;}
+#wpsp_selected_agents td{border: 1px solid #cebcbc;padding: 5px;}
+.delete-row{color: #eb572e; cursor: pointer;}
