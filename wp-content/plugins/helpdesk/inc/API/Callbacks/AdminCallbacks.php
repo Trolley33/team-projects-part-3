@@ -16,8 +16,7 @@ class AdminCallbacks extends BaseController
 
     public function problem_manager ()
     {
-        // return require_once("$this->plugin_path/templates/problem_manager.php");
-        echo "<h2>Problem Manager</h2>";
+        return require_once("$this->plugin_path/templates/problem-viewer.php");
     }
 
     public function equipment_manager ()
