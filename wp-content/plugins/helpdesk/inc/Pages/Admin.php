@@ -6,8 +6,9 @@
 
 namespace Inc\Pages;
 
-use Inc\Base\BaseController;
 use Inc\API\SettingsAPI;
+use Inc\Base\BaseController;
+use Inc\API\Callbacks\AdminCallbacks;
 
 class Admin extends BaseController
 {
@@ -15,12 +16,26 @@ class Admin extends BaseController
     public $pages = array();
     public $sub_pages = array();
 
-    public function __construct()
-    {
-        parent::__construct();
+    public $callbacks;
 
+
+    /**
+	 * Register plugin with admin menu.
+	 */
+	public function register()
+	{
         $this->settings = new SettingsAPI();
+        $this->callbacks = new AdminCallbacks();
 
+        $this->make_pages();
+
+        $this->make_sub_pages();
+
+        $this->settings->add_pages($this->pages)->with_sub_page('Dashboard')->add_sub_pages($this->sub_pages)->register();
+	}
+
+	public function make_pages()
+    {
         // Template for administration pages.
         $this->pages = [
             [
@@ -28,12 +43,15 @@ class Admin extends BaseController
                 'menu_title'=>"Helpdesk Settings",
                 'capability'=>"manage_options",
                 'menu_slug'=>"helpdesk",
-                'callback'=> function () { echo "<h1>Helpdesk Settings</h1>"; },
+                'callback'=> array($this->callbacks, 'dashboard'),
                 'icon_url'=>'dashicons-desktop',
                 'position'=>110
             ],
         ];
+    }
 
+    public function make_sub_pages()
+    {
         $this->sub_pages = [
             [
                 'parent_slug'=>'helpdesk',
@@ -41,7 +59,7 @@ class Admin extends BaseController
                 'menu_title'=>'Problem Manager',
                 'capability'=>'manage_options',
                 'menu_slug'=>'helpdesk_pm',
-                'callback'=> function () { echo "<h1>Problem Manager</h1>"; },
+                'callback'=> array($this->callbacks, 'problem_manager'),
             ],
             [
                 'parent_slug'=>'helpdesk',
@@ -49,7 +67,7 @@ class Admin extends BaseController
                 'menu_title'=>'Equipment Manager',
                 'capability'=>'manage_options',
                 'menu_slug'=>'helpdesk_em',
-                'callback'=> function () { echo "<h1>Equipment Manager</h1>"; },
+                'callback'=> array($this->callbacks, 'equipment_manager'),
             ],
             [
                 'parent_slug'=>'helpdesk',
@@ -57,25 +75,8 @@ class Admin extends BaseController
                 'menu_title'=>'Software Manager',
                 'capability'=>'manage_options',
                 'menu_slug'=>'helpdesk_sm',
-                'callback'=> function () { echo "<h1>Software Manager</h1>"; },
+                'callback'=> array($this->callbacks, 'software_manager'),
             ],
         ];
     }
-
-    /**
-	 * Register plugin with admin menu.
-	 */
-	public function register()
-	{
-
-        $this->settings->add_pages($this->pages)->with_sub_page('Dashboard')->add_sub_pages($this->sub_pages)->register();
-	}
-
-//	/**
-//	 * Load admin index page.
-//	 */
-//	function admin_index()
-//	{
-//		require_once $this->plugin_path . 'templates/admin.php';
-//	}
 }
