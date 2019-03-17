@@ -5,7 +5,7 @@ global $wpdb;
 $query = "
     SELECT $wpdb->posts.*
     FROM $wpdb->posts
-    WHERE $wpdb->posts.post_type= 'problem'";
+    WHERE $wpdb->posts.post_type= 'ticket' AND post_status != 'auto-draft';";
 
 $result = $wpdb->get_results($query, OBJECT);
 
