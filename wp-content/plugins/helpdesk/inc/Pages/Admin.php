@@ -55,14 +55,6 @@ class Admin extends BaseController
         $this->sub_pages = [
             [
                 'parent_slug'=>'helpdesk',
-                'page_title'=>'Problem Manager',
-                'menu_title'=>'Problem Manager',
-                'capability'=>'manage_options',
-                'menu_slug'=>'helpdesk_pm',
-                'callback'=> array($this->callbacks, 'problem_manager'),
-            ],
-            [
-                'parent_slug'=>'helpdesk',
                 'page_title'=>'Equipment Manager',
                 'menu_title'=>'Equipment Manager',
                 'capability'=>'manage_options',
