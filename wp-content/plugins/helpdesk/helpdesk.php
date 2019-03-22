@@ -49,34 +49,34 @@ if (class_exists('Inc\\Init'))
 
 function test()
 {
+    global $wpdb;
+
+    $results = $wpdb->get_results("
+SELECT wp_terms.term_id, wp_terms.name FROM wp_terms
+JOIN wp_term_taxonomy
+ON wp_term_taxonomy.term_id = wp_terms.term_id
+WHERE wp_term_taxonomy.taxonomy = 'ticket-tag';
+");
+
+
+    $options = [];
+    foreach ($results as $tag)
+    {
+        $options[$tag->term_id] = $tag->name;
+    }
 
     $tag_args = array(
         'name' => 'tags',
         'args' => array(
-            'show_column' => true,
-            'sortable_column' => true,
-            'title' => __( 'Problem Type', 'helpdesk' ),
-            'label' =>  __( 'Problem Type', 'helpdesk' ),
-            'label_plural' => __( 'Problem Types', 'helpdesk' ),
+            'title' => __( 'Tags', 'helpdesk' ),
+            'label' =>  __( 'Tags', 'helpdesk' ),
+            'label_plural' => __( 'Tags', 'helpdesk' ),
             'order'		 => '0',
+            'field_type' => 'select',
+            'multiple' => true,
+            'select2' => true,
+            'options' => $options
         )
     );
-
-    wpas_add_custom_taxonomy($tag_args['name'], $tag_args['args']);
-
-/*
-    echo "
-    <div class='wpas-form-group' id='wpas_ticket_priority_wrapper'>
-        <label for='ticket_tags'>Tags</label>
-        <select id='ticket_tags' class='wpas-form-control select2-pillbox' name='tags[]' multiple='multiple'><option value=''>Please select</option>
-            <option value='printer'>Printer</option>
-        
-            <option value='keyboard'>Keyboard</option>
-        
-            <option value='monitor'>Monitor</option>
-        </select>
-    </div>
-    
-	";
-*/
+    wpas_add_custom_field($tag_args['name'], $tag_args['args']);
 }
