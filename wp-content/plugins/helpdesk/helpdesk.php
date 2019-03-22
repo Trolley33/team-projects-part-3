@@ -44,4 +44,37 @@ register_deactivation_hook(__FILE__, 'deactivate_helpdesk_plugin');
 if (class_exists('Inc\\Init'))
 {
 	Inc\Init::register_services();
+	add_filter('plugins_loaded', 'test');
+}
+
+function test()
+{
+    $tag_args = array(
+        'name' => 'tags',
+        'args' => array(
+            'title' => __( 'Problem Type', 'helpdesk' ),
+            'label' =>  __( 'Problem Type', 'helpdesk' ),
+            'label_plural' => __( 'Problem Types', 'helpdesk' ),
+            'order'		 => '0',
+
+        )
+    );
+
+    wpas_add_custom_taxonomy($tag_args['name'], $tag_args['args']);
+
+/*
+    echo "
+    <div class='wpas-form-group' id='wpas_ticket_priority_wrapper'>
+        <label for='ticket_tags'>Tags</label>
+        <select id='ticket_tags' class='wpas-form-control select2-pillbox' name='tags[]' multiple='multiple'><option value=''>Please select</option>
+            <option value='printer'>Printer</option>
+        
+            <option value='keyboard'>Keyboard</option>
+        
+            <option value='monitor'>Monitor</option>
+        </select>
+    </div>
+    
+	";
+*/
 }
