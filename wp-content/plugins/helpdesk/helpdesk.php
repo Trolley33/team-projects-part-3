@@ -49,14 +49,16 @@ if (class_exists('Inc\\Init'))
 
 function test()
 {
+
     $tag_args = array(
         'name' => 'tags',
         'args' => array(
+            'show_column' => true,
+            'sortable_column' => true,
             'title' => __( 'Problem Type', 'helpdesk' ),
             'label' =>  __( 'Problem Type', 'helpdesk' ),
             'label_plural' => __( 'Problem Types', 'helpdesk' ),
             'order'		 => '0',
-
         )
     );
 
