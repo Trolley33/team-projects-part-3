@@ -28,12 +28,7 @@ class CustomPostTypeController extends BaseController
 
     public function register_custom_post_types()
     {
-        register_post_type('problem',
-            [
-                'labels' => ['name'=> __("Problems"), 'singular_name'=> __("Problem")],
-                'public'=>true,
-                'has_archive'=>false,
-            ]);
+        
     }
 
 }
