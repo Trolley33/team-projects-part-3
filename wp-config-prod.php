@@ -79,8 +79,8 @@ $table_prefix = 'wp_';
  */
 define( 'WP_DEBUG', false);
 
-define('WP_SITEURL', 'http://35.189.120.246');
-define('WP_HOME', 'http://35.189.120.246');
+define('WP_SITEURL', 'http://makeitall.ml');
+define('WP_HOME', 'http://makeitall.ml');
 
 // If we're behind a proxy server and using HTTPS, we need to alert Wordpress of that fact
 // see also http://codex.wordpress.org/Administration_Over_SSL#Using_a_Reverse_Proxy
