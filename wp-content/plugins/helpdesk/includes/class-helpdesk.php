@@ -173,6 +173,7 @@ class Helpdesk {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'init', $plugin_public, 'register_book_type' );
 		$this->loader->add_shortcode( 'all-tickets', $plugin_public, 'wpas_sc_all_tickets' );
+		$this->loader->add_filter('plugins_loaded', $plugin_public, 'wphd_add_custom_fields');
 	}
 
 	/**
