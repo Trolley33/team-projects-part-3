@@ -235,10 +235,10 @@ WHERE wp_term_taxonomy.taxonomy = 'ticket-tag';
 ");
 
     // Convert result array into 'tag-id' => 'tag-name'.
-    $options = [];
+    $tag_options = [];
     foreach ($results as $tag)
     {
-        $options[$tag->term_id] = $tag->name;
+        $tag_options[$tag->term_id] = $tag->name;
     }
 
     // Create custom tag field.
@@ -252,7 +252,7 @@ WHERE wp_term_taxonomy.taxonomy = 'ticket-tag';
             'field_type' => 'select',
             'multiple' => true,
             'select2' => true,
-            'options' => $options
+            'options' => $tag_options
         )
     );
 
