@@ -32,11 +32,21 @@
 	 /* This was written without jQuery prepared, so can be converted at some point */
 	// Put a page break after the label to match the rest of the style.
 	document.addEventListener('DOMContentLoaded', function () {
-	    var br = document.createElement('BR');
+	    var tag_br = document.createElement('BR');
 	    var tag_label = document.getElementById('wpas_tags');
-	    if (tag_label !== null)
+	    var os_br = document.createElement('BR');
+	    var os_label = document.getElementById('wpas_OS');
+	    var hardware_br = document.createElement('BR');
+	    var hardware_label = document.getElementById('wpas_Hardware');
+	    var software_br = document.createElement('BR');
+	    var software_label = document.getElementById('wpas_Software');
+
+	    if (tag_label !== null && os_label !== null && hardware_label !== null && software_label !== null)
 	    {
-	    	tag_label.labels[0].after(br);
+	    	tag_label.labels[0].after(tag_br);
+	    	os_label.labels[0].after(os_br);
+	    	hardware_label.labels[0].after(hardware_br);
+	    	software_label.labels[0].after(software_br);
 		}
 	   
 	    var filter = document.getElementById('wpas_filter');
