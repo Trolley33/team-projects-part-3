@@ -223,7 +223,7 @@ class Helpdesk_Public
 
     }
 
-    function wphd_add_custom_fields()
+    public function wphd_add_custom_fields()
 {
     // Grab all tags
     global $wpdb;
