@@ -33,13 +33,13 @@
 	// Put a page break after the label to match the rest of the style.
 	document.addEventListener('DOMContentLoaded', function () {
 	    var tag_br = document.createElement('BR');
-	    var tag_label = document.getElementById('wpas_tags');
+	    var tag_label = document.getElementById('wpas_ticket-tag');
 	    var os_br = document.createElement('BR');
 	    var os_label = document.getElementById('wpas_OS');
 	    var hardware_br = document.createElement('BR');
-	    var hardware_label = document.getElementById('wpas_Hardware');
+	    var hardware_label = document.getElementById('wpas_hardware');
 	    var software_br = document.createElement('BR');
-	    var software_label = document.getElementById('wpas_Software');
+	    var software_label = document.getElementById('wpas_software');
 
 	    if (tag_label !== null && os_label !== null && hardware_label !== null && software_label !== null)
 	    {
