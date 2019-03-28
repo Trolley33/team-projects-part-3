@@ -224,39 +224,77 @@ class Helpdesk_Public
     }
 
     public function wphd_add_custom_fields()
-{
-    // Grab all tags
-    global $wpdb;
-    $results = $wpdb->get_results("
-SELECT wp_terms.term_id, wp_terms.name FROM wp_terms
-JOIN wp_term_taxonomy
-ON wp_term_taxonomy.term_id = wp_terms.term_id
-WHERE wp_term_taxonomy.taxonomy = 'ticket-tag';
-");
-
-    // Convert result array into 'tag-id' => 'tag-name'.
-    $options = [];
-    foreach ($results as $tag)
     {
-        $options[$tag->term_id] = $tag->name;
+        // Grab all tags
+        global $wpdb;
+        $results = $wpdb->get_results("
+    SELECT wp_terms.term_id, wp_terms.name FROM wp_terms
+    JOIN wp_term_taxonomy
+    ON wp_term_taxonomy.term_id = wp_terms.term_id
+    WHERE wp_term_taxonomy.taxonomy = 'ticket-tag';
+    ");
+
+        // Convert result array into 'tag-id' => 'tag-name'.
+        $tag_options = [];
+        foreach ($results as $tag)
+        {
+            $tag_options[$tag->term_id] = $tag->name;
+        }
+
+        // Create custom tag field.
+        $tag_args = array(
+            'name' => 'tags',
+            'args' => array(
+                'title' => __( 'Tags', 'helpdesk' ),
+                'label' =>  __( 'Tags', 'helpdesk' ),
+                'label_plural' => __( 'Tags', 'helpdesk' ),
+                'order'      => '0',
+                'field_type' => 'select',
+                'multiple' => true,
+                'select2' => true,
+                'options' => $tag_options
+            )
+        );
+
+        wpas_add_custom_field($tag_args['name'], $tag_args['args']);
+
+        $os_args = array(
+            'name' => 'OS',
+            'args' => array(
+                'title' => __( 'Operating System', 'helpdesk' ), 
+                'label' => __( 'Operating System', 'helpdesk' ), 
+                'label_plural' => __( 'Operating System', 'helpdesk' ),
+                'select2' => true,
+                'order' => '1' 
+            )
+        );
+        wpas_add_custom_taxonomy($os_args['name'], $os_args['args']);
+
+        $hw_args = array(
+            'name' => 'Hardware',
+            'args' => array(
+                'title' => __( 'Affected Hardware', 'helpdesk' ), 
+                'label' => __( 'Affected Hardware', 'helpdesk' ), 
+                'label_plural' => __( 'Affected Hardware', 'helpdesk' ), 
+                'select2' => true,
+                'order' => '2' 
+            )
+        );
+        wpas_add_custom_taxonomy($hw_args['name'], $hw_args['args']);
+
+        $sw_args = array(
+            'name' => 'Software',
+            'args' => array(
+                'title' => __( 'Affected Software', 'helpdesk' ), 
+                'label' => __( 'Affected Software', 'helpdesk' ), 
+                'label_plural' => __( 'Affected Software', 'helpdesk' ), 
+                'select2' => true,
+                'order' => '3' 
+            )
+        );
+
+
+        wpas_add_custom_taxonomy($sw_args['name'], $sw_args['args']);
     }
-
-    // Create custom tag field.
-    $tag_args = array(
-        'name' => 'tags',
-        'args' => array(
-            'title' => __( 'Tags', 'helpdesk' ),
-            'label' =>  __( 'Tags', 'helpdesk' ),
-            'label_plural' => __( 'Tags', 'helpdesk' ),
-            'order'      => '0',
-            'field_type' => 'select',
-            'multiple' => true,
-            'select2' => true,
-            'options' => $options
-        )
-    );
-
-    wpas_add_custom_field($tag_args['name'], $tag_args['args']);
-}
 
 }
