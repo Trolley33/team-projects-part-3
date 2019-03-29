@@ -70,7 +70,7 @@ class WPAS_Member_Agent extends WPAS_Member {
         $query = "
         SELECT $wpdb->usermeta.meta_value
         FROM $wpdb->usermeta
-        WHERE $wpdb->usermeta.meta_key = 'specialism'
+        WHERE $wpdb->usermeta.meta_key = 'preferred-tags'
         AND $wpdb->usermeta.user_id = $this->user_id;
         ";
 

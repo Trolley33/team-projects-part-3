@@ -1215,12 +1215,11 @@ function wpas_find_agent( $ticket_id = false ) {
 	$users = shuffle_assoc( wpas_get_users( apply_filters( 'wpas_find_agent_get_users_args', array( 'cap' => 'edit_ticket' ) ) ) );
 	$agent = array();
 
-    $ticket_tags = get_ticket_tags($ticket_id);
-
-    foreach ($ticket_tags as $ticket_tag)
+    $ticket_tags_result = get_ticket_tags($ticket_id); // Array of tags submitted with this ticket.
+    $ticket_tags = array();
+    foreach ($ticket_tags_result as $row)
     {
-        echo "<script>console.log('ticket tag');</script>";
-        echo "<script>console.log(" . json_encode($ticket_tag) . ");</script>";
+        array_push($ticket_tags, $row['term_taxonomy_id']);
     }
 
 	foreach ( $users->members as $user ) {
@@ -1235,13 +1234,16 @@ function wpas_find_agent( $ticket_id = false ) {
 		}
 
 		$count = $wpas_agent->open_tickets(); // Total number of open tickets for this agent
-        $user_tags = $wpas_agent->specialist_tags(); // Tags for this agent.
+        $user_tags_result = $wpas_agent->specialist_tags(); // Serialised array of tags for this
 
-        foreach ($user_tags as $user_tag)
+        $user_tags = array();
+
+        if (count($user_tags_result) != 0)
         {
-            echo "<script>console.log('user tag');</script>";
-            echo "<script>console.log(" . json_encode($user_tag) . ");</script>";
+            $user_tags = unserialize($user_tags_result[0]->meta_value);
         }
+
+        // @TODO: use $user_tags + $ticket_tags to find best specialist (most matching tags).
 
         // Pick fewest ticket agent.
 		if ( empty( $agent ) ) {
@@ -1276,6 +1278,7 @@ function wpas_find_agent( $ticket_id = false ) {
 
 	return apply_filters( 'wpas_find_available_agent', (int) $agent_id, $ticket_id );
 }
+
 
 function get_ticket_tags ($ticket_id) {
     global $wpdb;
