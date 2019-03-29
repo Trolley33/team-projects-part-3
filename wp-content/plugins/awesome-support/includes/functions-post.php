@@ -347,19 +347,20 @@ function wpas_insert_ticket( $data = array(), $post_id = false, $agent_id = fals
 	add_post_meta( $ticket_id, '_wpas_last_reply_date_gmt', null, true );
 	add_post_meta( $ticket_id, '_wpas_is_waiting_client_reply', ! user_can( $data['post_author'], 'edit_ticket' ), true );
 
-	if ( false === $agent_id ) {
-		$agent_id = wpas_find_agent( $ticket_id );
-	}
 
-	/**
+    /**
 	 * Fire wpas_open_ticket_before_assigned after the post is successfully submitted but before it has been assigned to an agent.
 	 *
 	 * @since 3.2.6
 	 */
-	do_action( 'wpas_open_ticket_before_assigned', $ticket_id, $data, $incoming_data );
+    do_action( 'wpas_open_ticket_before_assigned', $ticket_id, $data, $incoming_data );
 
-	/* Assign an agent to the ticket */
-	wpas_assign_ticket( $ticket_id, apply_filters( 'wpas_new_ticket_agent_id', $agent_id, $ticket_id, $agent_id ), false );
+
+    if ( false === $agent_id ) {
+        $agent_id = wpas_find_agent( $ticket_id );
+    }
+    /* Assign an agent to the ticket */
+    wpas_assign_ticket( $ticket_id, apply_filters( 'wpas_new_ticket_agent_id', $agent_id, $ticket_id, $agent_id ), false );
 
 	/* Update the channel on the ticket - but only if the $update is false which means we've got a new ticket */
 	/* Need to update it here again because some of the action hooks fired above will overwrite the term.			  */
@@ -691,7 +692,7 @@ function wpas_new_reply_submission( $data ) {
 	}
 
 	/* Possibly close the ticket */
-	if ( $close && apply_filters( 'wpas_user_can_close_ticket', true, $ticket_id ) ) {
+	if ( $close && apply_filters( 'wpas_user_can_close_ticket', true, $data['ticket_id'] ) ) {
 
 		wpas_close_ticket( $parent_id );
 
@@ -1214,6 +1215,14 @@ function wpas_find_agent( $ticket_id = false ) {
 	$users = shuffle_assoc( wpas_get_users( apply_filters( 'wpas_find_agent_get_users_args', array( 'cap' => 'edit_ticket' ) ) ) );
 	$agent = array();
 
+    $ticket_tags = get_ticket_tags($ticket_id);
+
+    foreach ($ticket_tags as $ticket_tag)
+    {
+        echo "<script>console.log('ticket tag');</script>";
+        echo "<script>console.log(" . json_encode($ticket_tag) . ");</script>";
+    }
+
 	foreach ( $users->members as $user ) {
 
 		$wpas_agent = new WPAS_Member_Agent( $user );
@@ -1226,7 +1235,15 @@ function wpas_find_agent( $ticket_id = false ) {
 		}
 
 		$count = $wpas_agent->open_tickets(); // Total number of open tickets for this agent
+        $user_tags = $wpas_agent->specialist_tags(); // Tags for this agent.
 
+        foreach ($user_tags as $user_tag)
+        {
+            echo "<script>console.log('user tag');</script>";
+            echo "<script>console.log(" . json_encode($user_tag) . ");</script>";
+        }
+
+        // Pick fewest ticket agent.
 		if ( empty( $agent ) ) {
 			$agent = array(
 				'tickets' => $count,
@@ -1258,7 +1275,18 @@ function wpas_find_agent( $ticket_id = false ) {
 	}
 
 	return apply_filters( 'wpas_find_available_agent', (int) $agent_id, $ticket_id );
+}
 
+function get_ticket_tags ($ticket_id) {
+    global $wpdb;
+
+    $query = "
+        SELECT $wpdb->term_relationships.term_taxonomy_id
+        FROM $wpdb->term_relationships
+        WHERE $wpdb->term_relationships.object_id = $ticket_id;
+        ";
+
+    return $wpdb->get_results($query, OBJECT);
 }
 
 /**
@@ -2040,7 +2068,7 @@ function wpas_get_gdpr_data( $short_description ) {
 
 /**
  * Delete post attachments
- * 
+ *
  * @param int $post_id
  */
 function wpas_delete_post_attachments( $post_id ) {

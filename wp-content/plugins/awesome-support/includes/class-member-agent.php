@@ -63,6 +63,20 @@ class WPAS_Member_Agent extends WPAS_Member {
 
 	}
 
+	public function specialist_tags() {
+
+        global $wpdb;
+
+        $query = "
+        SELECT $wpdb->usermeta.meta_value
+        FROM $wpdb->usermeta
+        WHERE $wpdb->usermeta.meta_key = 'specialism'
+        AND $wpdb->usermeta.user_id = $this->user_id;
+        ";
+
+        return $wpdb->get_results($query, OBJECT);
+    }
+
 	/**
 	 * Check if the agent can be assigned to new tickets
 	 *

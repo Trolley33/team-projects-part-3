@@ -721,7 +721,7 @@ class WPAS_Custom_Fields {
 		 *
 		 * @since  3.0.0
 		 */
-		do_action( 'wpas_save_custom_fields_after', $post_id );
+		do_action( '', $post_id );
 
 		return $saved;
 
