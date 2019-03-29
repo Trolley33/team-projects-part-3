@@ -347,19 +347,20 @@ function wpas_insert_ticket( $data = array(), $post_id = false, $agent_id = fals
 	add_post_meta( $ticket_id, '_wpas_last_reply_date_gmt', null, true );
 	add_post_meta( $ticket_id, '_wpas_is_waiting_client_reply', ! user_can( $data['post_author'], 'edit_ticket' ), true );
 
-	if ( false === $agent_id ) {
-		$agent_id = wpas_find_agent( $ticket_id );
-	}
 
-	/**
+    /**
 	 * Fire wpas_open_ticket_before_assigned after the post is successfully submitted but before it has been assigned to an agent.
 	 *
 	 * @since 3.2.6
 	 */
-	do_action( 'wpas_open_ticket_before_assigned', $ticket_id, $data, $incoming_data );
+    do_action( 'wpas_open_ticket_before_assigned', $ticket_id, $data, $incoming_data );
 
-	/* Assign an agent to the ticket */
-	wpas_assign_ticket( $ticket_id, apply_filters( 'wpas_new_ticket_agent_id', $agent_id, $ticket_id, $agent_id ), false );
+
+    if ( false === $agent_id ) {
+        $agent_id = wpas_find_agent( $ticket_id );
+    }
+    /* Assign an agent to the ticket */
+    wpas_assign_ticket( $ticket_id, apply_filters( 'wpas_new_ticket_agent_id', $agent_id, $ticket_id, $agent_id ), false );
 
 	/* Update the channel on the ticket - but only if the $update is false which means we've got a new ticket */
 	/* Need to update it here again because some of the action hooks fired above will overwrite the term.			  */
@@ -691,7 +692,7 @@ function wpas_new_reply_submission( $data ) {
 	}
 
 	/* Possibly close the ticket */
-	if ( $close && apply_filters( 'wpas_user_can_close_ticket', true, $ticket_id ) ) {
+	if ( $close && apply_filters( 'wpas_user_can_close_ticket', true, $data['ticket_id'] ) ) {
 
 		wpas_close_ticket( $parent_id );
 
@@ -1214,6 +1215,13 @@ function wpas_find_agent( $ticket_id = false ) {
 	$users = shuffle_assoc( wpas_get_users( apply_filters( 'wpas_find_agent_get_users_args', array( 'cap' => 'edit_ticket' ) ) ) );
 	$agent = array();
 
+    $ticket_tags_result = get_ticket_tags($ticket_id); // Array of tags submitted with this ticket.
+    $ticket_tags = array();
+    foreach ($ticket_tags_result as $row)
+    {
+        array_push($ticket_tags, $row->term_taxonomy_id);
+    }
+
 	foreach ( $users->members as $user ) {
 
 		$wpas_agent = new WPAS_Member_Agent( $user );
@@ -1226,17 +1234,33 @@ function wpas_find_agent( $ticket_id = false ) {
 		}
 
 		$count = $wpas_agent->open_tickets(); // Total number of open tickets for this agent
+        $user_tags_result = $wpas_agent->specialist_tags(); // Serialised array of tags for this
 
-		if ( empty( $agent ) ) {
-			$agent = array(
-				'tickets' => $count,
-				'user_id' => $user->ID,
-			);
-		} else {
+        $user_tags = array();
+        if (count($user_tags_result) != 0)
+        {
+            $user_tags = unserialize($user_tags_result[0]->meta_value);
+        }
 
-			if ( $count < $agent['tickets'] ) {
+        $matches = array_intersect($user_tags, $ticket_tags);
+
+        // + 1 to prevent no matching tags disregarding agent, or divide by 0
+        $score = get_score(count($matches)+1, $count+1);
+
+        // If no agent set, set first one.
+        if ( empty( $agent ) ) {
+            $agent = array(
+                'score' => $score,
+                'user_id' => $user->ID,
+            );
+        }
+
+        // Replace selected agent with better one if we find one.
+        else {
+
+			if ($score > $agent['score']) {
 				$agent = array(
-					'tickets' => $count,
+					'score' => $score,
 					'user_id' => $user->ID,
 				);
 			}
@@ -1258,7 +1282,33 @@ function wpas_find_agent( $ticket_id = false ) {
 	}
 
 	return apply_filters( 'wpas_find_available_agent', (int) $agent_id, $ticket_id );
+}
 
+
+function get_ticket_tags ($ticket_id) {
+    global $wpdb;
+
+    $query = "
+        SELECT $wpdb->term_relationships.term_taxonomy_id
+        FROM $wpdb->term_relationships
+        WHERE $wpdb->term_relationships.object_id = $ticket_id;
+        ";
+
+    return $wpdb->get_results($query, OBJECT);
+}
+
+/**
+ * Auto-assign algorithm, applies score based on matching tags and workload.
+ * @param $matched_tags
+ * @param $workload
+ * @return float|int
+ */
+function get_score ($matched_tags, $workload)
+{
+    $tag_weight = 1;
+    $work_weight = 1;
+    // Score = (tags^2 * 1) / (workload * 1)
+    return (pow(2, $matched_tags) * $tag_weight) / ($workload * $work_weight);
 }
 
 /**
@@ -2040,7 +2090,7 @@ function wpas_get_gdpr_data( $short_description ) {
 
 /**
  * Delete post attachments
- * 
+ *
  * @param int $post_id
  */
 function wpas_delete_post_attachments( $post_id ) {

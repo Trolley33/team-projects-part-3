@@ -341,35 +341,35 @@ function wpas_register_core_fields() {
 	) );
 
 
-	/*******************************************************************/
-	/* Add Tag fields                                                  */
-	/*******************************************************************/
-
-	/** Get the labels for the ticket tags field if they are provided */
-	$as_label_for_ticket_tag_singular 	= isset( $options[ 'label_for_ticket_tag_singular' ] ) ? $options[ 'label_for_ticket_tag_singular' ] : __( 'Tag', 'awesome-support' );
-	$as_label_for_ticket_tag_plural 	= isset( $options[ 'label_for_ticket_tag_plural' ] ) ? $options[ 'label_for_ticket_tag_plural' ] : __( 'Tags', 'awesome-support' );
-
-	/** Create the custom field for ticket tags */
-	wpas_add_custom_field( 'ticket-tag', array(
-		'core'                  => true,
-		'show_column'           => true,
-		'log'                   => true,
-		'field_type'            => 'taxonomy',
-		'sortable_column'       => true,
-		'taxo_std'              => false,
-		'column_callback'       => 'wpas_show_taxonomy_column',
-		'save_callback'         => null,
-		'label'                 => $as_label_for_ticket_tag_singular,
-		'name'                  => $as_label_for_ticket_tag_singular,
-		'label_plural'          => $as_label_for_ticket_tag_plural,
-		'taxo_hierarchical'     => false,
-		'update_count_callback' => 'wpas_update_ticket_tag_terms_count',
-		'select2'               => false,
-		'taxo_manage_terms' 	=> 'ticket_manage_tags',
-		'taxo_edit_terms'   	=> 'ticket_edit_tags',
-		'taxo_delete_terms' 	=> 'ticket_delete_tags',
-		'title'           		=> $as_label_for_ticket_tag_singular
-	) );
+//	/*******************************************************************/
+//	/* Add Tag fields                                                  */
+//	/*******************************************************************/
+//
+//	/** Get the labels for the ticket tags field if they are provided */
+//	$as_label_for_ticket_tag_singular 	= isset( $options[ 'label_for_ticket_tag_singular' ] ) ? $options[ 'label_for_ticket_tag_singular' ] : __( 'Tag', 'awesome-support' );
+//	$as_label_for_ticket_tag_plural 	= isset( $options[ 'label_for_ticket_tag_plural' ] ) ? $options[ 'label_for_ticket_tag_plural' ] : __( 'Tags', 'awesome-support' );
+//
+//	/** Create the custom field for ticket tags */
+//	wpas_add_custom_field( 'ticket-tag', array(
+//		//'core'                  => true,
+//		'show_column'           => true,
+//		'log'                   => true,
+//		'field_type'            => 'taxonomy',
+//		'sortable_column'       => true,
+//		'taxo_std'              => false,
+//		'column_callback'       => 'wpas_show_taxonomy_column',
+//		'save_callback'         => null,
+//		'label'                 => $as_label_for_ticket_tag_singular,
+//		'name'                  => $as_label_for_ticket_tag_singular,
+//		'label_plural'          => $as_label_for_ticket_tag_plural,
+//		'taxo_hierarchical'     => false,
+//		'update_count_callback' => 'wpas_update_ticket_tag_terms_count',
+//		'select2'               => false,
+//		'taxo_manage_terms' 	=> 'ticket_manage_tags',
+//		'taxo_edit_terms'   	=> 'ticket_edit_tags',
+//		'taxo_delete_terms' 	=> 'ticket_delete_tags',
+//		'title'           		=> $as_label_for_ticket_tag_singular
+//	) );
 
 
 	/*******************************************************************/

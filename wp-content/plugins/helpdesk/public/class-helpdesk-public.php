@@ -106,6 +106,7 @@ class Helpdesk_Public
 
     public function register_book_type()
     {
+        /* Registering post types code.
         register_post_type('wporg_product',
             array(
                 'labels' => array(
@@ -116,6 +117,7 @@ class Helpdesk_Public
                 'has_archive' => true,
             )
         );
+        */
     }
 
     /**
@@ -225,76 +227,80 @@ class Helpdesk_Public
 
     public function wphd_add_custom_fields()
     {
-        // Grab all tags
-        global $wpdb;
-        $results = $wpdb->get_results("
-    SELECT wp_terms.term_id, wp_terms.name FROM wp_terms
-    JOIN wp_term_taxonomy
-    ON wp_term_taxonomy.term_id = wp_terms.term_id
-    WHERE wp_term_taxonomy.taxonomy = 'ticket-tag';
-    ");
 
-        // Convert result array into 'tag-id' => 'tag-name'.
-        $tag_options = [];
-        foreach ($results as $tag)
-        {
-            $tag_options[$tag->term_id] = $tag->name;
-        }
+        /*******************************************************************/
+        /* Add Tag fields                                                  */
+        /*******************************************************************/
 
-        // Create custom tag field.
-        $tag_args = array(
-            'name' => 'tags',
-            'args' => array(
-                'title' => __( 'Tags', 'helpdesk' ),
-                'label' =>  __( 'Tags', 'helpdesk' ),
-                'label_plural' => __( 'Tags', 'helpdesk' ),
-                'order'      => '0',
-                'field_type' => 'select',
-                'multiple' => true,
-                'select2' => true,
-                'options' => $tag_options
-            )
-        );
+        /** Get the labels for the ticket tags field if they are provided */
+        $as_label_for_ticket_tag_singular 	= isset( $options[ 'label_for_ticket_tag_singular' ] ) ? $options[ 'label_for_ticket_tag_singular' ] : __( 'Tag', 'awesome-support' );
+        $as_label_for_ticket_tag_plural 	= isset( $options[ 'label_for_ticket_tag_plural' ] ) ? $options[ 'label_for_ticket_tag_plural' ] : __( 'Tags', 'awesome-support' );
 
-        wpas_add_custom_field($tag_args['name'], $tag_args['args']);
+        /** Create the custom field for ticket tags */
+        wpas_add_custom_field( 'ticket-tag', array(
+            //'core'                  => true,
+            'show_column'           => true,
+            'log'                   => true,
+            'field_type'            => 'taxonomy',
+            'sortable_column'       => true,
+            'taxo_std'              => false,
+            'column_callback'       => 'wpas_show_taxonomy_column',
+            'label'                 => $as_label_for_ticket_tag_singular,
+            'name'                  => $as_label_for_ticket_tag_singular,
+            'label_plural'          => $as_label_for_ticket_tag_plural,
+            'taxo_hierarchical'     => false,
+            'update_count_callback' => 'wpas_update_ticket_tag_terms_count',
+            'select2'               => true,
+            'taxo_manage_terms' 	=> 'ticket_manage_tags',
+            'taxo_edit_terms'   	=> 'ticket_edit_tags',
+            'taxo_delete_terms' 	=> 'ticket_delete_tags',
+            'title'           		=> $as_label_for_ticket_tag_singular,
+            'order' => '0'
+        ) );
 
         $os_args = array(
             'name' => 'OS',
             'args' => array(
-                'title' => __( 'Operating System', 'helpdesk' ), 
-                'label' => __( 'Operating System', 'helpdesk' ), 
-                'label_plural' => __( 'Operating System', 'helpdesk' ),
+                'title' => __( 'Operating Systems', 'helpdesk' ),
+                'label' => __( 'Operating System', 'helpdesk' ),
+                'label_plural' => __( 'Operating Systems', 'helpdesk' ),
                 'select2' => true,
-                'order' => '1' 
+                'order' => '1'
             )
         );
         wpas_add_custom_taxonomy($os_args['name'], $os_args['args']);
 
+
         $hw_args = array(
-            'name' => 'Hardware',
+            'name' => 'hardware',
             'args' => array(
-                'title' => __( 'Affected Hardware', 'helpdesk' ), 
-                'label' => __( 'Affected Hardware', 'helpdesk' ), 
-                'label_plural' => __( 'Affected Hardware', 'helpdesk' ), 
+                'title' => __( 'Hardware', 'helpdesk' ),
+                'label' => __( 'Affected Hardware', 'helpdesk' ),
+                'label_plural' => __( 'Affected Hardware', 'helpdesk' ),
                 'select2' => true,
-                'order' => '2' 
+                'order' => '2'
             )
         );
         wpas_add_custom_taxonomy($hw_args['name'], $hw_args['args']);
 
         $sw_args = array(
-            'name' => 'Software',
+            'name' => 'software',
             'args' => array(
-                'title' => __( 'Affected Software', 'helpdesk' ), 
-                'label' => __( 'Affected Software', 'helpdesk' ), 
-                'label_plural' => __( 'Affected Software', 'helpdesk' ), 
+                'title' => __( 'Software', 'helpdesk' ),
+                'label' => __( 'Affected Software', 'helpdesk' ),
+                'label_plural' => __( 'Affected Software', 'helpdesk' ),
                 'select2' => true,
-                'order' => '3' 
+                'order' => '3'
             )
         );
 
 
         wpas_add_custom_taxonomy($sw_args['name'], $sw_args['args']);
+    }
+
+    public function test ()
+    {
+        echo "<script>console.log('test');</script>";
     }
 
 }
