@@ -1237,25 +1237,30 @@ function wpas_find_agent( $ticket_id = false ) {
         $user_tags_result = $wpas_agent->specialist_tags(); // Serialised array of tags for this
 
         $user_tags = array();
-
         if (count($user_tags_result) != 0)
         {
             $user_tags = unserialize($user_tags_result[0]->meta_value);
         }
 
-        // @TODO: use $user_tags + $ticket_tags to find best specialist (most matching tags).
+        $matches = array_intersect($user_tags, $ticket_tags);
 
-        // Pick fewest ticket agent.
-		if ( empty( $agent ) ) {
-			$agent = array(
-				'tickets' => $count,
-				'user_id' => $user->ID,
-			);
-		} else {
+        // + 1 to prevent no matching tags disregarding agent, or divide by 0
+        $score = get_score(count($matches)+1, $count+1);
 
-			if ( $count < $agent['tickets'] ) {
+        // If no agent set, set first one.
+        if ( empty( $agent ) ) {
+            $agent = array(
+                'score' => $score,
+                'user_id' => $user->ID,
+            );
+        }
+
+        // Replace selected agent with better one if we find one.
+        else {
+
+			if ($score > $agent['score']) {
 				$agent = array(
-					'tickets' => $count,
+					'score' => $score,
 					'user_id' => $user->ID,
 				);
 			}
@@ -1290,6 +1295,20 @@ function get_ticket_tags ($ticket_id) {
         ";
 
     return $wpdb->get_results($query, OBJECT);
+}
+
+/**
+ * Auto-assign algorithm, applies score based on matching tags and workload.
+ * @param $matched_tags
+ * @param $workload
+ * @return float|int
+ */
+function get_score ($matched_tags, $workload)
+{
+    $tag_weight = 1;
+    $work_weight = 1;
+    // Score = (tags^2 * 1) / (workload * 1)
+    return (pow(2, $matched_tags) * $tag_weight) / ($workload * $work_weight);
 }
 
 /**
