@@ -1219,7 +1219,7 @@ function wpas_find_agent( $ticket_id = false ) {
     $ticket_tags = array();
     foreach ($ticket_tags_result as $row)
     {
-        array_push($ticket_tags, $row['term_taxonomy_id']);
+        array_push($ticket_tags, $row->term_taxonomy_id);
     }
 
 	foreach ( $users->members as $user ) {
