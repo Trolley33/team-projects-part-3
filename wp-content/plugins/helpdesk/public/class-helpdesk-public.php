@@ -170,9 +170,7 @@ class Helpdesk_Public
      *
      * @since 4.4.0
      *
-     * @param none
-     *
-     * @return array post array of tickets found
+     * @return WP_Query post array of tickets found
      */
     private function wpas_get_all_tickets_for_shortcode()
     {
