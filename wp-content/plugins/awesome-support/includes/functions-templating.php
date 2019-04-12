@@ -774,7 +774,7 @@
 		$list  = array();
 
 		if ( ! is_array( $terms ) ) {
-			echo '';
+			echo 'N/A';
 		} else {
 
 			foreach ( $terms as $term ) {
