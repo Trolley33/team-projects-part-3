@@ -59,7 +59,16 @@ if ( $wpas_tickets->have_posts() ):
 					$wpas_tickets->the_post();
 
 					echo '<tr class="wpas-status-' . wpas_get_ticket_status( $wpas_tickets->post->ID ) . '" id="wpas_ticket_' . $wpas_tickets->post->ID . '">';
-                    echo "<td>1</td>";
+
+					global $wpdb;
+					$query = "SELECT COUNT(rating_id) as count FROM wp_ratings WHERE rating_postid = '" . $wpas_tickets->post->ID ."';";
+
+					$result = $wpdb->get_results($query);
+					if (count($result) == 0)
+					    $votes = 0;
+                    $votes = $result[0]->count;
+
+                    echo "<td>$votes</td>";
 
 					foreach ( $columns as $column_id => $column ) {
 
