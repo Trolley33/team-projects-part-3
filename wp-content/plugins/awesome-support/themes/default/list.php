@@ -68,7 +68,7 @@ if ( $wpas_tickets->have_posts() ):
 					    $votes = 0;
                     $votes = $result[0]->count;
 
-                    echo "<td>$votes</td>";
+                    echo "<td style='text-align: right;'>$votes</td>";
 
 					foreach ( $columns as $column_id => $column ) {
 
