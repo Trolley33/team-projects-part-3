@@ -36,6 +36,7 @@ if ( $wpas_tickets->have_posts() ):
 		<table id="wpas_ticketlist" class="wpas-table wpas-table-hover" data-filter="#wpas_filter" data-filter-text-only="true" data-page-navigation=".wpas_table_pagination" data-page-size=" <?php echo $tickets_per_page ?> ">
 			<thead>
 				<tr>
+                    <?php echo "<th>Help Points</th>"; ?>
 					<?php foreach ( $columns as $column_id => $column ) {
 
 						$data_attributes = '';
@@ -47,9 +48,10 @@ if ( $wpas_tickets->have_posts() ):
 
 						printf( '<th id="wpas-ticket-%1$s" %3$s>%2$s</th>', $column_id, $column['title'], $data_attributes );
 
-					} ?>
-				</tr>
-			</thead>
+
+                    } ?>
+                </tr>
+            </thead>
 			<tbody>
 				<?php
 				while( $wpas_tickets->have_posts() ):
@@ -57,6 +59,7 @@ if ( $wpas_tickets->have_posts() ):
 					$wpas_tickets->the_post();
 
 					echo '<tr class="wpas-status-' . wpas_get_ticket_status( $wpas_tickets->post->ID ) . '" id="wpas_ticket_' . $wpas_tickets->post->ID . '">';
+                    echo "<td>1</td>";
 
 					foreach ( $columns as $column_id => $column ) {
 
