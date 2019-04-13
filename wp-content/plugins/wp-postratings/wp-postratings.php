@@ -113,12 +113,13 @@ function the_ratings($start_tag = 'div', $custom_id = 0, $display = true) {
 	} else {
 		$attributes = 'id="post-ratings-'.$ratings_id.'" class="post-ratings"';
 	}
+
 	// If User Voted Or Is Not Allowed To Rate
 	if($user_voted) {
 		if(!$display) {
-			return "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading;
+			return "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading."<b>post voted for</b>";
 		} else {
-			echo "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading;
+			echo "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading."<b>post voted for</b>";
 		}
 	// If User Is Not Allowed To Rate
 	} else if(!check_allowtorate()) {
