@@ -1038,7 +1038,9 @@
 					'queued'     => '#1e73be',
 					'processing' => '#a01497',
 					'hold'       => '#b56629',
-				);
+                    'duplicate'  => '#aa00aa',
+                    'help'       => '#00aaaa',
+                );
 				$label    = $custom_status[ $post_status ];
 				$color    = wpas_get_option( "color_$post_status", false );
 

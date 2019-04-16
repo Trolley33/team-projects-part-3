@@ -264,6 +264,8 @@ function wpas_get_post_status() {
 			'queued'     => _x( 'New', 'Ticket status', 'awesome-support' ),
 			'processing' => _x( 'In Progress', 'Ticket status', 'awesome-support' ),
 			'hold'       => _x( 'On Hold', 'Ticket status', 'awesome-support' ),
+            'duplicate'  => _x( 'Duplicate', 'Ticket status', 'awesome-support' ),
+            'help'  => _x( 'Help Requested', 'Ticket status', 'awesome-support' ),
 	);
 
 	return apply_filters( 'wpas_ticket_statuses', $status );
