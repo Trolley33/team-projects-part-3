@@ -641,7 +641,7 @@ textarea.wpas-form-control {
 
 @media (min-width:1px) {
     .wpas-btn, .wpas-ticket-list, input, select {
-        font-size: 11.9px
+        font-size: 1em;
     }
     .wpas-btn {
         border-radius: 3px
