@@ -117,9 +117,9 @@ function the_ratings($start_tag = 'div', $custom_id = 0, $display = true) {
 	// If User Voted Or Is Not Allowed To Rate
 	if($user_voted) {
 		if(!$display) {
-			return "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading."<b>post voted for</b>";
+			return "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading;
 		} else {
-			echo "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading."<b>post voted for</b>";
+			echo "<$start_tag $attributes>".the_ratings_results($ratings_id).'</'.$start_tag.'>'.$loading;
 		}
 	// If User Is Not Allowed To Rate
 	} else if(!check_allowtorate()) {
