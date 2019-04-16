@@ -25,6 +25,8 @@ $author = get_user_by( 'id', $post->post_author );
 
 	<?php wpas_get_template( 'partials/ticket-navigation' ); ?>
 
+    <?php if(function_exists('the_ratings')) { the_ratings(); } ?>
+
 	<?php
 	/**
 	 * Display the table header containing the tickets details.
