@@ -19,10 +19,18 @@ if ( $wpas_tickets->have_posts() ):
 		<?php wpas_get_template( 'partials/ticket-navigation' ); ?>
 
 		<!-- Filters & Search tickets -->
+        <?php
+        $custom_status = wpas_get_post_status();
+        ?>
 		<div class="wpas-row" id="wpas_ticketlist_filters">
 			<div class="wpas-one-third">
 				<select class="wpas-form-control wpas-filter-status">
 					<option value=""><?php esc_html_e('Any status', 'awesome-support'); ?></option>
+                    <?php
+                    foreach ($custom_status as $short => $long) {
+                        echo "<option value='$short'>$long</option>";
+                    }
+                    ?>
 				</select>
 			</div>
 			<div class="wpas-one-third"></div>
