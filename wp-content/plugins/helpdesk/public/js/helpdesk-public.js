@@ -145,17 +145,16 @@
 
 function follow_thread(user_id, post_id)
 {
-	var followed_div = document.getElementById('followed_area');
-	followed_div.innerHTML = "Set user: " + user_id + " to follow post: " + post_id + ".";
-	console.log(followed_object.ajax_url);
+	var followed_button = document.getElementById('wphd-follow-button');
+
 	jQuery.ajax({
 		type: 'POST',
 		dataType: 'html',
 		url: followed_object.ajax_url,
-		data: 'action=follow_thread&pid=' + post_id + '&uid=' + user_id ,
+		data: 'action=follow_thread&pid=' + post_id + '&uid=' + user_id + "&follow=1",
 		success: function (event) {
-			console.log(event);
-			console.log("Help");
+			followed_button.onclick = function () {unfollow_thread(user_id, post_id);};
+			followed_button.innerHTML = "Unfollow this ticket?";
 		}
 	});
 
@@ -163,6 +162,16 @@ function follow_thread(user_id, post_id)
 
 function unfollow_thread(user_id, post_id)
 {
-	var followed_div = document.getElementById('followed_area');
-	followed_div.innerHTML = "Set user: " + user_id + " to unfollow post: " + post_id + ".";
+	var followed_button = document.getElementById('wphd-follow-button');
+
+	jQuery.ajax({
+		type: 'POST',
+		dataType: 'html',
+		url: followed_object.ajax_url,
+		data: 'action=follow_thread&pid=' + post_id + '&uid=' + user_id + "&follow=0",
+		success: function (event) {
+			followed_button.onclick = function () {follow_thread(user_id, post_id);};
+			followed_button.innerHTML = "Follow this ticket?";
+		}
+	});
 }

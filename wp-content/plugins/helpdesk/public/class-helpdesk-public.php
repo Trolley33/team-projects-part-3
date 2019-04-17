@@ -401,4 +401,26 @@ class Helpdesk_Public
         wpas_add_custom_taxonomy($sw_args['name'], $sw_args['args']);
     }
 
+    public function wphd_follow_ticket () {
+        if (!isset($_REQUEST['pid']) || !isset($_REQUEST['uid']) || !isset($_REQUEST['follow']))
+        {
+            echo "Error!";
+            return;
+        }
+
+        $pid = $_REQUEST['pid'];
+        $uid = $_REQUEST['uid'];
+        $follow = $_REQUEST['follow'];
+
+        global $wpdb;
+        if ($follow) {
+            $query = "INSERT INTO wp_followed_tickets (postid, userid) VALUES ('$pid', '$uid')";
+            $wpdb->query($query);
+        }
+        else {
+            $query = "DELETE FROM wp_followed_tickets WHERE postid='$pid' AND userid='$uid'";
+            $wpdb->query($query);
+        }
+    }
+
 }
