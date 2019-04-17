@@ -101,6 +101,9 @@ class Helpdesk_Public
          */
 
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/helpdesk-public.js', array('jquery'), $this->version, false);
+        wp_localize_script($this->plugin_name, 'followed_object', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+        ));
 
     }
 
@@ -396,11 +399,6 @@ class Helpdesk_Public
 
 
         wpas_add_custom_taxonomy($sw_args['name'], $sw_args['args']);
-    }
-
-    public function test ()
-    {
-        echo "<script>console.log('test');</script>";
     }
 
 }

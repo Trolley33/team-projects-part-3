@@ -80,4 +80,31 @@ function run_helpdesk() {
 
 }
 
+function the_followed_thread()
+{
+    $userid = get_current_user_id();
+    $postid = get_the_ID();
+
+    // Check if user is already following thread.
+    $following = false;
+
+
+    // Render 'unfollow' button if following.
+    if ($following == true) {
+        echo "
+   
+    <button class='wpas-btn wpas-btn-default' onclick='unfollow_thread($userid, $postid)'>Unfollow this thread?</button>
+    
+    ";
+    } else {
+        // Render follow button else.
+        echo "
+   
+    <button class='wpas-btn wpas-btn-default' onclick='follow_thread($userid, $postid)'>Follow this thread?</button>
+    
+    ";
+    }
+
+}
+
 run_helpdesk();

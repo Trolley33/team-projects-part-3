@@ -24,8 +24,13 @@ $author = get_user_by( 'id', $post->post_author );
 <div class="wpas wpas-ticket-details">
 
 	<?php wpas_get_template( 'partials/ticket-navigation' ); ?>
-    <div style="float: right;text-align:right;">
-        <?php if(function_exists('the_ratings')) { the_ratings(); } ?>
+    <div>
+        <div id="followed_area" style="float: left;text-align:left">
+            <?php if(function_exists('the_followed_thread')) { the_followed_thread(); } ?>
+        </div>
+        <div style="float: right;text-align:right;">
+            <?php if(function_exists('the_ratings')) { the_ratings(); } ?>
+        </div>
     </div>
 	<?php
 	/**

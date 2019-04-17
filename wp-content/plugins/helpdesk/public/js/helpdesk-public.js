@@ -139,4 +139,30 @@
 			}
 		}
 	}
+
+
 })(jQuery);
+
+function follow_thread(user_id, post_id)
+{
+	var followed_div = document.getElementById('followed_area');
+	followed_div.innerHTML = "Set user: " + user_id + " to follow post: " + post_id + ".";
+	console.log(followed_object.ajax_url);
+	jQuery.ajax({
+		type: 'POST',
+		dataType: 'html',
+		url: followed_object.ajax_url,
+		data: 'action=follow_thread&pid=' + post_id + '&uid=' + user_id ,
+		success: function (event) {
+			console.log(event);
+			console.log("Help");
+		}
+	});
+
+}
+
+function unfollow_thread(user_id, post_id)
+{
+	var followed_div = document.getElementById('followed_area');
+	followed_div.innerHTML = "Set user: " + user_id + " to unfollow post: " + post_id + ".";
+}
