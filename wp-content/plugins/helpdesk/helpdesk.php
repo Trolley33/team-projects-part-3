@@ -80,4 +80,34 @@ function run_helpdesk() {
 
 }
 
+function the_followed_thread()
+{
+    $userid = get_current_user_id();
+    $postid = get_the_ID();
+
+    // Check if user is already following thread.
+    global $wpdb;
+
+    $query = "SELECT id FROM wp_followed_tickets WHERE postid='$postid' AND userid='$userid'";
+    $result = $wpdb->get_results($query);
+
+    $following = true;
+    if (count($result) == 0) {
+        $following = false;
+    }
+
+    // Render 'unfollow' button if following.
+    if ($following == true) {
+        echo "
+        <button id='wphd-follow-button' class='wpas-btn wpas-btn-default' onclick='unfollow_thread($userid, $postid)'>Unfollow this ticket?</button>   
+        ";
+    } else {
+        // Render follow button else.
+        echo "   
+        <button id='wphd-follow-button' class='wpas-btn wpas-btn-default' onclick='follow_thread($userid, $postid)'>Follow this ticket?</button>    
+        ";
+    }
+
+}
+
 run_helpdesk();
