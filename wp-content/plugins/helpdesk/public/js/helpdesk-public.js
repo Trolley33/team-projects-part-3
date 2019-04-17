@@ -31,6 +31,7 @@
 
 	 /* This was written without jQuery prepared, so can be converted at some point */
 
+	/* --- Ticket submit page --- */
 	document.addEventListener('DOMContentLoaded', function () {
 	    var tag_label = document.getElementById('wpas_ticket-tag');
 		var os_label = document.getElementById('wpas_OS');
@@ -45,67 +46,41 @@
 	    	hardware_label.labels[0].after(document.createElement('BR'));
 	    	software_label.labels[0].after(document.createElement('BR'));
 		}
-	    // If filter is on this page, bind the search function to it.
-	    var filter = document.getElementById('wpas_filter');
-	    if (filter !== null) {
-	    	filter.addEventListener('keyup', 
-	    		function (event) 
-	    		{
-	    			if (event.keyCode !== 13)
-	    			{
-	    				return;
-	    			}
 
-	    			var val = this.value.toLowerCase();
-	        		var list = document.getElementById('wpas_ticketlist');
-	        		var rows = list.children[1].children;
-	        		for (let i=0; i < rows.length; i++) {
-	        			if (!rows[i].innerText.toLowerCase().includes(val))
-	        			{
-	        				rows[i].hidden = true;
-	        			}
-	        			else
-	        			{
-	        				rows[i].hidden = null;
-	        			}
-	        		}
-	    		}, false);
+		/* --- Ticket list filters --- */
 
-	    	var clear_filter = document.getElementsByClassName('wpas-clear-filter');
-	    	if (clear_filter.length !== 0)
-	    	{
-	    		clear_filter[0].addEventListener('click', function (event) {
-	    				filter.value = "";
-	    				var list = document.getElementById('wpas_ticketlist');
-	    				var rows = list.children[1].children;
-	    				for (let i=0; i < rows.length; i++) 
-	    				{  
-							rows[i].hidden = null;
-						}
-	    		}, false);
-	    	}
-	    }
-
-		// If status is on this page, bind the search function to it.
+	    // Check if both status filter and search bar are on this page, meaning we are on list.php
+	    var search_bar = document.getElementById('wpas_filter');
 		var status_filter = document.getElementById('status-filter');
-	    if (status_filter !== null) {
+	    if (search_bar !== null && status_filter !== null) {
+			var list = document.getElementById('wpas_ticketlist');
 			status_filter.addEventListener('change',
 				function (event)
 				{
-					var val = status_filter.options[status_filter.selectedIndex].innerHTML.toLowerCase();
-					var list = document.getElementById('wpas_ticketlist');
-					var rows = list.children[1].children;
-					for (let i=0; i < rows.length; i++) {
-						if (!rows[i].innerText.toLowerCase().includes(val))
-						{
-							rows[i].hidden = true;
-						}
-						else
-						{
-							rows[i].hidden = null;
-						}
-					}
+					var status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
+					var search = search_bar.value.toLowerCase();
+
+					filter_search(list, status, search);
 				}, false);
+
+			search_bar.addEventListener('keyup',
+				function (event) {
+					if (event.keyCode !== 13) {
+						return;
+					}
+					var status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
+					var search = this.value.toLowerCase();
+
+					filter_search(list, status, search);
+				}, false);
+
+			var clear_filter = document.getElementsByClassName('wpas-clear-filter');
+			if (clear_filter.length !== 0) {
+				clear_filter[0].addEventListener('click', function (event) {
+					var status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
+					filter_search(list, status, '');
+				}, false);
+			}
 		}
 
 	    // If the table exists, sort by ratings.
@@ -144,4 +119,24 @@
 			}
 		}
 	}, false);
+
+	function filter_search(table_list, status, terms)
+	{
+		var rows = table_list.children[1].children;
+		for (let i = 0; i < rows.length; i++) {
+			// Check right status is met.
+			if (!rows[i].innerText.toLowerCase().includes(status)) {
+				rows[i].hidden = true;
+				continue;
+			} else {
+				rows[i].hidden = null;
+			}
+			// Do search term search.
+			if (!rows[i].innerText.toLowerCase().includes(terms)) {
+				rows[i].hidden = true;
+			} else {
+				rows[i].hidden = null;
+			}
+		}
+	}
 })(jQuery);

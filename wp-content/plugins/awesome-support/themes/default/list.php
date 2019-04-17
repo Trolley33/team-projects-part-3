@@ -6,13 +6,13 @@ if ( $wpas_tickets->have_posts() ):
 
 	/* Get list of columns to display */
 	$columns 		  = wpas_get_tickets_list_columns();
-	
+
 	/* Get number of tickets per page */
 	$tickets_per_page = wpas_get_option( 'tickets_per_page_front_end' );
 	If ( empty($tickets_per_page) ) {
 		$tickets_per_page = 5 ; // default number of tickets per page to 5 if no value specified.
 	}
-	
+
 	?>
 	<div class="wpas wpas-ticket-list">
 
@@ -26,9 +26,10 @@ if ( $wpas_tickets->have_posts() ):
 			<div class="wpas-one-third">
 				<select id="status-filter" class="wpas-form-control wpas-filter-status">
 					<option value=""><?php esc_html_e('Any status', 'awesome-support'); ?></option>
+                    <option value="closed">Closed</option>
                     <?php
                     foreach ($custom_status as $short => $long) {
-                        echo "<option value='$short'>$long</option>";
+                        echo "<option value='$long'>$long</option>";
                     }
                     ?>
 				</select>
@@ -97,7 +98,7 @@ if ( $wpas_tickets->have_posts() ):
 					}
 
 					echo '</tr>';
-				
+
 				endwhile;
 
 				wp_reset_query(); ?>
