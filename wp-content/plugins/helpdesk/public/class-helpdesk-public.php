@@ -121,7 +121,7 @@ class Helpdesk_Public
     }
 
     /**
-     * Registration page shortcode.
+     * All tickets page shortcode.
      */
     public function wpas_sc_all_tickets()
     {
