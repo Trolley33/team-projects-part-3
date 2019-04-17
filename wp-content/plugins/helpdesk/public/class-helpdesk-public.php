@@ -224,7 +224,7 @@ class Helpdesk_Public
     }
 
     /**
-     * Registration page shortcode.
+     * Followed tickets page shortcode.
      */
     function wphd_sc_followed_tickets() {
 
@@ -293,7 +293,7 @@ class Helpdesk_Public
      */
     function wphd_get_followed_tickets_for_shortcode() {
 
-        global $current_user, $post, $wpdb;
+        global $current_user, $post;
 
         /**
          * For some reason when the user ID is set to 0
@@ -320,7 +320,7 @@ class Helpdesk_Public
         $args = apply_filters( 'wpas_tickets_shortcode_query_args', $args );
 
         $wpas_tickets_found = new WP_Query( $args );
-        $wpas_tickets_found->followed = true;
+
         return $wpas_tickets_found;
 
     }

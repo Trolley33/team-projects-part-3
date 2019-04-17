@@ -69,6 +69,7 @@ if ( $wpas_tickets->have_posts() ):
 					$wpas_tickets->the_post();
 
                     global $wpdb;
+
                     $rating_query = "SELECT COUNT(rating_id) as count FROM wp_ratings WHERE rating_postid = '" . $wpas_tickets->post->ID ."';";
 
                     $rating_result = $wpdb->get_results($rating_query);
@@ -76,14 +77,16 @@ if ( $wpas_tickets->have_posts() ):
                         $votes = 0;
                     $ratings = $rating_result[0]->count;
 
-				    if (!is_null($wpas_tickets->followed)) {
-				        if ($wpas_tickets->followed == true)
-				        {
-                            $followed_query = "SELECT id FROM wp_followed_tickets WHERE postid='".$wpas_tickets->post->ID."' AND userid='$userid'";
-                            $followed_result = $wpdb->get_results($followed_query);
-                            if (count($followed_result) == 0) {
-                                continue;
-                            }
+                    /* --- Not ideal code, should really be refactored --- */
+
+                    // Check if current URL is followed thread page, and modifies output to match.
+                    $path = parse_url(acf_get_current_url(), PHP_URL_PATH);
+                    if ($path == '/followed-tickets/')
+                    {
+                        $followed_query = "SELECT id FROM wp_followed_tickets WHERE postid='".$wpas_tickets->post->ID."' AND userid='$userid'";
+                        $followed_result = $wpdb->get_results($followed_query);
+                        if (count($followed_result) == 0) {
+                            continue;
                         }
                     }
 
