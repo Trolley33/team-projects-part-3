@@ -123,12 +123,12 @@ class Helpdesk_Public
     /**
      * All tickets page shortcode.
      */
-    public function wpas_sc_all_tickets()
+    public function wphd_sc_all_tickets()
     {
 		
         global $wpas_tickets, $post;
 
-        $wpas_tickets = $this->wpas_get_all_tickets_for_shortcode();
+        $wpas_tickets = $this->wphd_get_all_tickets_for_shortcode();
 
         /* Get the ticket content */
         ob_start();
@@ -172,7 +172,7 @@ class Helpdesk_Public
      *
      * @return WP_Query post array of tickets found
      */
-    private function wpas_get_all_tickets_for_shortcode()
+    private function wphd_get_all_tickets_for_shortcode()
     {
 
         global $current_user, $post;
@@ -219,6 +219,108 @@ class Helpdesk_Public
 
         $wpas_tickets_found = new WP_Query($args);
 
+        return $wpas_tickets_found;
+
+    }
+
+    /**
+     * Registration page shortcode.
+     */
+    function wphd_sc_followed_tickets() {
+
+        global $wpas_tickets, $post;
+
+        $wpas_tickets = $this->wphd_get_followed_tickets_for_shortcode() ;
+
+        /* Get the ticket content */
+        ob_start();
+
+        /**
+         * wpas_frontend_plugin_page_top is executed at the top
+         * of every plugin page on the front end.
+         */
+        do_action( 'wpas_frontend_plugin_page_top', $post->ID, $post );
+
+        /**
+         * wpas_before_tickets_list hook
+         */
+        do_action( 'wpas_before_tickets_list' );
+
+        /* If user is not logged in we display the register form */
+        if ( !is_user_logged_in() ):
+
+            $registration = wpas_get_option( 'login_page', false );
+
+            if ( false !== $registration && !empty( $registration ) && !is_null( get_post( intval( $registration ) ) ) ) {
+                /* As the headers are already sent we can't use wp_redirect. */
+                echo '<meta http-equiv="refresh" content="0; url=' . get_permalink( $registration ) . '" />';
+                wpas_get_notification_markup( 'info', __( 'You are being redirected...', 'awesome-support' ) );
+                exit;
+            }
+
+            wpas_get_template( 'registration' );
+
+        else:
+            /**
+             * Get the custom template.
+             */
+            wpas_get_template( 'list' );
+        endif;
+
+        /**
+         * wpas_after_tickets_list hook
+         */
+        do_action( 'wpas_after_tickets_list' );
+
+        /**
+         * Finally get the buffer content and return.
+         *
+         * @var string
+         */
+        $content = ob_get_clean();
+
+        return $content;
+
+    }
+    /**
+     * Get the list of tickets that should be shown in the [tickets] shortcode.
+     *
+     * @since 4.4.0
+     *
+     * @param none
+     *
+     * @return array post array of tickets found
+     */
+    function wphd_get_followed_tickets_for_shortcode() {
+
+        global $current_user, $post, $wpdb;
+
+        /**
+         * For some reason when the user ID is set to 0
+         * the query returns posts whose author has ID 1.
+         * In order to avoid that (for non logged users)
+         * we set the user ID to -1 if it is 0.
+         *
+         * @var integer
+         */
+        $author = ( 0 !== $current_user->ID ) ? $current_user->ID : -1;
+
+        $args = array(
+            'post_type'              => 'ticket',
+            'post_status'            => 'any',
+            'order'                  => 'DESC',
+            'orderby'                => 'date',
+            'posts_per_page'         => - 1,
+            'no_found_rows'          => false,
+            'cache_results'          => false,
+            'update_post_term_cache' => false,
+            'update_post_meta_cache' => false,
+        ) ;
+
+        $args = apply_filters( 'wpas_tickets_shortcode_query_args', $args );
+
+        $wpas_tickets_found = new WP_Query( $args );
+        $wpas_tickets_found->followed = true;
         return $wpas_tickets_found;
 
     }

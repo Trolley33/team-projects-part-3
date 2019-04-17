@@ -10,7 +10,7 @@ if ( $wpas_tickets->have_posts() ):
 	/* Get number of tickets per page */
 	$tickets_per_page = wpas_get_option( 'tickets_per_page_front_end' );
 	If ( empty($tickets_per_page) ) {
-		$tickets_per_page = 5 ; // default number of tickets per page to 5 if no value specified.
+		$tickets_per_page = -1 ; // default number of tickets per page to 5 if no value specified.
 	}
 
 	?>
@@ -63,21 +63,33 @@ if ( $wpas_tickets->have_posts() ):
             </thead>
 			<tbody>
 				<?php
+                $userid = get_current_user_id();
 				while( $wpas_tickets->have_posts() ):
 
 					$wpas_tickets->the_post();
 
+                    global $wpdb;
+                    $rating_query = "SELECT COUNT(rating_id) as count FROM wp_ratings WHERE rating_postid = '" . $wpas_tickets->post->ID ."';";
+
+                    $rating_result = $wpdb->get_results($rating_query);
+                    if (count($rating_result) == 0)
+                        $votes = 0;
+                    $ratings = $rating_result[0]->count;
+
+				    if (!is_null($wpas_tickets->followed)) {
+				        if ($wpas_tickets->followed == true)
+				        {
+                            $followed_query = "SELECT id FROM wp_followed_tickets WHERE postid='".$wpas_tickets->post->ID."' AND userid='$userid'";
+                            $followed_result = $wpdb->get_results($followed_query);
+                            if (count($followed_result) == 0) {
+                                continue;
+                            }
+                        }
+                    }
+
 					echo '<tr class="wpas-status-' . wpas_get_ticket_status( $wpas_tickets->post->ID ) . '" id="wpas_ticket_' . $wpas_tickets->post->ID . '">';
 
-					global $wpdb;
-					$query = "SELECT COUNT(rating_id) as count FROM wp_ratings WHERE rating_postid = '" . $wpas_tickets->post->ID ."';";
-
-					$result = $wpdb->get_results($query);
-					if (count($result) == 0)
-					    $votes = 0;
-                    $votes = $result[0]->count;
-
-                    echo "<td style='text-align: right;'>$votes</td>";
+                    echo "<td style='text-align: right;'>$ratings</td>";
 
 					foreach ( $columns as $column_id => $column ) {
 
