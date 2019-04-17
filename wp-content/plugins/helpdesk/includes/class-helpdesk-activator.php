@@ -34,5 +34,16 @@ class Helpdesk_Activator
     {
         // clear the permalinks after the post type has been registered
         flush_rewrite_rules();
+
+        // Create Post Ratings Table
+        $create_sql = "CREATE TABLE wp_followed_tickets (".
+            "id INT(11) NOT NULL auto_increment,".
+            "postid INT(11) NOT NULL ,".
+            "userid INT(10) NOT NULL default '0',".
+            "PRIMARY KEY (id),".
+            "KEY rating_followed (postid, userid)) ";
+
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        dbDelta( $create_sql );
     }
 }
