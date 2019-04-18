@@ -34,9 +34,16 @@ class Helpdesk_Activator
     {
         // clear the permalinks after the post type has been registered
         flush_rewrite_rules();
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
+        self::create_followed_tickets_table();
+        self::create_timeoff_table();
+
+    }
+
+    static function create_followed_tickets_table () {
         // Create Followed Tickets Table
-        $create_followed_sql =
+        $sql =
             "CREATE TABLE IF NOT EXISTS wp_followed_tickets (".
             "id INT(11) NOT NULL auto_increment,".
             "postid INT(11) NOT NULL ,".
@@ -44,7 +51,11 @@ class Helpdesk_Activator
             "PRIMARY KEY (id),".
             "KEY rating_followed (postid, userid)) ";
 
-        $create_timeoff_sql =
+        dbDelta($sql);
+    }
+
+    static function create_timeoff_table () {
+        $sql =
             "CREATE TABLE IF NOT EXISTS wp_timeoff (".
             "id INT(11) NOT NULL auto_increment,".
             "userid INT(10) NOT NULL default '0',".
@@ -53,8 +64,6 @@ class Helpdesk_Activator
             "time_end DATETIME, ".
             "PRIMARY KEY (id))";
 
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        dbDelta( $create_followed_sql );
-        dbDelta( $create_timeoff_sql );
+        dbDelta($sql);
     }
 }
