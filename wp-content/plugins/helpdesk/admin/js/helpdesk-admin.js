@@ -29,4 +29,9 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
+	$(function () {
+		var table = $('.display').dataTable();
+		console.log(table);
+	});
+
 })( jQuery );

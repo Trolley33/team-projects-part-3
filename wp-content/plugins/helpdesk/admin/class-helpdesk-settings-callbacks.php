@@ -97,32 +97,19 @@ class Helpdesk_Settings_Callbacks
         <?php
 }
 
-    public function skill_manager()
-    {
+    public function timeoff_manager (){
         ?>
-        <h2>Skill Manager</h2>
-
-        <table class='widefat fixed'>
-        <thead><tr><th>Agent Name</th><th>Agent Skills</th></tr></thead>
-        <tbody>
-        <tr><td>Dilip Clarke</td><td>Keyboard</td></tr>
-        <tr><td>Bert Smith</td><td>Monitor</td></tr>
-        </tbody>
+        <h1>Time Off Manager</h1>
+        <table class="display">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Time Off Reason</th><th>Start</th><th>End</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>0</td><td>Example</td><td>2019-04-01</td><td>2019-04-30</td></tr>
+            </tbody>
         </table>
-        <?php
-}
-
-    public function equipment_manager()
-    {
-        ?>
-        <h2>Equipment Manager</h2>
-        <?php
-}
-
-    public function software_manager()
-    {
-        ?>
-        <h2>Software Manager</h2>
-        <?php
-}
+        <?
+    }
 }
