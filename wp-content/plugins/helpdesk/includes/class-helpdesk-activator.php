@@ -35,15 +35,26 @@ class Helpdesk_Activator
         // clear the permalinks after the post type has been registered
         flush_rewrite_rules();
 
-        // Create Post Ratings Table
-        $create_sql = "CREATE TABLE wp_followed_tickets (".
+        // Create Followed Tickets Table
+        $create_followed_sql =
+            "CREATE TABLE IF NOT EXISTS wp_followed_tickets (".
             "id INT(11) NOT NULL auto_increment,".
             "postid INT(11) NOT NULL ,".
             "userid INT(10) NOT NULL default '0',".
             "PRIMARY KEY (id),".
             "KEY rating_followed (postid, userid)) ";
 
+        $create_timeoff_sql =
+            "CREATE TABLE IF NOT EXISTS wp_timeoff (".
+            "id INT(11) NOT NULL auto_increment,".
+            "userid INT(10) NOT NULL default '0',".
+            "reason VARCHAR(100) NOT NULL,".
+            "time_start DATETIME, ".
+            "time_end DATETIME, ".
+            "PRIMARY KEY (id))";
+
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        dbDelta( $create_sql );
+        dbDelta( $create_followed_sql );
+        dbDelta( $create_timeoff_sql );
     }
 }
