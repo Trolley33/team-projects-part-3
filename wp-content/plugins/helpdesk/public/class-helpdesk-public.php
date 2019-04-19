@@ -423,4 +423,69 @@ class Helpdesk_Public
         }
     }
 
+    public function wphd_edit_timeoff ()
+    {
+        if (!isset($_REQUEST['type'])) {
+            echo "Missing edit type";
+            return;
+        }
+        global $wpdb;
+        $type = $_REQUEST['type'];
+        echo $type;
+        switch ($type) {
+            case 'new':
+                if (!isset($_REQUEST['reason']) || !isset($_REQUEST['time_start']) || !isset($_REQUEST['time_end'])) {
+                    echo "Missing values";
+                    exit(1);
+                }
+                $reason = $wpdb->_real_escape($_REQUEST['reason']);
+                $time_start = $wpdb->_real_escape($_REQUEST['time_start']);
+                $time_end = $wpdb->_real_escape($_REQUEST['time_end']);
+                $uid = get_current_user_id();
+
+                $query = "
+                    INSERT INTO wp_timeoff
+                    (`userid`, `reason`, `time_start`, `time_end`)
+                    VALUES ('$uid', '$reason', '$time_start', '$time_end');
+                ";
+                $wpdb->query($query);
+                break;
+            case 'update':
+                if (!isset($_REQUEST['tid']) || !isset($_REQUEST['reason']) || !isset($_REQUEST['time_start']) || !isset($_REQUEST['time_end'])) {
+                    echo "Missing values";
+                    exit(1);
+                }
+                $tid = $wpdb->_real_escape($_REQUEST['tid']);
+                $reason = $wpdb->_real_escape($_REQUEST['reason']);
+                $time_start = $wpdb->_real_escape($_REQUEST['time_start']);
+                $time_end = $wpdb->_real_escape($_REQUEST['time_end']);
+
+                $query = "
+                    UPDATE wp_timeoff
+                    SET reason='$reason', time_start='$time_start', time_end='$time_end'
+                    WHERE id='$tid'
+                ";
+
+                $wpdb->query($query);
+                break;
+            case 'delete':
+                if (!isset($_REQUEST['tid'])) {
+                    echo "Missing value";
+                    exit(1);
+                }
+
+                $tid = $wpdb->_real_escape($_REQUEST['tid']);
+                $query = "
+                    DELETE FROM wp_timeoff
+                    WHERE id='$tid';
+                ";
+                $wpdb->query($query);
+                break;
+
+            default:
+                echo "Invalid type.";
+                exit(1);
+        }
+    }
+
 }

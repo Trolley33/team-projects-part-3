@@ -95,27 +95,11 @@ class Helpdesk_Settings
         $this->sub_pages = [
             [
                 'parent_slug' => 'helpdesk_dashboard',
-                'page_title' => 'Skill Manager',
-                'menu_title' => 'Skill Manager',
-                'capability' => 'manage_options',
-                'menu_slug' => 'helpdesk_skm',
-                'callback' => array($this->callbacks, 'skill_manager'),
-            ],
-            [
-                'parent_slug' => 'helpdesk_dashboard',
-                'page_title' => 'Equipment Manager',
-                'menu_title' => 'Equipment Manager',
-                'capability' => 'manage_options',
-                'menu_slug' => 'helpdesk_em',
-                'callback' => array($this->callbacks, 'equipment_manager'),
-            ],
-            [
-                'parent_slug' => 'helpdesk_dashboard',
-                'page_title' => 'Software Manager',
-                'menu_title' => 'Software Manager',
-                'capability' => 'manage_options',
-                'menu_slug' => 'helpdesk_sm',
-                'callback' => array($this->callbacks, 'software_manager'),
+                'page_title' => 'Time Off Manager',
+                'menu_title' => 'Time Off Manager',
+                'capability' => 'edit_ticket',
+                'menu_slug' => 'helpdesk_tom',
+                'callback' => array($this->callbacks, 'timeoff_manager'),
             ],
         ];
     }

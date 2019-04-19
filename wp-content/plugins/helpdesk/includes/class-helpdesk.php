@@ -201,6 +201,11 @@ class Helpdesk
         $this->loader->add_action('wp_ajax_follow_thread', $plugin_public, 'wphd_follow_ticket');
         $this->loader->add_action('wp_ajax_nopriv_follow_thread', $plugin_public, 'wphd_follow_ticket');
 
+        $this->loader->add_action('wp_ajax_edit_timeoff', $plugin_public, 'wphd_edit_timeoff');
+        $this->loader->add_action('wp_ajax_nopriv_edit_timeoff', $plugin_public, 'wphd_edit_timeoff');
+
+
+
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
         $this->loader->add_action('init', $plugin_public, 'register_book_type');
