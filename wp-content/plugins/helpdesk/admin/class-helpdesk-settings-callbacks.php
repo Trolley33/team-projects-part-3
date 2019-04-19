@@ -103,11 +103,14 @@ class Helpdesk_Settings_Callbacks
         $query = "SELECT * FROM wp_timeoff WHERE userid='$uid' ORDER BY time_start DESC";
         $results = $wpdb->get_results($query);
 
-        $this->make_timeoff_modal();
+        $this->make_timeoff_create_modal();
+        $this->make_timeoff_edit_modal();
         ?>
         <h1>Time Off Manager</h1>
         <hr/>
         <h4>Time Booked Off For: <?php echo wp_get_current_user()->display_name; ?></h4>
+        <button class='btn btn-secondary' data-toggle='modal' data-target='#timeoff_create_modal'>Create New</button>
+        <br/><br/>
         <table class="display compact cell-border">
             <thead>
                 <tr>
@@ -124,8 +127,8 @@ class Helpdesk_Settings_Callbacks
                 echo "<td>$value->reason</td>";
                 echo "<td>$value->time_start</td>";
                 echo "<td>$value->time_end</td>";
-                echo "<td><button class='btn btn-secondary' data-timeoff='". json_encode($value) ."' data-toggle='modal' data-target='#timeoff_modal'>Edit</button></td>";
-                echo "<td><button class='btn btn-danger'>Delete</button></td>";
+                echo "<td><button class='btn btn-secondary' data-timeoff='". json_encode($value) ."' data-toggle='modal' data-target='#timeoff_edit_modal'>Edit</button></td>";
+                echo "<td><button class='btn btn-danger timeoff_delete_button' value='$value->id' '>Delete</button></td>";
                 echo "</tr>";
             }
             ?>
@@ -134,9 +137,9 @@ class Helpdesk_Settings_Callbacks
         <?
     }
 
-    private function make_timeoff_modal () {
+    private function make_timeoff_edit_modal () {
         ?>
-        <div id="timeoff_modal" class="modal" tabindex="-1" role="dialog">
+        <div id="timeoff_edit_modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -172,5 +175,45 @@ class Helpdesk_Settings_Callbacks
             </div>
         </div>
     <?
+    }
+
+    private function make_timeoff_create_modal () {
+        ?>
+        <div id="timeoff_create_modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Book New Timeoff</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <label>
+                                Reason:
+                                <input class="form-control" type="text" name="reason" id="modal_reason"/>
+                            </label>
+                            <br/>
+                            <label>
+                                Start Date:
+                                <input class="form-control" type="date" name="start" id="modal_start"/>
+                            </label>
+                            <br/>
+                            <label>
+                                End Date:
+                                <input class="form-control" type="date" name="end" id="modal_end"/>
+                            </label>
+                            <br/>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?
     }
 }
