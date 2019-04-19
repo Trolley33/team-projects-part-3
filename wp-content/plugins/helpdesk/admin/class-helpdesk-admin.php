@@ -75,6 +75,7 @@ class Helpdesk_Admin
          * between the defined hooks and the functions defined in this
          * class.
          */
+        wp_enqueue_style('hd_bootstrap', "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css");
         wp_enqueue_style("hd_datatables", '//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css');
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/helpdesk-admin.css', array(), $this->version, 'all');
 
@@ -100,6 +101,7 @@ class Helpdesk_Admin
          * class.
          */
 
+        wp_enqueue_script('hd_bootstrap', "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js");
         wp_enqueue_script("hd_datatables", '//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js');
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/helpdesk-admin.js', array('jquery'), $this->version, false);
 
