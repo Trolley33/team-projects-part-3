@@ -104,6 +104,9 @@ class Helpdesk_Admin
         wp_enqueue_script('hd_bootstrap', "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js");
         wp_enqueue_script("hd_datatables", '//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js');
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/helpdesk-admin.js', array('jquery'), $this->version, false);
+        wp_localize_script($this->plugin_name, 'followed_object', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+        ));
 
     }
 

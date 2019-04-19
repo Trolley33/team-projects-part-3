@@ -423,4 +423,51 @@ class Helpdesk_Public
         }
     }
 
+    public function wphd_edit_timeoff ()
+    {
+        if (!isset($_REQUEST['type'])) {
+            echo "Missing edit type";
+            return;
+        }
+        global $wpdb;
+        $type = $_REQUEST['type'];
+        switch ($type) {
+            case 'new':
+                if (!isset($_REQUEST['reason']) || !isset($_REQUEST['time_start']) || !isset($_REQUEST['time_end'])) {
+                    echo "Missing values";
+                    break;
+                }
+                $reason = $_REQUEST['reason'];
+                $time_start = $_REQUEST['time_start'];
+                $time_end = $_REQUEST['time_end'];
+                // TODO: INSERT NEW TIMEOFF
+                break;
+            case 'update':
+                // TODO: UPDATE EXISTING TIMEOFF
+                if (!isset($_REQUEST['tid']) || !isset($_REQUEST['reason']) || !isset($_REQUEST['time_start']) || !isset($_REQUEST['time_end'])) {
+                    echo "Missing values";
+                    break;
+                }
+                $tid = $_REQUEST['tid'];
+                $reason = $wpdb->_real_escape($_REQUEST['reason']);
+                $time_start = $wpdb->_real_escape($_REQUEST['time_start']);
+                $time_end = $wpdb->_real_escape($_REQUEST['time_end']);
+
+                $query = "
+                UPDATE wp_timeoff
+                SET reason='$reason', time_start='$time_start', time_end='$time_end'
+                WHERE id='$tid'";
+
+                $wpdb->query($query);
+                echo "Finished query";
+                break;
+            case 'delete':
+                // TODO: DELETE EXISTING TIMEOFF
+                break;
+            default:
+                echo "Invalid type.";
+                break;
+        }
+    }
+
 }

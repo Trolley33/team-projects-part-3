@@ -98,18 +98,79 @@ class Helpdesk_Settings_Callbacks
 }
 
     public function timeoff_manager (){
+        global $wpdb;
+        $uid = get_current_user_id();
+        $query = "SELECT * FROM wp_timeoff WHERE userid='$uid' ORDER BY time_start DESC";
+        $results = $wpdb->get_results($query);
+
+        $this->make_timeoff_modal();
         ?>
         <h1>Time Off Manager</h1>
-        <table class="display">
+        <hr/>
+        <h4>Time Booked Off For: <?php echo wp_get_current_user()->display_name; ?></h4>
+        <table class="display compact cell-border">
             <thead>
                 <tr>
-                    <th>ID</th><th>Time Off Reason</th><th>Start</th><th>End</th>
+                    <th>ID</th><th>Time Off Reason</th><th>Start</th><th>End</th><th>Edit</th><th>Delete</th>
                 </tr>
             </thead>
             <tbody>
-                <tr><td>0</td><td>Example</td><td>2019-04-01</td><td>2019-04-30</td></tr>
+            <?php
+
+            foreach($results as $key => $value) {
+                echo "<tr>";
+
+                echo "<td>$value->id</td>";
+                echo "<td>$value->reason</td>";
+                echo "<td>$value->time_start</td>";
+                echo "<td>$value->time_end</td>";
+                echo "<td><button class='btn btn-secondary' data-timeoff='". json_encode($value) ."' data-toggle='modal' data-target='#timeoff_modal'>Edit</button></td>";
+                echo "<td><button class='btn btn-danger'>Delete</button></td>";
+                echo "</tr>";
+            }
+            ?>
             </tbody>
         </table>
         <?
+    }
+
+    private function make_timeoff_modal () {
+        ?>
+        <div id="timeoff_modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Timeoff</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <label>
+                                Reason:
+                                <input class="form-control" type="text" name="reason" id="modal_reason"/>
+                            </label>
+                            <br/>
+                            <label>
+                                Start Date:
+                                <input class="form-control" type="date" name="start" id="modal_start"/>
+                            </label>
+                            <br/>
+                            <label>
+                                End Date:
+                                <input class="form-control" type="date" name="end" id="modal_end"/>
+                            </label>
+                            <br/>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="submit-button" type="button" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?
     }
 }
