@@ -60,8 +60,8 @@ class Helpdesk_Activator
             "id INT(11) NOT NULL auto_increment,".
             "userid INT(10) NOT NULL default '0',".
             "reason VARCHAR(100) NOT NULL,".
-            "time_start DATETIME, ".
-            "time_end DATETIME, ".
+            "time_start DATE, ".
+            "time_end DATE, ".
             "PRIMARY KEY (id))";
 
         dbDelta($sql);
