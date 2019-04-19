@@ -1197,8 +1197,7 @@ function wpas_get_replies( $post_id, $status = 'any', $args = array(), $output =
 /**
  * Find an available agent to assign a ticket to.
  *
- * This is a super basic attribution system. It just finds the agent
- * with the less tickets currently open.
+ * Automatically assign tickets to agents.
  *
  * @since  3.0.0
  *
@@ -1222,6 +1221,7 @@ function wpas_find_agent( $ticket_id = false ) {
         array_push($ticket_tags, $row->term_taxonomy_id);
     }
 
+    global $wpdb;
 	foreach ( $users->members as $user ) {
 
 		$wpas_agent = new WPAS_Member_Agent( $user );
@@ -1232,6 +1232,18 @@ function wpas_find_agent( $ticket_id = false ) {
 		if ( true !== $wpas_agent->is_agent() || false === $wpas_agent->can_be_assigned() ) {
 			continue;
 		}
+
+		// Check if agent is currently away.
+        $timeoff_query = "
+            SELECT id FROM wp_timeoff
+            WHERE userid='$wpas_agent->user_id 
+            AND time_start >= CURRENT_DATE() AND time_end <= CURRENT_DATE();';
+        ";
+		$timeoff_result = $wpdb->get_results($timeoff_query);
+
+		if (count($timeoff_result) > 0) {
+            continue;
+        }
 
 		$count = $wpas_agent->open_tickets(); // Total number of open tickets for this agent
         $user_tags_result = $wpas_agent->specialist_tags(); // Serialised array of tags for this
