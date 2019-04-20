@@ -25,13 +25,12 @@ class Helpdesk_Settings_Api
 
     public function register()
     {
-        if (!empty($this->admin_pages))
-        {
+        if (!empty($this->admin_pages)) {
             add_action("admin_menu", array($this, "add_admin_menu"));
         }
     }
-    
-    public function add_pages( array $pages )
+
+    public function add_pages(array $pages)
     {
         $this->admin_pages = $pages;
 
@@ -48,12 +47,12 @@ class Helpdesk_Settings_Api
         // Template for sub pages.
         $sub_pages = [
             [
-                'parent_slug'=>$admin_page['menu_slug'],
-                'page_title'=>$admin_page['page_title'],
-                'menu_title'=> ($title) ? $title : $admin_page['menu_title'],
-                'capability'=>$admin_page['capability'],
-                'menu_slug'=>$admin_page['menu_slug'],
-                'callback'=> $admin_page['callback'],
+                'parent_slug' => $admin_page['menu_slug'],
+                'page_title' => $admin_page['page_title'],
+                'menu_title' => ($title) ? $title : $admin_page['menu_title'],
+                'capability' => $admin_page['capability'],
+                'menu_slug' => $admin_page['menu_slug'],
+                'callback' => $admin_page['callback'],
             ],
         ];
 
@@ -65,7 +64,7 @@ class Helpdesk_Settings_Api
     // Append sub pages to array.
     public function add_sub_pages(array $pages)
     {
-        $this->admin_sub_pages= array_merge($this->admin_sub_pages, $pages);
+        $this->admin_sub_pages = array_merge($this->admin_sub_pages, $pages);
 
         return $this;
     }
@@ -73,8 +72,7 @@ class Helpdesk_Settings_Api
     // Add menus to WordPress admin bar.
     public function add_admin_menu()
     {
-        foreach ($this->admin_pages as $page)
-        {
+        foreach ($this->admin_pages as $page) {
             add_menu_page(
                 $page['page_title'], $page['menu_title'], $page['capability'],
                 $page['menu_slug'], $page['callback'], $page['icon_url'],
@@ -82,8 +80,7 @@ class Helpdesk_Settings_Api
             );
         }
 
-        foreach ($this->admin_sub_pages as $sub_page)
-        {
+        foreach ($this->admin_sub_pages as $sub_page) {
             add_submenu_page(
                 $sub_page['parent_slug'],
                 $sub_page['page_title'], $sub_page['menu_title'], $sub_page['capability'],
