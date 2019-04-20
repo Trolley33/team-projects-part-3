@@ -28,7 +28,7 @@ class Helpdesk_Public
      *
      * @since    1.0.0
      * @access   private
-     * @var      string    $plugin_name    The ID of this plugin.
+     * @var      string $plugin_name The ID of this plugin.
      */
     private $plugin_name;
 
@@ -37,16 +37,16 @@ class Helpdesk_Public
      *
      * @since    1.0.0
      * @access   private
-     * @var      string    $version    The current version of this plugin.
+     * @var      string $version The current version of this plugin.
      */
     private $version;
 
     /**
      * Initialize the class and set its properties.
      *
+     * @param string $plugin_name The name of the plugin.
+     * @param string $version The version of this plugin.
      * @since    1.0.0
-     * @param      string    $plugin_name       The name of the plugin.
-     * @param      string    $version    The version of this plugin.
      */
     public function __construct($plugin_name, $version)
     {
@@ -128,7 +128,7 @@ class Helpdesk_Public
      */
     public function wphd_sc_all_tickets()
     {
-		
+
         global $wpas_tickets, $post;
 
         $wpas_tickets = $this->wphd_get_all_tickets_for_shortcode();
@@ -171,9 +171,9 @@ class Helpdesk_Public
     /**
      * Get the list of tickets that should be shown in the [all-tickets] shortcode.
      *
+     * @return WP_Query post array of tickets found
      * @since 4.4.0
      *
-     * @return WP_Query post array of tickets found
      */
     private function wphd_get_all_tickets_for_shortcode()
     {
@@ -229,11 +229,12 @@ class Helpdesk_Public
     /**
      * Followed tickets page shortcode.
      */
-    function wphd_sc_followed_tickets() {
+    function wphd_sc_followed_tickets()
+    {
 
         global $wpas_tickets, $post;
 
-        $wpas_tickets = $this->wphd_get_followed_tickets_for_shortcode() ;
+        $wpas_tickets = $this->wphd_get_followed_tickets_for_shortcode();
 
         /* Get the ticket content */
         ob_start();
@@ -242,38 +243,38 @@ class Helpdesk_Public
          * wpas_frontend_plugin_page_top is executed at the top
          * of every plugin page on the front end.
          */
-        do_action( 'wpas_frontend_plugin_page_top', $post->ID, $post );
+        do_action('wpas_frontend_plugin_page_top', $post->ID, $post);
 
         /**
          * wpas_before_tickets_list hook
          */
-        do_action( 'wpas_before_tickets_list' );
+        do_action('wpas_before_tickets_list');
 
         /* If user is not logged in we display the register form */
-        if ( !is_user_logged_in() ):
+        if (!is_user_logged_in()):
 
-            $registration = wpas_get_option( 'login_page', false );
+            $registration = wpas_get_option('login_page', false);
 
-            if ( false !== $registration && !empty( $registration ) && !is_null( get_post( intval( $registration ) ) ) ) {
+            if (false !== $registration && !empty($registration) && !is_null(get_post(intval($registration)))) {
                 /* As the headers are already sent we can't use wp_redirect. */
-                echo '<meta http-equiv="refresh" content="0; url=' . get_permalink( $registration ) . '" />';
-                wpas_get_notification_markup( 'info', __( 'You are being redirected...', 'awesome-support' ) );
+                echo '<meta http-equiv="refresh" content="0; url=' . get_permalink($registration) . '" />';
+                wpas_get_notification_markup('info', __('You are being redirected...', 'awesome-support'));
                 exit;
             }
 
-            wpas_get_template( 'registration' );
+            wpas_get_template('registration');
 
         else:
             /**
              * Get the custom template.
              */
-            wpas_get_template( 'list' );
+            wpas_get_template('list');
         endif;
 
         /**
          * wpas_after_tickets_list hook
          */
-        do_action( 'wpas_after_tickets_list' );
+        do_action('wpas_after_tickets_list');
 
         /**
          * Finally get the buffer content and return.
@@ -285,16 +286,18 @@ class Helpdesk_Public
         return $content;
 
     }
+
     /**
      * Get the list of tickets that should be shown in the [tickets] shortcode.
-     *
-     * @since 4.4.0
      *
      * @param none
      *
      * @return array post array of tickets found
+     * @since 4.4.0
+     *
      */
-    function wphd_get_followed_tickets_for_shortcode() {
+    function wphd_get_followed_tickets_for_shortcode()
+    {
 
         global $current_user, $post;
 
@@ -306,23 +309,23 @@ class Helpdesk_Public
          *
          * @var integer
          */
-        $author = ( 0 !== $current_user->ID ) ? $current_user->ID : -1;
+        $author = (0 !== $current_user->ID) ? $current_user->ID : -1;
 
         $args = array(
-            'post_type'              => 'ticket',
-            'post_status'            => 'any',
-            'order'                  => 'DESC',
-            'orderby'                => 'date',
-            'posts_per_page'         => - 1,
-            'no_found_rows'          => false,
-            'cache_results'          => false,
+            'post_type' => 'ticket',
+            'post_status' => 'any',
+            'order' => 'DESC',
+            'orderby' => 'date',
+            'posts_per_page' => -1,
+            'no_found_rows' => false,
+            'cache_results' => false,
             'update_post_term_cache' => false,
             'update_post_meta_cache' => false,
-        ) ;
+        );
 
-        $args = apply_filters( 'wpas_tickets_shortcode_query_args', $args );
+        $args = apply_filters('wpas_tickets_shortcode_query_args', $args);
 
-        $wpas_tickets_found = new WP_Query( $args );
+        $wpas_tickets_found = new WP_Query($args);
 
         return $wpas_tickets_found;
 
@@ -336,37 +339,37 @@ class Helpdesk_Public
         /*******************************************************************/
 
         /** Get the labels for the ticket tags field if they are provided */
-        $as_label_for_ticket_tag_singular 	= isset( $options[ 'label_for_ticket_tag_singular' ] ) ? $options[ 'label_for_ticket_tag_singular' ] : __( 'Tag', 'awesome-support' );
-        $as_label_for_ticket_tag_plural 	= isset( $options[ 'label_for_ticket_tag_plural' ] ) ? $options[ 'label_for_ticket_tag_plural' ] : __( 'Tags', 'awesome-support' );
+        $as_label_for_ticket_tag_singular = isset($options['label_for_ticket_tag_singular']) ? $options['label_for_ticket_tag_singular'] : __('Tag', 'awesome-support');
+        $as_label_for_ticket_tag_plural = isset($options['label_for_ticket_tag_plural']) ? $options['label_for_ticket_tag_plural'] : __('Tags', 'awesome-support');
 
         /** Create the custom field for ticket tags */
-        wpas_add_custom_field( 'ticket-tag', array(
+        wpas_add_custom_field('ticket-tag', array(
             //'core'                  => true,
-            'show_column'           => true,
-            'log'                   => true,
-            'field_type'            => 'taxonomy',
-            'sortable_column'       => true,
-            'taxo_std'              => false,
-            'column_callback'       => 'wpas_show_taxonomy_column',
-            'label'                 => $as_label_for_ticket_tag_singular,
-            'name'                  => $as_label_for_ticket_tag_singular,
-            'label_plural'          => $as_label_for_ticket_tag_plural,
-            'taxo_hierarchical'     => false,
+            'show_column' => true,
+            'log' => true,
+            'field_type' => 'taxonomy',
+            'sortable_column' => true,
+            'taxo_std' => false,
+            'column_callback' => 'wpas_show_taxonomy_column',
+            'label' => $as_label_for_ticket_tag_singular,
+            'name' => $as_label_for_ticket_tag_singular,
+            'label_plural' => $as_label_for_ticket_tag_plural,
+            'taxo_hierarchical' => false,
             'update_count_callback' => 'wpas_update_ticket_tag_terms_count',
-            'select2'               => true,
-            'taxo_manage_terms' 	=> 'ticket_manage_tags',
-            'taxo_edit_terms'   	=> 'ticket_edit_tags',
-            'taxo_delete_terms' 	=> 'ticket_delete_tags',
-            'title'           		=> $as_label_for_ticket_tag_singular,
+            'select2' => true,
+            'taxo_manage_terms' => 'ticket_manage_tags',
+            'taxo_edit_terms' => 'ticket_edit_tags',
+            'taxo_delete_terms' => 'ticket_delete_tags',
+            'title' => $as_label_for_ticket_tag_singular,
             'order' => '0'
-        ) );
+        ));
 
         $os_args = array(
             'name' => 'OS',
             'args' => array(
-                'title' => __( 'Operating Systems', 'helpdesk' ),
-                'label' => __( 'Operating System', 'helpdesk' ),
-                'label_plural' => __( 'Operating Systems', 'helpdesk' ),
+                'title' => __('Operating Systems', 'helpdesk'),
+                'label' => __('Operating System', 'helpdesk'),
+                'label_plural' => __('Operating Systems', 'helpdesk'),
                 'select2' => true,
                 'order' => '1'
             )
@@ -377,9 +380,9 @@ class Helpdesk_Public
         $hw_args = array(
             'name' => 'hardware',
             'args' => array(
-                'title' => __( 'Hardware', 'helpdesk' ),
-                'label' => __( 'Affected Hardware', 'helpdesk' ),
-                'label_plural' => __( 'Affected Hardware', 'helpdesk' ),
+                'title' => __('Hardware', 'helpdesk'),
+                'label' => __('Affected Hardware', 'helpdesk'),
+                'label_plural' => __('Affected Hardware', 'helpdesk'),
                 'select2' => true,
                 'order' => '2'
             )
@@ -389,9 +392,9 @@ class Helpdesk_Public
         $sw_args = array(
             'name' => 'software',
             'args' => array(
-                'title' => __( 'Software', 'helpdesk' ),
-                'label' => __( 'Affected Software', 'helpdesk' ),
-                'label_plural' => __( 'Affected Software', 'helpdesk' ),
+                'title' => __('Software', 'helpdesk'),
+                'label' => __('Affected Software', 'helpdesk'),
+                'label_plural' => __('Affected Software', 'helpdesk'),
                 'select2' => true,
                 'order' => '3'
             )
@@ -401,9 +404,9 @@ class Helpdesk_Public
         wpas_add_custom_taxonomy($sw_args['name'], $sw_args['args']);
     }
 
-    public function wphd_follow_ticket () {
-        if (!isset($_REQUEST['pid']) || !isset($_REQUEST['uid']) || !isset($_REQUEST['follow']))
-        {
+    public function wphd_follow_ticket()
+    {
+        if (!isset($_REQUEST['pid']) || !isset($_REQUEST['uid']) || !isset($_REQUEST['follow'])) {
             echo "Error!";
             return;
         }
@@ -416,14 +419,13 @@ class Helpdesk_Public
         if ($follow) {
             $query = "INSERT INTO wp_followed_tickets (postid, userid) VALUES ('$pid', '$uid')";
             $wpdb->query($query);
-        }
-        else {
+        } else {
             $query = "DELETE FROM wp_followed_tickets WHERE postid='$pid' AND userid='$uid'";
             $wpdb->query($query);
         }
     }
 
-    public function wphd_edit_timeoff ()
+    public function wphd_edit_timeoff()
     {
         if (!isset($_REQUEST['type'])) {
             echo "Missing edit type";

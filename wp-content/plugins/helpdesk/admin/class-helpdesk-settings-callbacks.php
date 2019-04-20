@@ -24,13 +24,13 @@ class Helpdesk_Settings_Callbacks
     public function section_developers($args)
     {
         ?>
-        <p id="<?php echo esc_attr($args['id']); ?>"><?php esc_html_e('Follow the white rabbit.', 'helpdesk');?></p>
+        <p id="<?php echo esc_attr($args['id']); ?>"><?php esc_html_e('Follow the white rabbit.', 'helpdesk'); ?></p>
         <?php
-}
+    }
 
     public function dashboard()
     {
-// check user capabilities
+        // check user capabilities
         if (!current_user_can('manage_options')) {
             return;
         }
@@ -47,30 +47,30 @@ class Helpdesk_Settings_Callbacks
         // show error/update messages
         settings_errors('helpdesk_dashboard_messages');
         ?>
-    <div class="wrap">
-    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-    <form action="options.php" method="post">
-    <?php
-// output security fields for the registered setting "helpdesk_dashboard"
-        settings_fields('helpdesk_dashboard');
-        // output setting sections and their fields
-        // (sections are registered for "wporg", each field is registered to a specific section)
-        do_settings_sections('helpdesk_dashboard');
-        // output save settings button
-        submit_button('Save Settings');
-        ?>
-    </form>
-    </div>
-    <?php
-}
-    // pill field cb
+        <div class="wrap">
+            <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+            <form action="options.php" method="post">
+                <?php
+                // output security fields for the registered setting "helpdesk_dashboard"
+                settings_fields('helpdesk_dashboard');
+                // output setting sections and their fields
+                // (sections are registered for "wporg", each field is registered to a specific section)
+                do_settings_sections('helpdesk_dashboard');
+                // output save settings button
+                submit_button('Save Settings');
+                ?>
+            </form>
+        </div>
+        <?php
+    }
+// pill field cb
 
-    // field callbacks can accept an $args parameter, which is an array.
-    // $args is defined at the add_settings_field() function.
-    // wordpress has magic interaction with the following keys: label_for, class.
-    // the "label_for" key value is used for the "for" attribute of the <label>.
-    // the "class" key value is used for the "class" attribute of the <tr> containing the field.
-    // you can add custom key value pairs to be used inside your callbacks.
+// field callbacks can accept an $args parameter, which is an array.
+// $args is defined at the add_settings_field() function.
+// wordpress has magic interaction with the following keys: label_for, class.
+// the "label_for" key value is used for the "for" attribute of the <label>.
+// the "class" key value is used for the "class" attribute of the <tr> containing the field.
+// you can add custom key value pairs to be used inside your callbacks.
     public function field_pill($args)
     {
         // get the value of the setting we've registered with register_setting()
@@ -78,26 +78,26 @@ class Helpdesk_Settings_Callbacks
         // output the field
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-        data-custom="<?php echo esc_attr($args['helpdesk_custom_data']); ?>"
-        name="helpdesk_options[<?php echo esc_attr($args['label_for']); ?>]"
-        >
-        <option value="red" <?php echo isset($options[$args['label_for']]) ? (selected($options[$args['label_for']], 'red', false)) : (''); ?>>
-        <?php esc_html_e('red pill', 'wporg');?>
-        </option>
-        <option value="blue" <?php echo isset($options[$args['label_for']]) ? (selected($options[$args['label_for']], 'blue', false)) : (''); ?>>
-        <?php esc_html_e('blue pill', 'wporg');?>
-        </option>
+                data-custom="<?php echo esc_attr($args['helpdesk_custom_data']); ?>"
+                name="helpdesk_options[<?php echo esc_attr($args['label_for']); ?>]">
+            <option value="red" <?php echo isset($options[$args['label_for']]) ? (selected($options[$args['label_for']], 'red', false)) : (''); ?>>
+                <?php esc_html_e('red pill', 'wporg'); ?>
+            </option>
+            <option value="blue" <?php echo isset($options[$args['label_for']]) ? (selected($options[$args['label_for']], 'blue', false)) : (''); ?>>
+                <?php esc_html_e('blue pill', 'wporg'); ?>
+            </option>
         </select>
         <p class="description">
-        <?php esc_html_e('You take the blue pill and the story ends. You wake in your bed and you believe whatever you want to believe.', 'wporg');?>
+            <?php esc_html_e('You take the blue pill and the story ends. You wake in your bed and you believe whatever you want to believe.', 'wporg'); ?>
         </p>
         <p class="description">
-        <?php esc_html_e('You take the red pill and you stay in Wonderland and I show you how deep the rabbit-hole goes.', 'wporg');?>
+            <?php esc_html_e('You take the red pill and you stay in Wonderland and I show you how deep the rabbit-hole goes.', 'wporg'); ?>
         </p>
         <?php
-}
+    }
 
-    public function timeoff_manager (){
+    public function timeoff_manager()
+    {
         global $wpdb;
         $uid = get_current_user_id();
         $query = "SELECT * FROM wp_timeoff WHERE userid='$uid' ORDER BY time_start DESC";
@@ -113,21 +113,26 @@ class Helpdesk_Settings_Callbacks
         <br/><br/>
         <table class="display compact cell-border">
             <thead>
-                <tr>
-                    <th>ID</th><th>Time Off Reason</th><th>Start</th><th>End</th><th>Edit</th><th>Delete</th>
-                </tr>
+            <tr>
+                <th>ID</th>
+                <th>Time Off Reason</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
             </thead>
             <tbody>
             <?php
 
-            foreach($results as $key => $value) {
+            foreach ($results as $key => $value) {
                 echo "<tr>";
 
                 echo "<td>$value->id</td>";
                 echo "<td>$value->reason</td>";
                 echo "<td>$value->time_start</td>";
                 echo "<td>$value->time_end</td>";
-                echo "<td><button class='btn btn-secondary' data-timeoff='". json_encode($value) ."' data-toggle='modal' data-target='#timeoff_edit_modal'>Edit</button></td>";
+                echo "<td><button class='btn btn-secondary' data-timeoff='" . json_encode($value) . "' data-toggle='modal' data-target='#timeoff_edit_modal'>Edit</button></td>";
                 echo "<td><button class='btn btn-danger timeoff_delete_button' value='$value->id' '>Delete</button></td>";
                 echo "</tr>";
             }
@@ -137,7 +142,8 @@ class Helpdesk_Settings_Callbacks
         <?
     }
 
-    private function make_timeoff_edit_modal () {
+    private function make_timeoff_edit_modal()
+    {
         ?>
         <div id="timeoff_edit_modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -148,36 +154,39 @@ class Helpdesk_Settings_Callbacks
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form>
+                    <form id="edit-form">
+                        <div class="modal-body">
+
                             <label>
                                 Reason:
-                                <input class="form-control" type="text" name="reason" id="modal_reason"/>
+                                <input required class="form-control" type="text" name="edit_reason"/>
                             </label>
                             <br/>
                             <label>
                                 Start Date:
-                                <input class="form-control" type="date" name="start" id="modal_start"/>
+                                <input required class="form-control start-date" type="date" name="edit_start"/>
                             </label>
                             <br/>
                             <label>
                                 End Date:
-                                <input class="form-control" type="date" name="end" id="modal_end"/>
+                                <input required class="form-control end-date" type="date" name="edit_end"/>
                             </label>
                             <br/>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="submit-button" type="button" class="btn btn-primary">Save changes</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <input id="submit-button" type="submit" class="btn btn-primary" value="Save Changes"/>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    <?
+        <?
     }
 
-    private function make_timeoff_create_modal () {
+    private function make_timeoff_create_modal()
+    {
         ?>
         <div id="timeoff_create_modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -188,32 +197,36 @@ class Helpdesk_Settings_Callbacks
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                    <form id="create-form">
                     <div class="modal-body">
-                        <form>
+
                             <label>
                                 Reason:
-                                <input class="form-control" type="text" name="reason" id="modal_reason"/>
+                                <input required class="form-control" type="text" name="create_reason"/>
                             </label>
                             <br/>
                             <label>
                                 Start Date:
-                                <input class="form-control" type="date" name="start" id="modal_start"/>
+                                <input required class="form-control start-date" type="date" name="create_start"/>
                             </label>
                             <br/>
                             <label>
                                 End Date:
-                                <input class="form-control" type="date" name="end" id="modal_end"/>
+                                <input required class="form-control end-date" type="date" name="create_end"/>
                             </label>
                             <br/>
-                        </form>
+
                     </div>
                     <div class="modal-footer">
-                        <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
+                        <input id="submit-button" type="submit" class="btn btn-primary" value="Submit"/>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
         <?
     }
 }
+
+?>

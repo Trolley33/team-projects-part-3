@@ -26,8 +26,8 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if (!defined('WPINC')) {
+    die;
 }
 
 /**
@@ -35,34 +35,36 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'HELPDESK_VERSION', '1.0.0' );
+define('HELPDESK_VERSION', '1.0.0');
 
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-helpdesk-activator.php
  */
-function activate_helpdesk() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-helpdesk-activator.php';
-	Helpdesk_Activator::activate();
+function activate_helpdesk()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-helpdesk-activator.php';
+    Helpdesk_Activator::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-helpdesk-deactivator.php
  */
-function deactivate_helpdesk() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-helpdesk-deactivator.php';
-	Helpdesk_Deactivator::deactivate();
+function deactivate_helpdesk()
+{
+    require_once plugin_dir_path(__FILE__) . 'includes/class-helpdesk-deactivator.php';
+    Helpdesk_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_helpdesk' );
-register_deactivation_hook( __FILE__, 'deactivate_helpdesk' );
+register_activation_hook(__FILE__, 'activate_helpdesk');
+register_deactivation_hook(__FILE__, 'deactivate_helpdesk');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-helpdesk.php';
+require plugin_dir_path(__FILE__) . 'includes/class-helpdesk.php';
 
 /**
  * Begins execution of the plugin.
@@ -73,10 +75,11 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-helpdesk.php';
  *
  * @since    1.0.0
  */
-function run_helpdesk() {
+function run_helpdesk()
+{
 
-	$plugin = new Helpdesk();
-	$plugin->run();
+    $plugin = new Helpdesk();
+    $plugin->run();
 
 }
 

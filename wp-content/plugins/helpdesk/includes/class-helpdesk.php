@@ -36,7 +36,7 @@ class Helpdesk
      *
      * @since    1.0.0
      * @access   protected
-     * @var      Helpdesk_Loader    $loader    Maintains and registers all hooks for the plugin.
+     * @var      Helpdesk_Loader $loader Maintains and registers all hooks for the plugin.
      */
     protected $loader;
 
@@ -45,7 +45,7 @@ class Helpdesk
      *
      * @since    1.0.0
      * @access   protected
-     * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+     * @var      string $plugin_name The string used to uniquely identify this plugin.
      */
     protected $plugin_name;
 
@@ -54,7 +54,7 @@ class Helpdesk
      *
      * @since    1.0.0
      * @access   protected
-     * @var      string    $version    The current version of the plugin.
+     * @var      string $version The current version of the plugin.
      */
     protected $version;
 
@@ -172,7 +172,7 @@ class Helpdesk
 
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
-        
+
         $plugin_settings = new Helpdesk_Settings(new Helpdesk_Settings_Api(), new Helpdesk_Settings_Callbacks());
 
         /**
@@ -205,7 +205,6 @@ class Helpdesk
         $this->loader->add_action('wp_ajax_nopriv_edit_timeoff', $plugin_public, 'wphd_edit_timeoff');
 
 
-
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
         $this->loader->add_action('init', $plugin_public, 'register_book_type');
@@ -228,8 +227,8 @@ class Helpdesk
      * The name of the plugin used to uniquely identify it within the context of
      * WordPress and to define internationalization functionality.
      *
-     * @since     1.0.0
      * @return    string    The name of the plugin.
+     * @since     1.0.0
      */
     public function get_plugin_name()
     {
@@ -239,8 +238,8 @@ class Helpdesk
     /**
      * The reference to the class that orchestrates the hooks with the plugin.
      *
-     * @since     1.0.0
      * @return    Helpdesk_Loader    Orchestrates the hooks of the plugin.
+     * @since     1.0.0
      */
     public function get_loader()
     {
@@ -250,8 +249,8 @@ class Helpdesk
     /**
      * Retrieve the version number of the plugin.
      *
-     * @since     1.0.0
      * @return    string    The version number of the plugin.
+     * @since     1.0.0
      */
     public function get_version()
     {
