@@ -36,21 +36,34 @@
             var timeoff_object = button.data('timeoff');
 
             var modal = $(this);
-            let reason_input = modal.find('.modal-body #modal_reason');
+
+            let reason_input = modal.find('.modal-body input[name="edit_reason"]');
+            let start_input = modal.find('.modal-body input[name="edit_start"]');
+            let end_input = modal.find('.modal-body input[name="edit_end"]');
+
             reason_input.val(timeoff_object.reason);
-            let start_input = modal.find('.modal-body #modal_start');
             start_input.val(timeoff_object.time_start);
-            let end_input = modal.find('.modal-body #modal_end');
             end_input.val(timeoff_object.time_end);
+            end_input.attr('min', timeoff_object.time_start);
+
+            start_input.change( function () {end_input.attr('min', $(this).val());});
 
             modal.find('.modal-footer #submit-button').unbind('click');
-            modal.find('.modal-footer #submit-button').click(function () {
+            modal.find('#edit-form').submit(function () {
+                const reason = reason_input.val();
+                const start = start_input.val();
+                const end = end_input.val();
+
+                if (reason === "" || start === "0000-00-00" || end === "0000-00-00") {
+                    return false;
+                }
+
                 let data = {
                     action: 'edit_timeoff',
                     tid: timeoff_object.id,
-                    reason: reason_input.val(),
-                    time_start: start_input.val(),
-                    time_end: end_input.val(),
+                    reason: reason,
+                    time_start: start,
+                    time_end: end,
                     type: 'update'
                 };
 
@@ -62,23 +75,35 @@
                         location.reload();
                     }
                 });
+                return false;
             });
         });
 
         $("#timeoff_create_modal").on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var modal = $(this);
-            let reason_input = modal.find('.modal-body #modal_reason');
-            let start_input = modal.find('.modal-body #modal_start');
-            let end_input = modal.find('.modal-body #modal_end');
 
-            modal.find('.modal-footer #submit-button').unbind('click');
-            modal.find('.modal-footer #submit-button').click(function () {
+            let reason_input = modal.find('.modal-body input[name="create_reason"]');
+            let start_input = modal.find('.modal-body input[name="create_start"]');
+            let end_input = modal.find('.modal-body input[name="create_end"]');
+
+            start_input.change( function () {end_input.attr('min', $(this).val());});
+
+            modal.find('.modal-footer #submit-button').unbind('submit');
+            modal.find('#create-form').submit(function () {
+                const reason = reason_input.val();
+                const start = start_input.val();
+                const end = end_input.val();
+
+                if (reason === "" || start === "0000-00-00" || end === "0000-00-00") {
+                    return false;
+                }
+
                 let data = {
                     action: 'edit_timeoff',
-                    reason: reason_input.val(),
-                    time_start: start_input.val(),
-                    time_end: end_input.val(),
+                    reason: reason,
+                    time_start: start,
+                    time_end: end,
                     type: 'new'
                 };
 
@@ -90,6 +115,7 @@
                         location.reload();
                     }
                 });
+                return false;
             });
         });
 
@@ -117,6 +143,7 @@
                 }
             });
         });
+
     });
 })(jQuery);
 

@@ -154,29 +154,31 @@ class Helpdesk_Settings_Callbacks
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form>
+                    <form id="edit-form">
+                        <div class="modal-body">
+
                             <label>
                                 Reason:
-                                <input class="form-control" type="text" name="reason" id="modal_reason"/>
+                                <input required class="form-control" type="text" name="edit_reason"/>
                             </label>
                             <br/>
                             <label>
                                 Start Date:
-                                <input class="form-control" type="date" name="start" id="modal_start"/>
+                                <input required class="form-control start-date" type="date" name="edit_start"/>
                             </label>
                             <br/>
                             <label>
                                 End Date:
-                                <input class="form-control" type="date" name="end" id="modal_end"/>
+                                <input required class="form-control end-date" type="date" name="edit_end"/>
                             </label>
                             <br/>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="submit-button" type="button" class="btn btn-primary">Save changes</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <input id="submit-button" type="submit" class="btn btn-primary" value="Save Changes"/>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -195,29 +197,31 @@ class Helpdesk_Settings_Callbacks
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                    <form id="create-form">
                     <div class="modal-body">
-                        <form>
+
                             <label>
                                 Reason:
-                                <input class="form-control" type="text" name="reason" id="modal_reason"/>
+                                <input required class="form-control" type="text" name="create_reason"/>
                             </label>
                             <br/>
                             <label>
                                 Start Date:
-                                <input class="form-control" type="date" name="start" id="modal_start"/>
+                                <input required class="form-control start-date" type="date" name="create_start"/>
                             </label>
                             <br/>
                             <label>
                                 End Date:
-                                <input class="form-control" type="date" name="end" id="modal_end"/>
+                                <input required class="form-control end-date" type="date" name="create_end"/>
                             </label>
                             <br/>
-                        </form>
+
                     </div>
                     <div class="modal-footer">
-                        <button id="submit-button" type="button" class="btn btn-primary">Submit</button>
+                        <input id="submit-button" type="submit" class="btn btn-primary" value="Submit"/>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
