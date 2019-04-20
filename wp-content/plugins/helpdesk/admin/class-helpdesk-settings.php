@@ -101,6 +101,14 @@ class Helpdesk_Settings
                 'menu_slug' => 'helpdesk_tom',
                 'callback' => array($this->callbacks, 'timeoff_manager'),
             ],
+            [
+                'parent_slug' => 'helpdesk_dashboard',
+                'page_title' => 'Analytics',
+                'menu_title' => 'Analytics',
+                'capability' => 'view_all_tickets',
+                'menu_slug' => 'helpdesk_ana',
+                'callback' => array($this->callbacks, 'analytics_page'),
+            ],
         ];
     }
 }

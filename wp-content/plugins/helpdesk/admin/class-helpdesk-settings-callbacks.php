@@ -227,6 +227,16 @@ class Helpdesk_Settings_Callbacks
         </div>
         <?
     }
+
+    function analytics_page () {
+        ?>
+        <h1>Show some graphs!</h1>
+        <p>
+            Chart over here, something over there, probably want everything on the same page, and just use JS (ajax)
+        to load stuff?
+        </p>
+        <?php
+    }
 }
 
 ?>
