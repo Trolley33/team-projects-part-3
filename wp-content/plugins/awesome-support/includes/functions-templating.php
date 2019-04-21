@@ -388,6 +388,18 @@
 		 */
 		do_action( 'wpas_ticket_details_reply_form_before' );
 
+        $user_id = get_current_user_id();
+
+        if (!wpas_is_agent($user_id)) {
+            $post           = get_post( $post_id );
+            $author_id      = $post->post_author;
+            if ($author_id != $user_id)
+            {
+                echo wpas_get_notification_markup('info', "You cannot reply to another user's ticket.");
+                return;
+            }
+        }
+
 		if ( 'closed' === $status ):
 
 			echo wpas_get_notification_markup( 'info', sprintf( __( 'The ticket has been closed. If you feel that your issue has not been solved yet or something new came up in relation to this ticket, <a href="%s">you can re-open it by clicking this link</a>.', 'awesome-support' ), wpas_get_reopen_url() ) );

@@ -165,6 +165,7 @@ $author = get_user_by( 'id', $post->post_author );
 		 */
 		 
 			wpas_get_reply_form(); 
-	 } ?>
+	}
+	?>
 
 </div>
