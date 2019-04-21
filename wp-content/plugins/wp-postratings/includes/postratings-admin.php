@@ -32,16 +32,16 @@ class WPPostRatingsAdmin {
 		add_action( 'admin_menu', array( $this, 'ratings_menu' ) );
 
 		// Add rating column to the admin
-		add_filter( 'manage_posts_columns', array( $this, 'postrating_admin_column_title' ) );
-		add_filter( 'manage_pages_columns', array( $this, 'postrating_admin_column_title' ) );
+		//add_filter( 'manage_posts_columns', array( $this, 'postrating_admin_column_title' ) );
+		//add_filter( 'manage_pages_columns', array( $this, 'postrating_admin_column_title' ) );
 
 		// Fill rating column in the admin
-		add_action( 'manage_posts_custom_column', array( $this, 'postrating_admin_column_content' ) );
-		add_action( 'manage_pages_custom_column', array( $this, 'postrating_admin_column_content' ) );
+		//add_action( 'manage_posts_custom_column', array( $this, 'postrating_admin_column_content' ) );
+		//add_action( 'manage_pages_custom_column', array( $this, 'postrating_admin_column_content' ) );
 
 		// Sort rating column in the admin
-		add_filter( 'manage_edit-post_sortable_columns', array( $this, 'postrating_admin_column_sort' ) );
-		add_filter( 'manage_edit-page_sortable_columns', array( $this, 'postrating_admin_column_sort' ) );
+		//add_filter( 'manage_edit-post_sortable_columns', array( $this, 'postrating_admin_column_sort' ) );
+		//add_filter( 'manage_edit-page_sortable_columns', array( $this, 'postrating_admin_column_sort' ) );
 
 	}
 
