@@ -371,6 +371,10 @@ class Helpdesk_Public
                 'label' => __('Operating System', 'helpdesk'),
                 'label_plural' => __('Operating Systems', 'helpdesk'),
                 'select2' => true,
+                'show_column' => true,
+                'sortable_column' => true,
+                'taxo_std' => false,
+                'column_callback' => 'wpas_show_taxonomy_column',
                 'order' => '1'
             )
         );
@@ -384,6 +388,10 @@ class Helpdesk_Public
                 'label' => __('Affected Hardware', 'helpdesk'),
                 'label_plural' => __('Affected Hardware', 'helpdesk'),
                 'select2' => true,
+                'show_column' => true,
+                'sortable_column' => true,
+                'taxo_std' => false,
+                'column_callback' => 'wpas_show_taxonomy_column',
                 'order' => '2'
             )
         );
@@ -396,6 +404,10 @@ class Helpdesk_Public
                 'label' => __('Affected Software', 'helpdesk'),
                 'label_plural' => __('Affected Software', 'helpdesk'),
                 'select2' => true,
+                'show_column' => true,
+                'sortable_column' => true,
+                'taxo_std' => false,
+                'column_callback' => 'wpas_show_taxonomy_column',
                 'order' => '3'
             )
         );
