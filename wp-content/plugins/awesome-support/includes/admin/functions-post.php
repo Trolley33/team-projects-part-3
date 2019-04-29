@@ -88,7 +88,11 @@ function wpas_filter_ticket_data( $data, $postarr ) {
 
 			$data['post_status'] = $_POST['post_status_override'];
 
+
 			if ( isset($postarr['original_post_status']) && $postarr['original_post_status'] !== $_POST['post_status_override'] && isset( $_POST['wpas_post_parent'] ) ) {
+                if ($_POST['post_status_override'] == 'duplicate') {
+                    wpas_close_ticket($data['post_name']);
+                }
 				wpas_log_history( intval( $_POST['wpas_post_parent'] ), sprintf( __( 'Ticket state changed to %s', 'awesome-support' ), '&laquo;' . $status[ $_POST['post_status_override'] ] . '&raquo;' ) );
 			}
 		}

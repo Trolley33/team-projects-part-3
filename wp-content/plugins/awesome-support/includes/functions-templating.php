@@ -1026,15 +1026,19 @@
 		$post_status   = $post->post_status;
 		$custom_status = wpas_get_post_status();
 
-		if ( 'closed' === $status && ( 'post-new.php' == $pagenow || 'post.php' == $pagenow || 'edit.php' == $pagenow || ( ! is_admin() && 'index.php' === $pagenow ) ) ) {
-			$label = __( 'Closed', 'awesome-support' );
-			$color = wpas_get_option( "color_$status", '#dd3333' );
-			$tag   = "<span class='wpas-label wpas-label-$name' style='background-color:$color;'>$label</span>";
+//		if ($post_status == 'duplicate') {
+//		    wpas_close_ticket($post_id);
+//        }
 
-			if ( 'edit.php' == $pagenow && array_key_exists( $post_status, $custom_status ) ) {
-				$tag .= '<br/>' . $custom_status[ $post_status ];
-			}
+		if ( 'closed' === $status && $post_status !== 'duplicate' && ( 'post-new.php' == $pagenow || 'post.php' == $pagenow || 'edit.php' == $pagenow || ( ! is_admin() && 'index.php' === $pagenow ) ) ) {
 
+            $label = __('Closed', 'awesome-support');
+            $color = wpas_get_option("color_$status", '#dd3333');
+            $tag = "<span class='wpas-label wpas-label-$name' style='background-color:$color;'>$label</span>";
+
+            if ('edit.php' == $pagenow && array_key_exists($post_status, $custom_status)) {
+                $tag .= '<br/>' . $custom_status[$post_status];
+            }
 		} else {
 
 			$post          = get_post( $post_id );
@@ -1052,6 +1056,7 @@
 					'hold'       => '#b56629',
                     'duplicate'  => '#aa00aa',
                     'help'       => '#00aaaa',
+                    //'closed'     => '#000000',
                 );
 				$label    = $custom_status[ $post_status ];
 				$color    = wpas_get_option( "color_$post_status", false );
