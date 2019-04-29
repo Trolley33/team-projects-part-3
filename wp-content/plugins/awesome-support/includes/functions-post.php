@@ -1470,6 +1470,7 @@ function wpas_update_ticket_status( $post_id, $status ) {
 
 	$custom_status = wpas_get_post_status();
 
+
 	if ( ! array_key_exists( $status, $custom_status ) ) {
 		return false;
 	}
