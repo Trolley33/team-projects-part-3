@@ -107,7 +107,7 @@ class Helpdesk_Admin
         wp_localize_script($this->plugin_name, 'followed_object', array(
             'ajax_url' => admin_url('admin-ajax.php'),
         ));
-
+        wp_enqueue_script( 'chart.js', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js');
     }
 
     public function display_admin_settings()
@@ -156,5 +156,12 @@ class Helpdesk_Admin
             'WPOrg',
             'wporg_settings_section'
         );
+    }
+
+    public function test_ajax() {
+        global $wpdb;
+        $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` ORDER BY `wp_posts`.`post_date` ASC");
+        echo json_encode($col);
+        die();
     }
 }
