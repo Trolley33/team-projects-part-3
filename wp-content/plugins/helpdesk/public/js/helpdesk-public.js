@@ -79,6 +79,8 @@
                     filter_search(list, status, '');
                 }, false);
             }
+
+            filter_search(list, "", "");
         }
 
         // If the table exists, sort by ratings.
@@ -121,6 +123,12 @@
     function filter_search(table_list, status, terms) {
         var rows = table_list.children[1].children;
         for (let i = 0; i < rows.length; i++) {
+            // Don't show duplicate tickets.
+            console.log(rows[i].cells);
+            if (rows[i].cells[1].innerText.toLowerCase().includes("duplicate")) {
+                rows[i].hidden = true;
+                continue;
+            }
             // Check right status is met.
             if (!rows[i].innerText.toLowerCase().includes(status)) {
                 rows[i].hidden = true;

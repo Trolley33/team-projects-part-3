@@ -29,6 +29,8 @@ if ( $wpas_tickets->have_posts() ):
                     <option value="closed">Closed</option>
                     <?php
                     foreach ($custom_status as $short => $long) {
+                        if ($short == 'duplicate')
+                            continue;
                         echo "<option value='$long'>$long</option>";
                     }
                     ?>
