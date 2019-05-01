@@ -1236,8 +1236,9 @@ function wpas_find_agent( $ticket_id = false ) {
 		// Check if agent is currently away.
         $timeoff_query = "
             SELECT id FROM wp_timeoff
-            WHERE userid='$wpas_agent->user_id 
-            AND time_start >= CURRENT_DATE() AND time_end <= CURRENT_DATE();';
+            WHERE userid='$wpas_agent->user_id'
+            AND time_start >= CURRENT_DATE()
+            AND time_end <= CURRENT_DATE();
         ";
 		$timeoff_result = $wpdb->get_results($timeoff_query);
 
@@ -1311,6 +1312,7 @@ function get_ticket_tags ($ticket_id) {
 
 /**
  * Auto-assign algorithm, applies score based on matching tags and workload.
+ * (autoassign, assignment)
  * @param $matched_tags
  * @param $workload
  * @return float|int

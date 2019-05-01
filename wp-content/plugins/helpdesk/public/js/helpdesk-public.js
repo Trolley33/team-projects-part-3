@@ -124,7 +124,6 @@
         var rows = table_list.children[1].children;
         for (let i = 0; i < rows.length; i++) {
             // Don't show duplicate tickets.
-            console.log(rows[i].cells);
             if (rows[i].cells[1].innerText.toLowerCase().includes("duplicate")) {
                 rows[i].hidden = true;
                 continue;
