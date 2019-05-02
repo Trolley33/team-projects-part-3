@@ -158,9 +158,14 @@ class Helpdesk_Admin
         );
     }
 
-    public function test_ajax() {
+    public function get_tickets_past_year() {
         global $wpdb;
-        $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` ORDER BY `wp_posts`.`post_date` ASC");
+        // SELECT DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY)
+        // SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) ORDER BY `wp_posts`.`post_date`
+        // SELECT DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH)
+        // SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) ORDER BY `wp_posts`.`post_date`
+        // SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) ORDER BY `wp_posts`.`post_date`
+        $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) ORDER BY `wp_posts`.`post_date`");
         echo json_encode($col);
         die();
     }

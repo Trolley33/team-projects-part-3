@@ -173,7 +173,7 @@ class Helpdesk
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         
-        $this->loader->add_action('wp_ajax_test_ajax', $plugin_admin, 'test_ajax');
+        $this->loader->add_action('wp_ajax_get_tickets_past_year', $plugin_admin, 'get_tickets_past_year');
 
         $plugin_settings = new Helpdesk_Settings(new Helpdesk_Settings_Api(), new Helpdesk_Settings_Callbacks());
 

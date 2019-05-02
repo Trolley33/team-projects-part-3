@@ -154,44 +154,28 @@ function initChart1() {
     if (!myChart) return;
 
     const data = {
-        action: 'test_ajax'
+        action: 'get_tickets_past_year'
     };
     console.log(followed_object.ajax_url);
     // We can also pass the url value separately from ajaxurl for front end AJAX implementations
     jQuery.get(followed_object.ajax_url, data, response => {
-        // const dates = JSON.parse(response);
-        // console.log(dates);
-        // const currentDate = new Date();
-        // const currentYear = currentDate.getFullYear();
-        // const currentMonth = currentDate.getMonth() + 1;
 
-        // const monthCount = dates.reduce((acc, date) => {
-        //     const dateString = date.split(' ')[0];
-        //     const month = parseInt(dateString.split('-')[1]);
-        //     const year = parseInt(dateString.split('-')[2]);
+        const months = JSON.parse(response).map(dateString => new Date(dateString).getMonth());
+        const currentMonth = new Date().getMonth();
+        const monthCounts = months.reduce((acc, month) => {
+            if (month >= currentMonth) acc[month - currentMonth]++; else acc[12 + month - currentMonth]++;
+            return acc;
+        }, new Array(12).fill(0));
 
-
-        //     return acc;
-        // }, [0, 0]);
-
-        // const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        // const months = [];
-        // for (let i = 12; i > 0; i -= 1) {
-        //     const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-        //     const month = monthNames[d.getMonth()];
-        //     const year = d.getFullYear();
-        //     months.push(month);
-        // }
-        // console.log(months);
-        const monthCount = [35, 42, 46, 50, 43, 40, 35, 30, 31, 28, 33, 34];
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].reduceRight((acc, month, i, monthNames) => [...acc, monthNames[new Date(new Date().getFullYear(), new Date().getMonth() - i, 0).getMonth()]], []);
+        // const monthCounts = [35, 42, 46, 50, 43, 40, 35, 30, 31, 28, 33, 34];
         new Chart(myChart, {
             type: 'bar',
             data: {
-                labels: ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'Febuary', 'March'],
+                labels: monthNames,
                 datasets: [{
                     label: 'Tickets submitted',
-                    data: monthCount,
-                    // backgroundColor: 'green'
+                    data: monthCounts,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.6)',
                         'rgba(54, 162, 235, 0.6)',
@@ -205,44 +189,13 @@ function initChart1() {
                         'rgba(75, 192, 192, 0.6)',
                         'rgba(153, 102, 255, 0.6)',
                         'rgba(255, 159, 64, 0.6)'
-                    ],
-                    borderWidth: 1,
-                    borderColor: '#777',
-                    hoverBorderWidth: 1,
-                    hoverBorderColor: '#000'
+                    ]
                 }]
             },
             options: {
-                title: {
-                    display: true,
-                    text: 'Number of Tickets Submitted in the Past Year'
-                    // fontSize: 25
-                },
-                legend: {
-                    display: false,
-                    position: 'right',
-                    labels: {
-                        fontColor: '#000'
-                    }
-                },
-                layout: {
-                    padding: {
-                        left: 50,
-                        right: 0,
-                        bottom: 0,
-                        top: 0
-                    }
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                },
-                tooltips: {
-                    enabled: true
-                }
+                title: { display: true, text: 'Number of Tickets Submitted in the Past Year' },
+                legend: { display: false },
+                scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
             }
         });
     });

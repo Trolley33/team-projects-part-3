@@ -108,7 +108,7 @@ class Helpdesk_Settings
                 'capability' => 'view_all_tickets',
                 'menu_slug' => 'helpdesk_ana',
                 'callback' => array($this->callbacks, 'analytics_page'),
-            ],
+            ]
         ];
     }
 }
