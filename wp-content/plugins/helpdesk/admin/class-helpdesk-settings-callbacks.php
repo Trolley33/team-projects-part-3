@@ -234,12 +234,17 @@ function analytics_page()
         Chart over here, something over there, probably want everything on the same page, and just use JS (ajax)
         to load stuff?
     </p>
+    
     <div class="container">
         <div id="ticketsrange" class="mb-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
             <img src="https://image.flaticon.com/icons/svg/42/42446.svg" class="mr-2" width="24" height="24" alt="Calendar interface symbol tool free icon" title="Calendar interface symbol tool free icon">
             <span></span>
         </div>
         <canvas id="chartTickets"></canvas>
+    </div>
+
+    <div class="container">
+        <canvas id="hardware-chart"></canvas>
     </div>
 <?php
 }

@@ -143,8 +143,8 @@
                 }
             });
         });
-        
         initChartTickets();
+        initHardwareChart();
     });
 
     const barColours = [
@@ -156,8 +156,7 @@
         'rgba(107, 76, 154, 0.8)',
         'rgba(146, 36, 40, 0.8)',
         'rgba(148, 139, 61, 0.8)'
-
-    ];
+      ];
 
     function getNumberOfBarColours(amount) {
         const colours = [];
@@ -270,7 +269,59 @@
         });
 
     }
+
 })(jQuery);
 
 
+function initHardwareChart() {
+    const hardwareChart = document.getElementById('hardware-chart');
+    if (!hardwareChart) return;
 
+    // We can also pass the url value separately from ajaxurl for front end AJAX implementations
+    jQuery.get(followed_object.ajax_url, {action: 'get_problem_hardware_past_year'}, response => {
+        const hardware = JSON.parse(response).map(data => {return data});
+        // Want an object where each name is the identifier (for 'indexing').
+        const hardwareObjects = Array.from(new Set(hardware)).reduce((obj, item) => {
+            obj[item.name] = item;
+            return obj;
+        }, {});
+
+        // Calculate number of occurrences per hardware.
+        hardware.forEach((data) => {if (hardwareObjects[data.name].count !== undefined) hardwareObjects[data.name].count += 1; else hardwareObjects[data.name].count = 0;});
+
+        // Convert object into array of objects.
+        const hardwareInfo = Object.values(hardwareObjects);
+        // Descending order sort.
+        hardwareInfo.sort((a, b) => {return b.count - a.count});
+
+        new Chart(hardwareChart, {
+            type: 'bar',
+            data: {
+                labels: hardwareInfo.map((data) => {return data.name}),
+                datasets: [{
+                    label: 'Problems Submitted',
+                    data: hardwareInfo.map((data) => {return data.count}),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                title: { display: true, text: 'Number of Tickets Hardware Involved In (past month).' },
+                legend: { display: false },
+                scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
+            }
+        });
+    });
+}

@@ -174,6 +174,7 @@ class Helpdesk
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         
         $this->loader->add_action('wp_ajax_get_tickets_past_year', $plugin_admin, 'get_tickets_past_year');
+        $this->loader->add_action('wp_ajax_get_problem_hardware_past_year', $plugin_admin, 'get_problem_hardware_past_year');
         $this->loader->add_action('wp_ajax_get_tickets_past_month', $plugin_admin, 'get_tickets_past_month');
         $this->loader->add_action('wp_ajax_get_tickets', $plugin_admin, 'get_tickets');
 

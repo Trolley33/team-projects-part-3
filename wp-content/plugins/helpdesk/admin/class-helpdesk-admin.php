@@ -164,11 +164,34 @@ class Helpdesk_Admin
 
     public function get_tickets_past_year() {
         global $wpdb;
-        $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) ORDER BY `wp_posts`.`post_date`");
+        $col = $wpdb->get_col("
+                SELECT post_date FROM `wp_posts` 
+                WHERE post_type = 'ticket' 
+                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) 
+                AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) 
+                ORDER BY `wp_posts`.`post_date`;
+        ");
         echo json_encode($col);
         die();
     }
 
+    public function get_problem_hardware_past_year() {
+        global $wpdb;
+        // TODO: REFACTOR.
+        $time_stamps = $wpdb->get_results("
+                SELECT wp_terms.name FROM `wp_posts` 
+                JOIN `wp_term_relationships` 
+                ON wp_posts.ID = wp_term_relationships.object_id 
+                JOIN wp_term_taxonomy  
+                ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
+                JOIN `wp_terms`
+                ON wp_terms.term_id = wp_term_taxonomy.term_id
+                WHERE post_type = 'ticket' 
+                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) 
+                AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) 
+                AND wp_term_taxonomy.taxonomy = 'hardware';
+        ");
+        echo json_encode($time_stamps);
     public function get_tickets_past_month() {
         global $wpdb;
         $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND post_date < CURDATE() ORDER BY `wp_posts`.`post_date`");
