@@ -192,6 +192,9 @@ class Helpdesk_Admin
                 AND wp_term_taxonomy.taxonomy = 'hardware';
         ");
         echo json_encode($time_stamps);
+        die();
+    }
+    
     public function get_tickets_past_month() {
         global $wpdb;
         $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND post_date < CURDATE() ORDER BY `wp_posts`.`post_date`");
