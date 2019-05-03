@@ -235,7 +235,11 @@ function analytics_page()
         to load stuff?
     </p>
     <div class="container">
-        <canvas id="myChart"></canvas>
+        <div id="ticketsrange" class="mb-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <img src="https://image.flaticon.com/icons/svg/42/42446.svg" class="mr-2" width="24" height="24" alt="Calendar interface symbol tool free icon" title="Calendar interface symbol tool free icon">
+            <span></span>
+        </div>
+        <canvas id="chartTickets"></canvas>
     </div>
 <?php
 }

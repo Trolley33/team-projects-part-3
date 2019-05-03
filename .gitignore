@@ -28,3 +28,5 @@ Vagrantfile
 # Other
 bash.exe.stackdump
 wp-config.php
+
+node_modules/
