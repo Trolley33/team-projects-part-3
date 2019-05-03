@@ -87,6 +87,15 @@ class Helpdesk_Settings
                 'icon_url' => 'dashicons-desktop',
                 'position' => 110,
             ],
+            [
+                'page_title' => "Helpdesk Analytics",
+                'menu_title' => "Helpdesk Analytics",
+                'capability' => "view_all_tickets",
+                'menu_slug' => "helpdesk_analytics",
+                'callback' => array($this->callbacks, 'analytics_page'),
+                'icon_url' => 'dashicons-chart-bar',
+                'position' => 111,
+            ],
         ];
     }
 
@@ -101,14 +110,6 @@ class Helpdesk_Settings
                 'menu_slug' => 'helpdesk_tom',
                 'callback' => array($this->callbacks, 'timeoff_manager'),
             ],
-            [
-                'parent_slug' => 'helpdesk_dashboard',
-                'page_title' => 'Analytics',
-                'menu_title' => 'Analytics',
-                'capability' => 'view_all_tickets',
-                'menu_slug' => 'helpdesk_ana',
-                'callback' => array($this->callbacks, 'analytics_page'),
-            ]
         ];
     }
 }
