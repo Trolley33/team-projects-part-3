@@ -134,5 +134,6 @@ if ( $wpas_tickets->have_posts() ):
 		</table>
 	</div>
 <?php else:
+    wpas_get_template( 'partials/ticket-navigation' );
 	echo wpas_get_notification_markup( 'info', sprintf( __( 'You haven\'t submitted a ticket yet. <a href="%s">Click here to submit your first ticket</a>.', 'awesome-support' ), wpas_get_submission_page_url() ) );
 endif; ?>

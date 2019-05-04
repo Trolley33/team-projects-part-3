@@ -9,6 +9,8 @@ function wpas_sc_client_account() {
 
 	$wpas_tickets = wpas_get_tickets_for_shortcode() ;
 
+
+
 	/* Get the ticket content */
 	ob_start();
 
@@ -56,6 +58,7 @@ function wpas_sc_client_account() {
 	 * 
 	 * @var string
 	 */
+
 	$content = ob_get_clean();
 
 	return $content;
