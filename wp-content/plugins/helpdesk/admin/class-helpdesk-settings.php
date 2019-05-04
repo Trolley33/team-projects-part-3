@@ -89,7 +89,7 @@ class Helpdesk_Settings
             ],
             [
                 'page_title' => "Helpdesk Analytics",
-                'menu_title' => "Helpdesk Analytics",
+                'menu_title' => "Tickets",
                 'capability' => "view_all_tickets",
                 'menu_slug' => "helpdesk_analytics",
                 'callback' => array($this->callbacks, 'analytics_page'),
@@ -109,6 +109,15 @@ class Helpdesk_Settings
                 'capability' => 'edit_ticket',
                 'menu_slug' => 'helpdesk_tom',
                 'callback' => array($this->callbacks, 'timeoff_manager'),
+            ],
+            [
+                'parent_slug' => 'helpdesk_analytics',
+                'page_title' => "Helpdesk Analytics",
+                'menu_title' => "Agents",
+                'capability' => "view_all_tickets",
+                'menu_slug' => "helpdesk_analytics2",
+                'callback' => array($this->callbacks, 'analytics_page'),
+                'position' => 111,
             ],
         ];
     }

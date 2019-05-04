@@ -229,22 +229,69 @@ private function make_timeoff_create_modal()
 function analytics_page()
 {
     ?>
-    <h1>Show some graphs!</h1>
-    <p>
-        Chart over here, something over there, probably want everything on the same page, and just use JS (ajax)
-        to load stuff?
-    </p>
-    
-    <div class="container">
-        <div id="ticketsrange" class="mb-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-            <img src="https://image.flaticon.com/icons/svg/42/42446.svg" class="mr-2" width="24" height="24" alt="Calendar interface symbol tool free icon" title="Calendar interface symbol tool free icon">
-            <span></span>
+    <div class="container-fluid">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
-        <canvas id="chartTickets"></canvas>
-    </div>
+        <h2>Tickets Overview</h2>
+        <h4>Overall Submitted Tickets</h4>
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card card-body">
+                    <div class="d-flex d-flex justify-content-between">
+                        <h5 class="input-group-text">Tickets Submitted</h5>
+                        <button id="ticketsrange" class="btn date-button btn-outline-info"></button>
+                    </div>
+                    <canvas id="chartTickets"></canvas>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="row">
+                    <div class="col-sm-6 col-xl-12">
+                        <div class="card card-body">
+                            <small class="text-muted">TICKETS SUBMITTED TODAY</small>
+                            <h1 id="tickets-submitted-today"></h1>
+                            <hr />
+                            <small class="text-muted">TICKETS SUBMITTED THIS WEEK</small>
+                            <h5 class="card-title">
+                                <span id="tickets-submitted-week-num" style="margin-right: 0.5em"></span>
+                                <span id="tickets-submitted-week-up" class="arrow-up d-none"></span>
+                                <span id="tickets-submitted-week-down" class="arrow-down d-none"></span>
+                                <span id="tickets-submitted-week-perc" class="text-success"></span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-12">
+                        <div class="card card-body">
+                            <div class="d-flex d-flex justify-content-between">
+                                <h5 class="input-group-text">Tickets Submitted</h5>
+                                <button id="ticketsrange" class="btn date-button btn-outline-info"></button>
+                            </div>
+                            <canvas id="chartTickets"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body">
+                        <small class="text-muted">Dummy Card</small>
+                        <h1>##</h1>
+                        <hr />
+                        <small class="text-muted">Dummy Card</small>
+                        <h5 class="card-title"><span>##</span> <span>##</span></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <div class="card">
+                    <canvas id="hardware-chart"></canvas>
+                </div>
+            </div>
 
-    <div class="container">
-        <canvas id="hardware-chart"></canvas>
+        </div>
     </div>
 <?php
 }

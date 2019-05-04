@@ -29,6 +29,7 @@
      * practising this, we should strive to set a better example in our own work.
      */
 
+    $(document).ready(function () { $('body').bootstrapMaterialDesign(); });
     $(function () {
         var table = $('.display').dataTable();
         $("#timeoff_edit_modal").on('show.bs.modal', function (event) {
@@ -143,8 +144,11 @@
                 }
             });
         });
-        initChartTickets();
-        initHardwareChart();
+        retrieveTicketMoments().then(ticketMoments => {
+            initChartTickets(ticketMoments);
+            initInfoBoxTickets(ticketMoments);
+            initHardwareChart();
+        });
     });
 
     const barColours = [
@@ -156,7 +160,7 @@
         'rgba(107, 76, 154, 0.8)',
         'rgba(146, 36, 40, 0.8)',
         'rgba(148, 139, 61, 0.8)'
-      ];
+    ];
 
     function getNumberOfBarColours(amount) {
         const colours = [];
@@ -172,7 +176,7 @@
     function generateChartDataBetweenMoments(moments, startDate, endDate, unit) {
         const outputCounts = [];
 
-        for (let dateI = startDate.clone().startOf(unit); dateI < endDate; dateI.add(1, unit)) {
+        for (let dateI = startDate.clone().startOf(unit); dateI <= endDate; dateI.add(1, unit)) {
             const todaysTickets = moments.filter(date => date.clone().startOf(unit).isSame(dateI));
 
             outputCounts.push({ t: dateI.toDate(), y: todaysTickets.length });
@@ -181,147 +185,182 @@
         return outputCounts;
     }
 
-    function initChartTickets() {
+    function retrieveTicketMoments() {
+        return new Promise(resolve => {
+            jQuery.get(followed_object.ajax_url, { action: 'get_tickets' }, response => {
+                resolve(JSON.parse(response).map(dateString => moment(dateString)));
+            });
+        });
+    }
+
+    function addRangePicker(id, onTicketDateRangeChangeCallback, callbackArgs, args) {
+        let start = moment().subtract(29, 'days');
+        let end = moment();
+        const callback = (start, end) => {
+            $(`#${id}`).html(`${start.format('MMMM D, YYYY')} - ${end.format('MMMM D, YYYY')}`);
+            onTicketDateRangeChangeCallback(start, end, callbackArgs);
+        };
+        
+        $(`#${id}`).daterangepicker({
+            startDate: args.start ? args.start : start,
+            endDate: args.end ? args.end : end,
+            ranges: args.ranges ? args.ranges : {
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 6 Months': [moment().subtract(6, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Past Year': [moment().subtract(1, 'Year').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Past 5 Years': [moment().subtract(5, 'Year').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, callback);
+
+        callback(start, end);
+    }
+
+    // Updates the charts data using newly selected dates
+    function onTicketDateRangeChange(start, end, args) {
+        const duration = moment.duration(end.diff(start));
+        if (duration.get('months') <= 1) {
+            args.ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(args.ticketMoments, start, end, 'days');
+            args.ticketsChart.options.scales.xAxes[0].time = {
+                unit: 'day',
+                tooltipFormat: 'MMM D'
+            };
+        }
+        else if (duration.get('months') <= 6) {
+            args.ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(args.ticketMoments, start, end, 'weeks');
+            args.ticketsChart.options.scales.xAxes[0].time = {
+                unit: 'day',
+                tooltipFormat: 'MMM D'
+            };
+        }
+        else if (duration.get('years') <= 3) {
+            args.ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(args.ticketMoments, start, end, 'months');
+            args.ticketsChart.options.scales.xAxes[0].time = {
+                unit: 'month',
+                tooltipFormat: 'MMMM Y'
+            };
+        }
+        else {
+            args.ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(args.ticketMoments, start, end, 'years');
+            args.ticketsChart.options.scales.xAxes[0].time = {
+                unit: 'year',
+                tooltipFormat: 'Y'
+            };
+        }
+        args.ticketsChart.update();
+    }
+
+    function initChartTickets(ticketMoments) {
         const ticketsChartElement = document.getElementById('chartTickets');
         if (!ticketsChartElement) {
             console.warn("tickets chart not found in HTML. Unabled to show chart.");
             return;
         }
 
-        const data = {
-            action: 'get_tickets'
-        };
+        // Creates the base tickets chart
+        const ticketsChart = new Chart(ticketsChartElement, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Tickets submitted',
+                    backgroundColor: getNumberOfBarColours(1)[0]
+                }]
+            },
+            options: {
+                legend: { display: false },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'month',
+                            tooltipFormat: 'MMMM Y'
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            callback: value => value % 1 === 0 ? value : null
+                        }
+                    }]
+                }
+            }
+        });
 
-        jQuery.get(followed_object.ajax_url, data, response => {
-            const ticketMoments = JSON.parse(response).map(dateString => moment(dateString));
+        addRangePicker('ticketsrange', onTicketDateRangeChange, { ticketsChart, ticketMoments });
+    }
 
-            // Creates the base tickets chart
-            const ticketsChart = new Chart(ticketsChartElement, {
-                type: 'line',
+    function initInfoBoxTickets(ticketMoments) {
+        const ticketsSubmittedToday = $('#tickets-submitted-today');
+        const ticketsSubmittedWeekNum = $('#tickets-submitted-week-num');
+        const ticketsSubmittedWeekUpArrow = $('#tickets-submitted-week-up');
+        const ticketsSubmittedWeekDownArrow = $('#tickets-submitted-week-down');
+        const ticketsSubmittedWeekPercentage = $('#tickets-submitted-week-perc');
+
+        ticketsSubmittedToday.html(ticketMoments.filter(ticketMoment => moment().isSame(ticketMoment.clone(), 'day')).length);
+        const ticketsSubmittedWeek = ticketMoments.filter(ticketMoment => moment().isSame(ticketMoment.clone(), 'week')).length;
+        const ticketsSubmittedLastWeek = ticketMoments.filter(ticketMoment => moment().subtract(1, 'week').isSame(ticketMoment.clone(), 'week')).length;
+        ticketsSubmittedWeekNum.html(ticketsSubmittedWeek);
+        const percentChange = Math.floor((ticketsSubmittedWeek - ticketsSubmittedLastWeek) / ticketsSubmittedWeek * 100);
+        ticketsSubmittedWeekPercentage.html(percentChange.toString() + "%");
+        if (percentChange >= 0) {
+            ticketsSubmittedWeekUpArrow.removeClass("d-none");
+            ticketsSubmittedWeekDownArrow.addClass("d-none");
+            ticketsSubmittedWeekPercentage.addClass("text-success");
+            ticketsSubmittedWeekPercentage.removeClass("text-danger");
+        }
+        else {
+            ticketsSubmittedWeekUpArrow.addClass("d-none");
+            ticketsSubmittedWeekDownArrow.removeClass("d-none");
+            ticketsSubmittedWeekPercentage.addClass("text-danger");
+            ticketsSubmittedWeekPercentage.removeClass("text-success");
+        }
+    }
+
+    function initHardwareChart() {
+        const hardwareChart = document.getElementById('hardware-chart');
+        if (!hardwareChart) return;
+
+        // We can also pass the url value separately from ajaxurl for front end AJAX implementations
+        jQuery.get(followed_object.ajax_url, { action: 'get_problem_hardware_past_year' }, response => {
+            const hardware = JSON.parse(response).map(data => data);
+            // Want an object where each name is the identifier (for 'indexing').
+            const hardwareObjects = Array.from(new Set(hardware)).reduce((obj, item) => {
+                obj[item.name] = item;
+                return obj;
+            }, {});
+
+            // Calculate number of occurrences per hardware.
+            hardware.forEach((data) => { if (hardwareObjects[data.name].count !== undefined) hardwareObjects[data.name].count += 1; else hardwareObjects[data.name].count = 0; });
+
+            // Convert object into array of objects.
+            const hardwareInfo = Object.values(hardwareObjects);
+            // Descending order sort.
+            hardwareInfo.sort((a, b) => b.count - a.count);
+
+            new Chart(hardwareChart, {
+                type: 'bar',
                 data: {
+                    labels: hardwareInfo.map(data => data.name),
                     datasets: [{
-                        label: 'Tickets submitted',
-                        backgroundColor: getNumberOfBarColours(1)[0]
+                        label: 'Problems Submitted',
+                        data: hardwareInfo.map(data => data.count),
+                        backgroundColor: getNumberOfBarColours(50)
                     }]
                 },
                 options: {
+                    title: { display: true, text: 'Number of Tickets Hardware Involved In (past month).' },
                     legend: { display: false },
-                    scales: {
-                        xAxes: [{
-                            type: 'time',
-                            time: {
-                                unit: 'month',
-                                tooltipFormat: 'MMMM Y'
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                                callback: value => value % 1 === 0 ? value : null
-                            }
-                        }]
-                    }
+                    scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
                 }
             });
-
-            var start = moment().subtract(29, 'days');
-            var end = moment();
-
-            // Updates the charts data using newly selected dates
-            function onTicketDateRangeChange(start, end) {
-                $('#ticketsrange span').html(`${start.format('MMMM D, YYYY')} - ${end.format('MMMM D, YYYY')}`);
-                const duration = moment.duration(end.diff(start));
-                console.log(ticketMoments);
-
-                if (duration.get('months') <= 3) {
-                    ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(ticketMoments, start, end, 'days');
-                    ticketsChart.options.scales.xAxes[0].time = {
-                        unit: 'day',
-                        tooltipFormat: 'MMM D'
-                    };
-                }
-                else if (duration.get('years') <= 10) {
-                    ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(ticketMoments, start, end, 'months');
-                    ticketsChart.options.scales.xAxes[0].time = {
-                        unit: 'month',
-                        tooltipFormat: 'MMMM Y'
-                    };
-                }
-
-                ticketsChart.update();
-            }
-
-            $('#ticketsrange').daterangepicker({
-                startDate: start,
-                endDate: end,
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Past Year': [moment().subtract(1, 'Year').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                }
-            }, onTicketDateRangeChange);
-
-            onTicketDateRangeChange(start, end);
         });
-
     }
 
 })(jQuery);
 
 
-function initHardwareChart() {
-    const hardwareChart = document.getElementById('hardware-chart');
-    if (!hardwareChart) return;
 
-    // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-    jQuery.get(followed_object.ajax_url, {action: 'get_problem_hardware_past_year'}, response => {
-        const hardware = JSON.parse(response).map(data => {return data});
-        // Want an object where each name is the identifier (for 'indexing').
-        const hardwareObjects = Array.from(new Set(hardware)).reduce((obj, item) => {
-            obj[item.name] = item;
-            return obj;
-        }, {});
 
-        // Calculate number of occurrences per hardware.
-        hardware.forEach((data) => {if (hardwareObjects[data.name].count !== undefined) hardwareObjects[data.name].count += 1; else hardwareObjects[data.name].count = 0;});
 
-        // Convert object into array of objects.
-        const hardwareInfo = Object.values(hardwareObjects);
-        // Descending order sort.
-        hardwareInfo.sort((a, b) => {return b.count - a.count});
-
-        new Chart(hardwareChart, {
-            type: 'bar',
-            data: {
-                labels: hardwareInfo.map((data) => {return data.name}),
-                datasets: [{
-                    label: 'Problems Submitted',
-                    data: hardwareInfo.map((data) => {return data.count}),
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(153, 102, 255, 0.6)',
-                        'rgba(255, 159, 64, 0.6)',
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(153, 102, 255, 0.6)',
-                        'rgba(255, 159, 64, 0.6)'
-                    ]
-                }]
-            },
-            options: {
-                title: { display: true, text: 'Number of Tickets Hardware Involved In (past month).' },
-                legend: { display: false },
-                scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
-            }
-        });
-    });
-}

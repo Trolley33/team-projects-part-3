@@ -53,7 +53,6 @@ class Helpdesk_Admin
 
         $this->plugin_name = $plugin_name;
         $this->version = $version;
-
     }
 
     /**
@@ -75,11 +74,12 @@ class Helpdesk_Admin
          * between the defined hooks and the functions defined in this
          * class.
          */
-        wp_enqueue_style('hd_bootstrap', "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css");
+        // wp_enqueue_style('hd_bootstrap', "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css");
+        wp_enqueue_style('google_fonts', "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons");
+        wp_enqueue_style('bootstrap_material', "https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css");
         wp_enqueue_style("hd_datatables", '//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css');
         wp_enqueue_style("daterangepicker", 'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css');
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/helpdesk-admin.css', array(), $this->version, 'all');
-
     }
 
     /**
@@ -103,15 +103,16 @@ class Helpdesk_Admin
          */
 
         wp_enqueue_script('popper', "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js");
-        wp_enqueue_script('hd_bootstrap', "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js");
+        wp_enqueue_script('bootstrap_material', "https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js");
+        // wp_enqueue_script('hd_bootstrap', "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js");
         wp_enqueue_script("hd_datatables", '//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js');
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/helpdesk-admin.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name, 'followed_object', array(
             'ajax_url' => admin_url('admin-ajax.php'),
         ));
-        wp_enqueue_script( 'chart.js', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js');
-        wp_enqueue_script( 'moment.js', 'https://momentjs.com/downloads/moment.min.js');
-        wp_enqueue_script( 'daterangepicker', 'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js');
+        wp_enqueue_script('chart.js', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js');
+        wp_enqueue_script('moment.js', 'https://momentjs.com/downloads/moment-with-locales.min.js');
+        wp_enqueue_script('daterangepicker', 'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js');
     }
 
     public function display_admin_settings()
@@ -162,10 +163,10 @@ class Helpdesk_Admin
         );
     }
 
-    public function get_tickets_past_year() {
+    public function get_tickets_past_year()
+    {
         global $wpdb;
-        $col = $wpdb->get_col("
-                SELECT post_date FROM `wp_posts` 
+        $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` 
                 WHERE post_type = 'ticket' 
                 AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) 
                 AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) 
@@ -175,11 +176,11 @@ class Helpdesk_Admin
         die();
     }
 
-    public function get_problem_hardware_past_year() {
+    public function get_problem_hardware_past_year()
+    {
         global $wpdb;
         // TODO: REFACTOR.
-        $time_stamps = $wpdb->get_results("
-                SELECT wp_terms.name FROM `wp_posts` 
+        $time_stamps = $wpdb->get_results("SELECT wp_terms.name FROM `wp_posts` 
                 JOIN `wp_term_relationships` 
                 ON wp_posts.ID = wp_term_relationships.object_id 
                 JOIN wp_term_taxonomy  
@@ -187,25 +188,41 @@ class Helpdesk_Admin
                 JOIN `wp_terms`
                 ON wp_terms.term_id = wp_term_taxonomy.term_id
                 WHERE post_type = 'ticket' 
-                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) 
-                AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) 
-                AND wp_term_taxonomy.taxonomy = 'hardware';
-        ");
+                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH)
+                AND wp_term_taxonomy.taxonomy = 'hardware'");
         echo json_encode($time_stamps);
         die();
     }
-    
-    public function get_tickets_past_month() {
+
+    public function get_tickets_past_month()
+    {
         global $wpdb;
         $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND post_date < CURDATE() ORDER BY `wp_posts`.`post_date`");
         echo json_encode($col);
         die();
     }
 
-    public function get_tickets() {
+    public function get_tickets()
+    {
         global $wpdb;
         $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' ORDER BY `wp_posts`.`post_date`");
         echo json_encode($col);
+        die();
+    }
+
+    public function get_tickets_full() {
+        global $wpdb;
+        $time_stamps = $wpdb->get_results("SELECT * FROM `wp_posts` 
+                JOIN `wp_term_relationships` 
+                ON wp_posts.ID = wp_term_relationships.object_id 
+                JOIN wp_term_taxonomy  
+                ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
+                JOIN `wp_terms`
+                ON wp_terms.term_id = wp_term_taxonomy.term_id
+                WHERE post_type = 'ticket' 
+                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH)
+                AND wp_term_taxonomy.taxonomy = 'hardware'");
+        echo json_encode($time_stamps);
         die();
     }
 }
