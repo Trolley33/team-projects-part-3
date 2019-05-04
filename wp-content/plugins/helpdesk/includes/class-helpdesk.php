@@ -177,6 +177,7 @@ class Helpdesk
         $this->loader->add_action('wp_ajax_get_tickets_past_month', $plugin_admin, 'get_tickets_past_month');
         $this->loader->add_action('wp_ajax_get_tickets_full', $plugin_admin, 'get_tickets_full');
         $this->loader->add_action('wp_ajax_get_tickets', $plugin_admin, 'get_tickets');
+        $this->loader->add_action('wp_ajax_get_ticket_taxonomies', $plugin_admin, 'get_ticket_taxonomies');
 
         $this->loader->add_action('wp_ajax_get_problem_hardware_past_year', $plugin_admin, 'get_problem_hardware_past_year');
         $this->loader->add_action('wp_ajax_get_problem_software_past_year', $plugin_admin, 'get_problem_software_past_year');

@@ -172,9 +172,9 @@
         retrieveTicketMoments().then(ticketMoments => {
             initChartTickets(ticketMoments);
             initInfoBoxTickets(ticketMoments);
-            initHardwareChart();
-            initSoftwareChart();
         });
+        initHardwareChart();
+        initSoftwareChart();
     });
 
     const barColours = [
@@ -198,7 +198,7 @@
         colours.push(...barColours.slice(0, amount % barColours.length));
         return colours;
     }
-
+    
     function generateChartDataBetweenMoments(moments, startDate, endDate, unit) {
         const outputCounts = [];
 
@@ -220,16 +220,16 @@
     }
 
     function addRangePicker(id, onTicketDateRangeChangeCallback, callbackArgs = {}, args = {}) {
-        let start = moment().subtract(29, 'days');
-        let end = moment();
-        
+        let start = args.start ? args.start : moment().subtract(29, 'days');
+        let end = args.end ? args.end : moment();
+
         const callback = (start, end) => {
             $(`#${id}`).html(`${start.format('MMMM D, YYYY')} - ${end.format('MMMM D, YYYY')}`);
             onTicketDateRangeChangeCallback(start, end, callbackArgs);
         };
-        
+
         $(`#${id}`).daterangepicker({
-            startDate: args.start ? args.start : start,
+            startDate: start,
             endDate: args.end ? args.end : end,
             ranges: args.ranges ? args.ranges : {
                 'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -343,43 +343,43 @@
             ticketsSubmittedWeekPercentage.addClass("text-danger");
             ticketsSubmittedWeekPercentage.removeClass("text-success");
         }
-    }    
- 
+    }
+
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');
         if (!hardwareChartElement) return;
 
         // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        jQuery.get(followed_object.ajax_url, {action: 'get_problem_hardware_past_year'}, response => {
-            const hardware = JSON.parse(response).map(data => {return data});
+        jQuery.get(followed_object.ajax_url, { action: 'get_problem_hardware_past_year' }, response => {
+            const hardware = JSON.parse(response).map(data => { return data; });
             // Get occurences of each piece of hardware and convert to array.
             const hardwareInfo = Object.values(hardware.reduce((output, hardware) => {
-                if (output[hardware.name] === undefined) output[hardware.name] = {name: hardware.name, count: 0};
+                if (output[hardware.name] === undefined) output[hardware.name] = { name: hardware.name, count: 0 };
                 else output[hardware.name].count += 1;
                 return output;
             }, {}));
 
             // Descending order sort.
-            hardwareInfo.sort((a, b) => {return b.count - a.count});
+            hardwareInfo.sort((a, b) => { return b.count - a.count; });
 
             new Chart(hardwareChartElement, {
                 type: 'bar',
                 data: {
-                    labels: hardwareInfo.map((data) => {return data.name}),
+                    labels: hardwareInfo.map((data) => { return data.name; }),
                     datasets: [
-                    {
-                        data: Array.apply(null, new Array(hardwareInfo.length)).map(Number.prototype.valueOf, 30),
-                        fill: false,
-                        radius: 0,
-                        borderColor: '#ff0000',
-                        type: 'line',
-                        label: "Reliability Threshold"
-                    },
-                    {
-                    label: 'Problems Submitted',
-                    data: hardwareInfo.map((data) => {return data.count}),
-                    backgroundColor: barColours
-                    }]
+                        {
+                            data: Array.apply(null, new Array(hardwareInfo.length)).map(Number.prototype.valueOf, 30),
+                            fill: false,
+                            radius: 0,
+                            borderColor: '#ff0000',
+                            type: 'line',
+                            label: "Reliability Threshold"
+                        },
+                        {
+                            label: 'Problems Submitted',
+                            data: hardwareInfo.map((data) => { return data.count; }),
+                            backgroundColor: barColours
+                        }]
                 },
                 options: {
                     title: { display: true, text: 'Number of Tickets Hardware Involved In.' },
@@ -395,25 +395,25 @@
         if (!softwareChartElement) return;
 
         // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        jQuery.get(followed_object.ajax_url, {action: 'get_problem_software_past_year'}, response => {
-            const software = JSON.parse(response).map(data => {return data});
+        jQuery.get(followed_object.ajax_url, { action: 'get_problem_software_past_year' }, response => {
+            const software = JSON.parse(response).map(data => { return data; });
             // Get occurences of each piece of software and convert to array.
             const softwareInfo = Object.values(software.reduce((output, software) => {
-                if (output[software.name] === undefined) output[software.name] = {name: software.name, count: 0};
+                if (output[software.name] === undefined) output[software.name] = { name: software.name, count: 0 };
                 else output[software.name].count += 1;
                 return output;
             }, {}));
 
             // Descending order sort.
-            softwareInfo.sort((a, b) => {return b.count - a.count});
+            softwareInfo.sort((a, b) => { return b.count - a.count; });
 
             new Chart(softwareChartElement, {
                 type: 'bar',
                 data: {
-                    labels: softwareInfo.map((data) => {return data.name}),
+                    labels: softwareInfo.map((data) => { return data.name; }),
                     datasets: [{
                         label: 'Problems Submitted',
-                        data: softwareInfo.map((data) => {return data.count}),
+                        data: softwareInfo.map((data) => { return data.count; }),
                         backgroundColor: barColours
                     }]
                 },
@@ -433,43 +433,25 @@
         const closed_moments = agent_object.closed_tickets.map(dateString => moment(dateString));
 
         const agentPieChart = new Chart(agentPieChartElement, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
                 labels: ["Ticket Open", "Tickets Closed"],
                 datasets: [{
                     data: [agent_object.open_tickets, agent_object.closed_tickets],
-                    backgroundColor: ["#00ff00", "#ff0000"]
+                    backgroundColor: ['rgb(62, 150, 81)',
+                        'rgb(204, 37, 41)']
                 }]
-            },
+            }
         });
 
-        // Updates the charts data using newly selected dates
-        function onAgentTicketDateRangeChange(start, end) {
-            $('#agent-ticket-range span').html(`${start.format('MMMM D, YYYY')} - ${end.format('MMMM D, YYYY')}`);
-            const duration = moment.duration(end.diff(start));
+        addRangePicker('agent-ticket-range', onAgentTicketDateRangeChange, { agentPieChart, closed_moments }, { start: moment().subtract(6, 'days') });
+    }
 
-            if (duration.get('months') <= 3) {
-                agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(closed_moments, start, end, 'days').length;
-            }
-
-            agentPieChart.update();
-        }
-
-        var start = moment().startOf('week');
-        var end = moment();
-
-        $('#agent-ticket-range').daterangepicker({
-            startDate: start,
-            endDate: end,
-            ranges: {
-                'This Week': [moment().startOf('week'), moment()],
-                'This Month': [moment().startOf('month'), moment()],
-                'Last 3 Months': [moment().subtract(2, 'month').startOf('month'), moment().endOf('month')],
-            }
-        }, onAgentTicketDateRangeChange);
-
-
-        onAgentTicketDateRangeChange(start, end);
+    // Updates the charts data using newly selected dates
+    function onAgentTicketDateRangeChange(start, end, args) {
+        const duration = moment.duration(end.diff(start));
+        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').length;
+        args.agentPieChart.update();
     }
 })(jQuery);
 

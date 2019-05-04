@@ -230,9 +230,6 @@ function analytics_page()
 {
     ?>
     <div class="container-fluid">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
         <h2>Tickets Overview</h2>
         <h4>Overall Submitted Tickets</h4>
         <div class="row">
@@ -300,11 +297,11 @@ function analytics_page()
 <?php
 }
 
-    public function agent_analytics()
-    {
-        global $wpdb;
+public function agent_analytics()
+{
+    global $wpdb;
 
-        $query = "
+    $query = "
             SELECT wp_users.id, wp_users.display_name FROM wp_users
             JOIN wp_usermeta
             ON wp_users.id = wp_usermeta.user_id
@@ -312,22 +309,22 @@ function analytics_page()
             AND wp_usermeta.meta_value = 'yes';
         ";
 
-        $results = $wpdb->get_results($query);
+    $results = $wpdb->get_results($query);
 
-        $this->make_agent_analytics_modal()
-        ?>
-        <h1>Agent Analytics</h1>
-        <hr />
-        <br /><br />
-        <table class="display compact cell-border">
-            <thead>
+    $this->make_agent_analytics_modal()
+    ?>
+    <h1>Agent Analytics</h1>
+    <hr />
+    <br /><br />
+    <table class="display compact cell-border">
+        <thead>
             <tr>
                 <th>Agent ID</th>
                 <th>Agent Name</th>
                 <th>View</th>
             </tr>
-            </thead>
-            <tbody>
+        </thead>
+        <tbody>
             <?php
 
             foreach ($results as $key => $value) {
@@ -339,42 +336,41 @@ function analytics_page()
                 echo "</tr>";
             }
             ?>
-            </tbody>
-        </table>
-        <?
-    }
+        </tbody>
+    </table>
+<?
+}
 
-    function make_agent_analytics_modal() {
-        ?>
+function make_agent_analytics_modal()
+{
+    ?>
 
-        <div id="agent_analytics_modal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Viewing Graph for: <span id="agent-name"></span></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+
+
+    <div id="agent_analytics_modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Viewing Graph for: <span id="agent-name"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <button id="agent-ticket-range" class="btn date-button btn-outline-info"></button>
+                    <div class="container">
+                        <canvas id="agent-pie-chart"></canvas>
                     </div>
-                        <div class="modal-body">
-                            <div id="agent-ticket-range" class="mb-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                                <img src="https://image.flaticon.com/icons/svg/42/42446.svg" class="mr-2" width="24" height="24" alt="Calendar interface symbol tool free icon" title="Calendar interface symbol tool free icon">
-                                <span></span>
-                            </div>
-                            <div class="container">
-                                <canvas id="agent-pie-chart"></canvas>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-        <?
-    }
-
-
+    </div>
+<?
+}
 }
 
 ?>
