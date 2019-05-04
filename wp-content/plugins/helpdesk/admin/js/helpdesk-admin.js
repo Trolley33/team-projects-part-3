@@ -219,13 +219,13 @@
         });
     }
 
-    function addRangePicker(id, onTicketDateRangeChangeCallback, callbackArgs = {}, args = {}) {
+    function addRangePicker(id, onDateRangeChangeCallback, callbackArgs = {}, args = {}) {
         let start = args.start ? args.start : moment().subtract(29, 'days');
         let end = args.end ? args.end : moment();
 
         const callback = (start, end) => {
             $(`#${id}`).html(`${start.format('MMMM D, YYYY')} - ${end.format('MMMM D, YYYY')}`);
-            onTicketDateRangeChangeCallback(start, end, callbackArgs);
+            onDateRangeChangeCallback(start, end, callbackArgs);
         };
 
         $(`#${id}`).daterangepicker({
