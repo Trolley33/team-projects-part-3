@@ -343,6 +343,8 @@
         }
     }
 
+    const reliability_threshold = 100;
+
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');
         if (!hardwareChartElement) return;
@@ -366,7 +368,7 @@
                     labels: hardwareInfo.map((data) => { return data.name; }),
                     datasets: [
                         {
-                            data: Array.apply(null, new Array(hardwareInfo.length)).map(Number.prototype.valueOf, 30),
+                            data: Array.apply(null, new Array(hardwareInfo.length)).map(Number.prototype.valueOf, reliability_threshold),
                             fill: false,
                             radius: 0,
                             borderColor: '#ff0000',
@@ -395,7 +397,7 @@
         // We can also pass the url value separately from ajaxurl for front end AJAX implementations
         jQuery.get(followed_object.ajax_url, { action: 'get_problem_software_past_year' }, response => {
             const software = JSON.parse(response).map(data => { return data; });
-            // Get occurences of each piece of software and convert to array.
+            // Get occurrences of each piece of software and convert to array.
             const softwareInfo = Object.values(software.reduce((output, software) => {
                 if (output[software.name] === undefined) output[software.name] = { name: software.name, count: 0 };
                 else output[software.name].count += 1;
@@ -409,7 +411,15 @@
                 type: 'bar',
                 data: {
                     labels: softwareInfo.map((data) => { return data.name; }),
-                    datasets: [{
+                    datasets: [
+                    {
+                        data: Array.apply(null, new Array(softwareInfo.length)).map(Number.prototype.valueOf, reliability_threshold),
+                        fill: false,
+                        radius: 0,
+                        borderColor: '#ff0000',
+                        type: 'line',
+                        label: "Reliability Threshold"
+                    },{
                         label: 'Problems Submitted',
                         data: softwareInfo.map((data) => { return data.count; }),
                         backgroundColor: barColours

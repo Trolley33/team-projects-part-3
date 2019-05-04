@@ -288,11 +288,12 @@ function analytics_page()
                 </div>
             </div>
 
+            <div class="col-xl-8">
+                <div class="card">
+                    <canvas id="software-chart"></canvas>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="container">
-        <canvas id="software-chart"></canvas>
     </div>
 <?php
 }
@@ -344,9 +345,6 @@ public function agent_analytics()
 function make_agent_analytics_modal()
 {
     ?>
-
-
-
     <div id="agent_analytics_modal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
