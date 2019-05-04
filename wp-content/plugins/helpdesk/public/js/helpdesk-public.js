@@ -126,8 +126,10 @@
 
     function change_page(amount) {
         const rows = document.getElementById('wpas_ticketlist').children[1].children;
+        const max_shown = Array.from(rows).reduce((acc, row) => {if (row.searched) return acc += 1; else return acc;}, 0);
+        
         if ((page+amount)*page_range < 0) {page = 0;}
-        else if ((page+amount)*page_range > rows.length) {page = Math.floor(rows.length/page_range);}
+        else if ((page+amount)*page_range > max_shown) {page = Math.floor(max_shown/page_range);}
         else {
             page += amount;
             page_filter();
