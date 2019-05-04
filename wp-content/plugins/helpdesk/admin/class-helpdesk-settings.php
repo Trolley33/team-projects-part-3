@@ -118,6 +118,14 @@ class Helpdesk_Settings
                 'menu_slug' => 'helpdesk_agent_analytics',
                 'callback' => array($this->callbacks, 'agent_analytics'),
             ],
+            [
+                'parent_slug' => 'helpdesk_analytics',
+                'page_title' => 'User Analytics',
+                'menu_title' => 'User Analytics',
+                'capability' => 'edit_ticket',
+                'menu_slug' => 'helpdesk_user_analytics',
+                'callback' => array($this->callbacks, 'user_analytics'),
+            ],
         ];
     }
 }

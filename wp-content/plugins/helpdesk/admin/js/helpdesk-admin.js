@@ -105,6 +105,30 @@
             });
         });
 
+        /* User chart */
+        $("#user_analytics_modal").on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var user = button.data('user');
+
+            var modal = $(this);
+            modal.find('#user-name').html(user.display_name);
+
+            let data = {
+                action: 'get_user_analytics',
+                id: user.id
+            };
+
+            jQuery.ajax({
+                type: 'POST',
+                url: followed_object.ajax_url,
+                data: data,
+                success: function (data) {
+                    console.log(data);
+                    initUserChart(JSON.parse(data));
+                }
+            });
+        });
+
         $("#timeoff_create_modal").on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var modal = $(this);
@@ -435,15 +459,19 @@
     }
 
     function initAgentChart(agent_object) {
-        const agentPieChartElement = document.getElementById('agent-pie-chart');
+        const agentPieChartElement = $('#agent-pie-chart');
         if (!agentPieChartElement) return;
+
+        if (agentPieChartElement.data('graph')) {
+            agentPieChartElement.data('graph').destroy();
+        }
 
         const closed_moments = agent_object.closed_tickets.map(dateString => moment(dateString));
 
         const agentPieChart = new Chart(agentPieChartElement, {
             type: 'pie',
             data: {
-                labels: ["Ticket Open", "Tickets Closed"],
+                labels: ["Ticket Still Open", "Tickets Closed"],
                 datasets: [{
                     data: [agent_object.open_tickets, agent_object.closed_tickets],
                     backgroundColor: ['rgb(62, 150, 81)',
@@ -451,6 +479,8 @@
                 }]
             }
         });
+
+        agentPieChartElement.data('graph', agentPieChartElement);
 
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -464,9 +494,60 @@
 
     // Updates the charts data using newly selected dates
     function onAgentTicketDateRangeChange(start, end, args) {
-        const duration = moment.duration(end.diff(start));
-        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').length;
+        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        if (!args.agentPieChart.data.datasets[0].data[1]) {
+            $('#agent-pie-chart').data('graph').destroy();
+            $('#no-data').show();
+            return;
+        }
         args.agentPieChart.update();
+    }
+
+    function initUserChart(user_object) {
+        const userPieChartElement = $('#user-pie-chart');
+        if (!userPieChartElement) return;
+
+        if (userPieChartElement.data('graph')) {
+            userPieChartElement.data('graph').destroy();
+        }
+
+        $('#no-data').hide();
+
+        const closed_moments = user_object.closed_tickets.map(dateString => moment(dateString));
+
+        const userPieChart = new Chart(userPieChartElement, {
+            type: 'pie',
+            data: {
+                labels: ["Tickets Open", "Tickets Closed"],
+                datasets: [{
+                    data: [user_object.open_tickets, user_object.closed_tickets],
+                    backgroundColor: ['rgb(62, 150, 81)',
+                        'rgb(204, 37, 41)']
+                }]
+            }
+        });
+
+        userPieChartElement.data('graph', userPieChart);
+
+        const ranges = {
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        };
+
+        addRangePicker('user-ticket-range', onUserTicketDateRangeChange, { userPieChart, closed_moments }, { start: moment().subtract(6, 'days'), ranges });
+    }
+
+    // Updates the charts data using newly selected dates
+    function onUserTicketDateRangeChange(start, end, args) {
+        args.userPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        if (!args.userPieChart.data.datasets[0].data[1]) {
+            $('#user-pie-chart').data('graph').destroy();
+            $('#no-data').show();
+            return;
+        }
+        args.userPieChart.update();
     }
 })(jQuery);
 

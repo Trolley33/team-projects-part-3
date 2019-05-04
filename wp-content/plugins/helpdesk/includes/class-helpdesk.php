@@ -183,6 +183,7 @@ class Helpdesk
         $this->loader->add_action('wp_ajax_get_problem_software_past_year', $plugin_admin, 'get_problem_software_past_year');
 
         $this->loader->add_action('wp_ajax_get_agent_analytics', $plugin_admin, 'get_agent_analytics');
+        $this->loader->add_action('wp_ajax_get_user_analytics', $plugin_admin, 'get_user_analytics');
 
 
         $plugin_settings = new Helpdesk_Settings(new Helpdesk_Settings_Api(), new Helpdesk_Settings_Callbacks());

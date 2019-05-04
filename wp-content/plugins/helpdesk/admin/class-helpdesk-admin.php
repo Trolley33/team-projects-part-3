@@ -281,6 +281,55 @@ class Helpdesk_Admin
         die();
     }
 
+    public function get_user_analytics()
+    {
+        if (!isset($_REQUEST['id'])) {
+            exit(1);
+        }
+        global $wpdb;
+
+
+        $id = $wpdb->_escape($_REQUEST['id']);
+        /*
+        Want to get:
+        - Number of tickets assigned in time frame
+        - Number of tickets closed in time frame.
+        - Avg length of time tickets open.
+        - ?
+        */
+        $open_query = "SELECT COUNT(*) FROM wp_postmeta a
+            JOIN wp_postmeta b
+              ON a.post_id = b.post_id
+            WHERE 
+              a.meta_key = '_wpas_assignee'
+              AND a.meta_value = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'open';
+        ";
+
+        $closed_query = "SELECT c.meta_value FROM wp_postmeta a
+            JOIN wp_postmeta b
+              ON a.post_id = b.post_id
+            JOIN wp_postmeta c
+              ON b.post_id = c.post_id
+            WHERE 
+              a.meta_key = '_wpas_assignee'
+              AND a.meta_value = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'closed'
+              AND c.meta_key = '_ticket_closed_on';
+        ";
+
+        $open_column = $wpdb->get_col($open_query)[0];
+        $closed_column = $wpdb->get_col($closed_query);
+
+        $output = new stdClass();
+        $output->open_tickets = intval($open_column);
+        $output->closed_tickets = $closed_column;
+        echo json_encode($output);
+        die();
+    }
+
 
     public function get_tickets_full()
     {
