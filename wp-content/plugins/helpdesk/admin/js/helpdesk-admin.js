@@ -198,7 +198,7 @@
         colours.push(...barColours.slice(0, amount % barColours.length));
         return colours;
     }
-    
+
     function generateChartDataBetweenMoments(moments, startDate, endDate, unit) {
         const outputCounts = [];
 
@@ -281,10 +281,8 @@
 
     function initChartTickets(ticketMoments) {
         const ticketsChartElement = document.getElementById('chartTickets');
-        if (!ticketsChartElement) {
-            console.warn("tickets chart not found in HTML. Unabled to show chart.");
-            return;
-        }
+        if (!ticketsChartElement) return;
+        
 
         // Creates the base tickets chart
         const ticketsChart = new Chart(ticketsChartElement, {
@@ -444,7 +442,14 @@
             }
         });
 
-        addRangePicker('agent-ticket-range', onAgentTicketDateRangeChange, { agentPieChart, closed_moments }, { start: moment().subtract(6, 'days') });
+        const ranges = {
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        };
+
+        addRangePicker('agent-ticket-range', onAgentTicketDateRangeChange, { agentPieChart, closed_moments }, { start: moment().subtract(6, 'days'), ranges });
     }
 
     // Updates the charts data using newly selected dates
