@@ -478,7 +478,7 @@
             }
         });
 
-        agentPieChartElement.data('pie', agentPieChartElement);
+        agentPieChartElement.data('pie', agentPieChart);
 
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
