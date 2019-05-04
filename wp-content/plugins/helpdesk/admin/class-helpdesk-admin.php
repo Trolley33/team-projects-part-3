@@ -194,8 +194,29 @@ class Helpdesk_Admin
         die();
     }
 
-    public function get_tickets_past_month()
-    {
+
+    public function get_problem_software_past_year() {
+        global $wpdb;
+        // TODO: REFACTOR.
+        $time_stamps = $wpdb->get_results("
+                SELECT wp_terms.name FROM `wp_posts` 
+                JOIN `wp_term_relationships` 
+                ON wp_posts.ID = wp_term_relationships.object_id 
+                JOIN wp_term_taxonomy  
+                ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
+                JOIN `wp_terms`
+                ON wp_terms.term_id = wp_term_taxonomy.term_id
+                WHERE post_type = 'ticket' 
+                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) 
+                AND post_date < DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY) 
+                AND wp_term_taxonomy.taxonomy = 'software';
+        ");
+        echo json_encode($time_stamps);
+        die();
+    }
+    
+    public function get_tickets_past_month() {
+
         global $wpdb;
         $col = $wpdb->get_col("SELECT post_date FROM `wp_posts` WHERE post_type = 'ticket' AND post_date >= DATE_ADD(CURDATE(), INTERVAL -1 MONTH) AND post_date < CURDATE() ORDER BY `wp_posts`.`post_date`");
         echo json_encode($col);
@@ -209,6 +230,57 @@ class Helpdesk_Admin
         echo json_encode($col);
         die();
     }
+
+
+    public function get_agent_analytics() {
+        if (!isset($_REQUEST['id'])) {
+            exit(1);
+        }
+        global $wpdb;
+
+
+        $id = $wpdb->_escape($_REQUEST['id']);
+        /*
+        Want to get:
+        - Number of tickets assigned in time frame
+        - Number of tickets closed in time frame.
+        - Avg length of time tickets open.
+        - ?
+        */
+        $open_query = "
+            SELECT COUNT(*) FROM wp_postmeta a
+            JOIN wp_postmeta b
+              ON a.post_id = b.post_id
+            WHERE 
+              a.meta_key = '_wpas_assignee'
+              AND a.meta_value = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'open';
+        ";
+
+        $closed_query = "
+            SELECT c.meta_value FROM wp_postmeta a
+            JOIN wp_postmeta b
+              ON a.post_id = b.post_id
+            JOIN wp_postmeta c
+              ON b.post_id = c.post_id
+            WHERE 
+              a.meta_key = '_wpas_assignee'
+              AND a.meta_value = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'closed'
+              AND c.meta_key = '_ticket_closed_on';
+        ";
+
+        $open_column = $wpdb->get_col($open_query)[0];
+        $closed_column = $wpdb->get_col($closed_query);
+
+        $output = new stdClass();
+        $output->open_tickets = intval($open_column);
+        $output->closed_tickets = $closed_column;
+        echo json_encode($output);
+    }
+
 
     public function get_tickets_full() {
         global $wpdb;

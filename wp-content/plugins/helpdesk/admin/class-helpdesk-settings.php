@@ -109,7 +109,15 @@ class Helpdesk_Settings
                 'capability' => 'edit_ticket',
                 'menu_slug' => 'helpdesk_tom',
                 'callback' => array($this->callbacks, 'timeoff_manager'),
-            ]
+            ],
+            [
+                'parent_slug' => 'helpdesk_analytics',
+                'page_title' => 'Agent Analytics',
+                'menu_title' => 'Agent Analytics',
+                'capability' => 'edit_ticket',
+                'menu_slug' => 'helpdesk_agent_analytics',
+                'callback' => array($this->callbacks, 'agent_analytics'),
+            ],
         ];
     }
 }
