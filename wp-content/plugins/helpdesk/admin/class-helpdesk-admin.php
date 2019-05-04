@@ -279,6 +279,7 @@ class Helpdesk_Admin
         $output->open_tickets = intval($open_column);
         $output->closed_tickets = $closed_column;
         echo json_encode($output);
+        die();
     }
 
 
