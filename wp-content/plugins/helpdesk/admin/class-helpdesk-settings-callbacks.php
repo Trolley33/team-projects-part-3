@@ -391,7 +391,7 @@ function make_agent_analytics_modal()
 {
     ?>
     <div id="agent_analytics_modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg"  role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Viewing Graph for: <span id="agent-name"></span></h5>
@@ -420,7 +420,7 @@ function make_agent_analytics_modal()
     {
         ?>
         <div id="user_analytics_modal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Viewing Graph for: <span id="user-name"></span></h5>
@@ -429,11 +429,14 @@ function make_agent_analytics_modal()
                         </button>
                     </div>
                     <div class="modal-body">
-
                         <button id="user-ticket-range" class="btn date-button btn-outline-info"></button>
                         <div class="container">
                             <div id="no-data" style="display: none;">No data found.</div>
                             <canvas id="user-pie-chart"></canvas>
+                        </div>
+
+                        <div class="container">
+                            <canvas id="user-bar-chart"></canvas>
                         </div>
                     </div>
                     <div class="modal-footer">

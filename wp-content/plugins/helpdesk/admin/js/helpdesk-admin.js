@@ -99,7 +99,6 @@
                 url: followed_object.ajax_url,
                 data: data,
                 success: function (data) {
-                    console.log(data);
                     initAgentChart(JSON.parse(data));
                 }
             });
@@ -123,7 +122,6 @@
                 url: followed_object.ajax_url,
                 data: data,
                 success: function (data) {
-                    console.log(data);
                     initUserChart(JSON.parse(data));
                 }
             });
@@ -367,7 +365,7 @@
         }
     }
 
-    const reliability_threshold = 100;
+    const reliability_threshold = 10;
 
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');
@@ -378,7 +376,7 @@
             const hardware = JSON.parse(response).map(data => { return data; });
             // Get occurences of each piece of hardware and convert to array.
             const hardwareInfo = Object.values(hardware.reduce((output, hardware) => {
-                if (output[hardware.name] === undefined) output[hardware.name] = { name: hardware.name, count: 0 };
+                if (output[hardware.name] === undefined) output[hardware.name] = { name: hardware.name, count: 1 };
                 else output[hardware.name].count += 1;
                 return output;
             }, {}));
@@ -423,7 +421,7 @@
             const software = JSON.parse(response).map(data => { return data; });
             // Get occurrences of each piece of software and convert to array.
             const softwareInfo = Object.values(software.reduce((output, software) => {
-                if (output[software.name] === undefined) output[software.name] = { name: software.name, count: 0 };
+                if (output[software.name] === undefined) output[software.name] = { name: software.name, count: 1 };
                 else output[software.name].count += 1;
                 return output;
             }, {}));
@@ -462,8 +460,8 @@
         const agentPieChartElement = $('#agent-pie-chart');
         if (!agentPieChartElement) return;
 
-        if (agentPieChartElement.data('graph')) {
-            agentPieChartElement.data('graph').destroy();
+        if (agentPieChartElement.data('pie')) {
+            agentPieChartElement.data('pie').destroy();
         }
 
         const closed_moments = agent_object.closed_tickets.map(dateString => moment(dateString));
@@ -471,7 +469,7 @@
         const agentPieChart = new Chart(agentPieChartElement, {
             type: 'pie',
             data: {
-                labels: ["Ticket Still Open", "Tickets Closed"],
+                labels: ["Ticket Unresolved", "Tickets Resolved"],
                 datasets: [{
                     data: [agent_object.open_tickets, agent_object.closed_tickets],
                     backgroundColor: ['rgb(62, 150, 81)',
@@ -480,7 +478,7 @@
             }
         });
 
-        agentPieChartElement.data('graph', agentPieChartElement);
+        agentPieChartElement.data('pie', agentPieChartElement);
 
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -496,7 +494,7 @@
     function onAgentTicketDateRangeChange(start, end, args) {
         args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
         if (!args.agentPieChart.data.datasets[0].data[1]) {
-            $('#agent-pie-chart').data('graph').destroy();
+            $('#agent-pie-chart').data('pie').destroy();
             $('#no-data').show();
             return;
         }
@@ -505,20 +503,21 @@
 
     function initUserChart(user_object) {
         const userPieChartElement = $('#user-pie-chart');
-        if (!userPieChartElement) return;
+        const userBarChartElement = $('#user-bar-chart');
+        if (!userPieChartElement || !userBarChartElement) return;
 
-        if (userPieChartElement.data('graph')) {
-            userPieChartElement.data('graph').destroy();
+        if (userPieChartElement.data('pie') || userPieChartElement.data('bar')) {
+            userPieChartElement.data('pie').destroy();
+            userPieChartElement.data('bar').destroy();
         }
 
         $('#no-data').hide();
-
         const closed_moments = user_object.closed_tickets.map(dateString => moment(dateString));
 
         const userPieChart = new Chart(userPieChartElement, {
             type: 'pie',
             data: {
-                labels: ["Tickets Open", "Tickets Closed"],
+                labels: ["Tickets Unresolved", "Tickets Resolved"],
                 datasets: [{
                     data: [user_object.open_tickets, user_object.closed_tickets],
                     backgroundColor: ['rgb(62, 150, 81)',
@@ -527,7 +526,43 @@
             }
         });
 
-        userPieChartElement.data('graph', userPieChart);
+        const common_problems = Object.values(user_object.common.reduce((output, problem) => {
+            if (output[problem.name] === undefined) output[problem.name] = { name: problem.name, time: moment(problem.time), count: 1 };
+            else output[problem.name].count += 1;
+            return output;
+        }, {}));
+
+        // Descending order sort.
+        common_problems.sort((a, b) => { return b.count - a.count; });
+
+        const userBarChart = new Chart(userBarChartElement, {
+            type: 'bar',
+            data: {
+                labels: common_problems.map((data) => { return data.name; }),
+                datasets: [
+                    {
+                        data: Array.apply(null, new Array(common_problems.length)).map(Number.prototype.valueOf, reliability_threshold),
+                        fill: false,
+                        radius: 0,
+                        borderColor: '#ff0000',
+                        type: 'line',
+                        label: "Training Threshold"
+                    },
+                    {
+                        label: 'Problems Submitted',
+                        data: common_problems.map((data) => { return data.count; }),
+                        backgroundColor: barColours
+                    }]
+            },
+            options: {
+                title: { display: true, text: 'Number of Times Problem Type Submitted by User' },
+                legend: { display: false },
+                scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
+            }
+        });
+
+        userPieChartElement.data('pie', userPieChart);
+        userPieChartElement.data('bar', userBarChart);
 
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -542,8 +577,8 @@
     // Updates the charts data using newly selected dates
     function onUserTicketDateRangeChange(start, end, args) {
         args.userPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
-        if (!args.userPieChart.data.datasets[0].data[1]) {
-            $('#user-pie-chart').data('graph').destroy();
+        if (!args.userPieChart.data.datasets[0].data[0] && !args.userPieChart.data.datasets[0].data[1]) {
+            $('#user-pie-chart').data('pie').destroy();
             $('#no-data').show();
             return;
         }
