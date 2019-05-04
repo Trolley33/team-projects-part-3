@@ -123,7 +123,11 @@ if ( $wpas_tickets->have_posts() ):
 			<tfoot>
 				<tr>
 					<td colspan="<?php echo count($columns); ?>">
-						<ul class="wpas_table_pagination"></ul>
+						<div style="float: right;">
+                            <button id="prev-page-button" class="btn btn-secondary">&leftarrow;</button>
+                            <span id="page-number" style="margin: 10px 10px;">1</span>
+                            <button id="next-page-button" class="btn btn-secondary">&rightarrow;</button>
+                        </div>
 					</td>
 				</tr>
 			</tfoot>
