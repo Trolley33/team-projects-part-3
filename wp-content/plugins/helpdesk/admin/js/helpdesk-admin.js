@@ -404,7 +404,7 @@
                         }]
                 },
                 options: {
-                    title: { display: true, text: 'Number of Tickets Hardware Involved In.' },
+                    title: { display: true, text: 'Number of Hardware Tickets' },
                     legend: { display: false },
                     scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
                 }
@@ -448,7 +448,7 @@
                     }]
                 },
                 options: {
-                    title: { display: true, text: 'Number of Tickets Software Involved In.' },
+                    title: { display: true, text: 'Number of Software Tickets' },
                     legend: { display: false },
                     scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
                 }
@@ -527,8 +527,8 @@
         });
 
         const common_problems = Object.values(user_object.common.reduce((output, problem) => {
-            if (output[problem.name] === undefined) output[problem.name] = { name: problem.name, time: moment(problem.time), count: 1 };
-            else output[problem.name].count += 1;
+            if (output[problem.name] === undefined) output[problem.name] = { name: problem.name, time: [moment(problem.time)], count: 1 };
+            else {output[problem.name].count += 1; output[problem.name].time.push(moment(problem.time));}
             return output;
         }, {}));
 
@@ -555,7 +555,7 @@
                     }]
             },
             options: {
-                title: { display: true, text: 'Number of Times Problem Type Submitted by User' },
+                title: { display: true, text: 'Problem Type Submitted by User' },
                 legend: { display: false },
                 scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
             }
@@ -571,7 +571,7 @@
             'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         };
 
-        addRangePicker('user-ticket-range', onUserTicketDateRangeChange, { userPieChart, closed_moments }, { start: moment().subtract(6, 'days'), ranges });
+        addRangePicker('user-ticket-range', onUserTicketDateRangeChange, { userPieChart, closed_moments, userBarChart, common_problems }, { start: moment().subtract(6, 'days'), ranges });
     }
 
     // Updates the charts data using newly selected dates
@@ -583,6 +583,14 @@
             return;
         }
         args.userPieChart.update();
+
+        let tempBarData = {};
+        args.common_problems.forEach(problem => tempBarData[problem.name] = {name: problem.name, time_count :(generateChartDataBetweenMoments(problem.time, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0))});
+        tempBarData = Object.values(tempBarData);
+        tempBarData.sort((a, b) => b.time_count - a.time_count);
+        args.userBarChart.data.labels = tempBarData.map(object => object.name);
+        args.userBarChart.data.datasets[1].data = tempBarData.map(object => object.time_count);
+        args.userBarChart.update();
     }
 })(jQuery);
 
