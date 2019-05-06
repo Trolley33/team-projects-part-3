@@ -434,7 +434,6 @@ function make_user_analytics_modal()
                         <canvas id="user-pie-chart"></canvas>
                     </div>
                     <div class="modal-body">
-                        <button id="user-ticket-range" class="btn date-button btn-outline-info"></button>
                         <div class="container">
                             <canvas id="user-pie-chart"></canvas>
                         </div>
