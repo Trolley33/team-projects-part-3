@@ -261,10 +261,9 @@ function analytics_page()
                     <div class="col-sm-6 col-xl-12">
                         <div class="card card-body">
                             <div class="d-flex d-flex justify-content-between">
-                                <h5 class="input-group-text">Tickets Submitted</h5>
-                                <button id="ticketsrange" class="btn date-button btn-outline-info"></button>
+                                <h5 class="input-group-text">Placeholder Card</h5>
                             </div>
-                            <canvas id="chartTickets"></canvas>
+                            <canvas id="chart" style="background-color: rgb(232, 235, 238)"></canvas>
                         </div>
                     </div>
                 </div>
