@@ -509,7 +509,7 @@
             data: {
                 labels: ["Ticket Unresolved", "Tickets Resolved"],
                 datasets: [{
-                    data: [],
+                    data: [agent_object.open_tickets],
                     backgroundColor: ['rgb(62, 150, 81)',
                         'rgb(204, 37, 41)']
                 }]
