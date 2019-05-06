@@ -353,7 +353,7 @@ public function user_analytics()
 
     $results = $wpdb->get_results($query);
 
-    $this->make_user_analytics_modal()
+    $this->make_user_analytics_modal();
     ?>
     <h1>User Analytics</h1>
     <hr />
@@ -447,6 +447,7 @@ function make_user_analytics_modal()
                 </div>
             </div>
         </div>
+    </div>
     </div>
 <?
 }
