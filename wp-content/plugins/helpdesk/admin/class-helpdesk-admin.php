@@ -281,6 +281,70 @@ class Helpdesk_Admin
         die();
     }
 
+    public function get_user_analytics()
+    {
+        if (!isset($_REQUEST['id'])) {
+            exit(1);
+        }
+        global $wpdb;
+
+
+        $id = $wpdb->_escape($_REQUEST['id']);
+        /*
+        Want to get:
+        - Number of tickets assigned in time frame
+        - Number of tickets closed in time frame.
+        - Avg length of time tickets open.
+        - ?
+        */
+        $open_query = "SELECT COUNT(*) FROM wp_posts a
+            JOIN wp_postmeta b
+              ON a.ID = b.post_id
+            WHERE 
+              a.post_author = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'open';
+        ";
+
+        $closed_query = "SELECT c.meta_value FROM wp_posts a
+            JOIN wp_postmeta b
+              ON a.ID = b.post_id
+            JOIN wp_postmeta c
+              ON b.post_id = c.post_id
+            WHERE 
+              a.post_author = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'closed'
+              AND c.meta_key = '_ticket_closed_on';
+        ";
+
+        $common_problems_query = "SELECT b.meta_value as time, t.name FROM wp_posts a
+            JOIN wp_postmeta b
+              ON a.ID = b.post_id
+            JOIN wp_term_relationships r
+              ON r.object_id = a.ID
+            JOIN wp_term_taxonomy tt
+              ON r.term_taxonomy_id = tt.term_taxonomy_id
+            JOIN wp_terms t
+              ON tt.term_id = t.term_id 
+            WHERE
+              a.post_author = '$id'
+              AND b.meta_key = '_ticket_closed_on'
+              AND t.term_id > 20;
+        ";
+
+        $open_column = $wpdb->get_col($open_query)[0];
+        $closed_column = $wpdb->get_col($closed_query);
+        $common_result = $wpdb->get_results($common_problems_query);
+
+        $output = new stdClass();
+        $output->open_tickets = intval($open_column);
+        $output->closed_tickets = $closed_column;
+        $output->common = $common_result;
+        echo json_encode($output);
+        die();
+    }
+
 
     public function get_tickets_full()
     {

@@ -332,14 +332,56 @@ public function agent_analytics()
 <?
 }
 
+public function user_analytics()
+{
+    global $wpdb;
+
+    $query = "
+        SELECT wp_users.id, wp_users.display_name FROM wp_users
+        JOIN wp_usermeta
+          ON wp_users.id = wp_usermeta.user_id
+        WHERE 
+              wp_usermeta.meta_key = 'wp_user_level' 
+          AND wp_usermeta.meta_value = '0';
+    ";
+
+    $results = $wpdb->get_results($query);
+
+    $this->make_user_analytics_modal()
+    ?>
+    <h1>Agent Analytics</h1>
+    <hr />
+    <br /><br />
+    <table class="display compact cell-border">
+        <thead>
+        <tr>
+            <th>User ID</th>
+            <th>User Name</th>
+            <th>View</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+
+        foreach ($results as $key => $value) {
+            echo "<tr>";
+
+            echo "<td>$value->id</td>";
+            echo "<td>$value->display_name</td>";
+            echo "<td><button class='btn btn-secondary' data-user='" . json_encode($value) . "' data-toggle='modal' data-target='#user_analytics_modal'>View</button></td>";
+            echo "</tr>";
+        }
+        ?>
+        </tbody>
+    </table>
+    <?
+}
+
 function make_agent_analytics_modal()
 {
     ?>
-
-
-
     <div id="agent_analytics_modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg"  role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Viewing Graph for: <span id="agent-name"></span></h5>
@@ -351,6 +393,7 @@ function make_agent_analytics_modal()
 
                     <button id="agent-ticket-range" class="btn date-button btn-outline-info"></button>
                     <div class="container">
+                        <div id="no-data" hidden>No data found.</div>
                         <canvas id="agent-pie-chart"></canvas>
                     </div>
                 </div>
@@ -362,6 +405,38 @@ function make_agent_analytics_modal()
     </div>
 <?
 }
+
+    function make_user_analytics_modal()
+    {
+        ?>
+        <div id="user_analytics_modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Viewing Graph for: <span id="user-name"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <button id="user-ticket-range" class="btn date-button btn-outline-info"></button>
+                        <div class="container">
+                            <div id="no-data" style="display: none;">No data found.</div>
+                            <canvas id="user-pie-chart"></canvas>
+                        </div>
+
+                        <div class="container">
+                            <canvas id="user-bar-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?
+    }
 }
 
 ?>

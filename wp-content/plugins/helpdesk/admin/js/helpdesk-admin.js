@@ -99,8 +99,30 @@
                 url: followed_object.ajax_url,
                 data: data,
                 success: function (data) {
-                    console.log(data);
                     initAgentChart(JSON.parse(data));
+                }
+            });
+        });
+
+        /* User chart */
+        $("#user_analytics_modal").on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var user = button.data('user');
+
+            var modal = $(this);
+            modal.find('#user-name').html(user.display_name);
+
+            let data = {
+                action: 'get_user_analytics',
+                id: user.id
+            };
+
+            jQuery.ajax({
+                type: 'POST',
+                url: followed_object.ajax_url,
+                data: data,
+                success: function (data) {
+                    initUserChart(JSON.parse(data));
                 }
             });
         });
@@ -219,13 +241,13 @@
         });
     }
 
-    function addRangePicker(id, onTicketDateRangeChangeCallback, callbackArgs = {}, args = {}) {
+    function addRangePicker(id, onDateRangeChangeCallback, callbackArgs = {}, args = {}) {
         let start = args.start ? args.start : moment().subtract(29, 'days');
         let end = args.end ? args.end : moment();
 
         const callback = (start, end) => {
             $(`#${id}`).html(`${start.format('MMMM D, YYYY')} - ${end.format('MMMM D, YYYY')}`);
-            onTicketDateRangeChangeCallback(start, end, callbackArgs);
+            onDateRangeChangeCallback(start, end, callbackArgs);
         };
 
         $(`#${id}`).daterangepicker({
@@ -344,6 +366,8 @@
         }
     }
 
+    const reliability_threshold = 10;
+
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');
         if (!hardwareChartElement) return;
@@ -353,7 +377,7 @@
             const hardware = JSON.parse(response).map(data => { return data; });
             // Get occurences of each piece of hardware and convert to array.
             const hardwareInfo = Object.values(hardware.reduce((output, hardware) => {
-                if (output[hardware.name] === undefined) output[hardware.name] = { name: hardware.name, count: 0 };
+                if (output[hardware.name] === undefined) output[hardware.name] = { name: hardware.name, count: 1 };
                 else output[hardware.name].count += 1;
                 return output;
             }, {}));
@@ -367,7 +391,7 @@
                     labels: hardwareInfo.map((data) => { return data.name; }),
                     datasets: [
                         {
-                            data: Array.apply(null, new Array(hardwareInfo.length)).map(Number.prototype.valueOf, 30),
+                            data: Array.apply(null, new Array(hardwareInfo.length)).map(Number.prototype.valueOf, reliability_threshold),
                             fill: false,
                             radius: 0,
                             borderColor: '#ff0000',
@@ -381,7 +405,7 @@
                         }]
                 },
                 options: {
-                    title: { display: true, text: 'Number of Tickets Hardware Involved In.' },
+                    title: { display: true, text: 'Number of Hardware Tickets' },
                     legend: { display: false },
                     scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
                 }
@@ -396,9 +420,9 @@
         // We can also pass the url value separately from ajaxurl for front end AJAX implementations
         jQuery.get(followed_object.ajax_url, { action: 'get_problem_software_past_year' }, response => {
             const software = JSON.parse(response).map(data => { return data; });
-            // Get occurences of each piece of software and convert to array.
+            // Get occurrences of each piece of software and convert to array.
             const softwareInfo = Object.values(software.reduce((output, software) => {
-                if (output[software.name] === undefined) output[software.name] = { name: software.name, count: 0 };
+                if (output[software.name] === undefined) output[software.name] = { name: software.name, count: 1 };
                 else output[software.name].count += 1;
                 return output;
             }, {}));
@@ -410,14 +434,22 @@
                 type: 'bar',
                 data: {
                     labels: softwareInfo.map((data) => { return data.name; }),
-                    datasets: [{
+                    datasets: [
+                    {
+                        data: Array.apply(null, new Array(softwareInfo.length)).map(Number.prototype.valueOf, reliability_threshold),
+                        fill: false,
+                        radius: 0,
+                        borderColor: '#ff0000',
+                        type: 'line',
+                        label: "Reliability Threshold"
+                    },{
                         label: 'Problems Submitted',
                         data: softwareInfo.map((data) => { return data.count; }),
                         backgroundColor: getNumberOfBarColours(100).slice(4)
                     }]
                 },
                 options: {
-                    title: { display: true, text: 'Number of Tickets Software Involved In.' },
+                    title: { display: true, text: 'Number of Software Tickets' },
                     legend: { display: false },
                     scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
                 }
@@ -426,15 +458,19 @@
     }
 
     function initAgentChart(agent_object) {
-        const agentPieChartElement = document.getElementById('agent-pie-chart');
+        const agentPieChartElement = $('#agent-pie-chart');
         if (!agentPieChartElement) return;
+
+        if (agentPieChartElement.data('pie')) {
+            agentPieChartElement.data('pie').destroy();
+        }
 
         const closed_moments = agent_object.closed_tickets.map(dateString => moment(dateString));
 
         const agentPieChart = new Chart(agentPieChartElement, {
             type: 'pie',
             data: {
-                labels: ["Ticket Open", "Tickets Closed"],
+                labels: ["Ticket Unresolved", "Tickets Resolved"],
                 datasets: [{
                     data: [agent_object.open_tickets, agent_object.closed_tickets],
                     backgroundColor: ['rgb(62, 150, 81)',
@@ -442,6 +478,8 @@
                 }]
             }
         });
+
+        agentPieChartElement.data('pie', agentPieChart);
 
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -455,9 +493,105 @@
 
     // Updates the charts data using newly selected dates
     function onAgentTicketDateRangeChange(start, end, args) {
-        const duration = moment.duration(end.diff(start));
-        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').length;
+        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        if (!args.agentPieChart.data.datasets[0].data[1]) {
+            $('#agent-pie-chart').data('pie').destroy();
+            $('#no-data').show();
+            return;
+        }
         args.agentPieChart.update();
+    }
+
+    function initUserChart(user_object) {
+        const userPieChartElement = $('#user-pie-chart');
+        const userBarChartElement = $('#user-bar-chart');
+        if (!userPieChartElement || !userBarChartElement) return;
+
+        if (userPieChartElement.data('pie') || userPieChartElement.data('bar')) {
+            userPieChartElement.data('pie').destroy();
+            userPieChartElement.data('bar').destroy();
+        }
+
+        $('#no-data').hide();
+        const closed_moments = user_object.closed_tickets.map(dateString => moment(dateString));
+
+        const userPieChart = new Chart(userPieChartElement, {
+            type: 'pie',
+            data: {
+                labels: ["Tickets Unresolved", "Tickets Resolved"],
+                datasets: [{
+                    data: [user_object.open_tickets, user_object.closed_tickets],
+                    backgroundColor: ['rgb(62, 150, 81)',
+                        'rgb(204, 37, 41)']
+                }]
+            }
+        });
+
+        const common_problems = Object.values(user_object.common.reduce((output, problem) => {
+            if (output[problem.name] === undefined) output[problem.name] = { name: problem.name, time: [moment(problem.time)], count: 1 };
+            else {output[problem.name].count += 1; output[problem.name].time.push(moment(problem.time));}
+            return output;
+        }, {}));
+
+        // Descending order sort.
+        common_problems.sort((a, b) => { return b.count - a.count; });
+
+        const userBarChart = new Chart(userBarChartElement, {
+            type: 'bar',
+            data: {
+                labels: common_problems.map((data) => { return data.name; }),
+                datasets: [
+                    {
+                        data: Array.apply(null, new Array(common_problems.length)).map(Number.prototype.valueOf, reliability_threshold),
+                        fill: false,
+                        radius: 0,
+                        borderColor: '#ff0000',
+                        type: 'line',
+                        label: "Training Threshold"
+                    },
+                    {
+                        label: 'Problems Submitted',
+                        data: common_problems.map((data) => { return data.count; }),
+                        backgroundColor: barColours
+                    }]
+            },
+            options: {
+                title: { display: true, text: 'Problem Type Submitted by User' },
+                legend: { display: false },
+                scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
+            }
+        });
+
+        userPieChartElement.data('pie', userPieChart);
+        userPieChartElement.data('bar', userBarChart);
+
+        const ranges = {
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        };
+
+        addRangePicker('user-ticket-range', onUserTicketDateRangeChange, { userPieChart, closed_moments, userBarChart, common_problems }, { start: moment().subtract(6, 'days'), ranges });
+    }
+
+    // Updates the charts data using newly selected dates
+    function onUserTicketDateRangeChange(start, end, args) {
+        args.userPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        if (!args.userPieChart.data.datasets[0].data[0] && !args.userPieChart.data.datasets[0].data[1]) {
+            $('#user-pie-chart').data('pie').destroy();
+            $('#no-data').show();
+            return;
+        }
+        args.userPieChart.update();
+
+        let tempBarData = {};
+        args.common_problems.forEach(problem => tempBarData[problem.name] = {name: problem.name, time_count :(generateChartDataBetweenMoments(problem.time, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0))});
+        tempBarData = Object.values(tempBarData);
+        tempBarData.sort((a, b) => b.time_count - a.time_count);
+        args.userBarChart.data.labels = tempBarData.map(object => object.name);
+        args.userBarChart.data.datasets[1].data = tempBarData.map(object => object.time_count);
+        args.userBarChart.update();
     }
 })(jQuery);
 
