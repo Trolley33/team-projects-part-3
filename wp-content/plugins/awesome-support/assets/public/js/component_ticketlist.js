@@ -1,6 +1,6 @@
 (function ($) {
 	"use strict";
-
+	/*
 	$(function () {
 
 		// Our condition to prevent error
@@ -64,5 +64,6 @@
 		}
 
 	});
+	*/
 
 }(jQuery));
