@@ -367,6 +367,7 @@
 
     const baseHardwareReliabilityThreshold = 2;
     const baseSoftwareReliabilityThreshold = 1;
+    const baseUserTrainingThreshold = 1;
 
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');
@@ -600,7 +601,7 @@
                 labels: common_problems.map((data) => { return data.name; }),
                 datasets: [
                     {
-                        data: Array.apply(null, new Array(common_problems.length)).map(Number.prototype.valueOf, base_reliability_threshold),
+                        data: Array.apply(null, new Array(common_problems.length)).map(Number.prototype.valueOf, baseUserTrainingThreshold),
                         fill: false,
                         radius: 0,
                         borderColor: '#ff0000',
