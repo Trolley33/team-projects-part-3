@@ -180,7 +180,9 @@ class Helpdesk
         $this->loader->add_action('wp_ajax_get_ticket_taxonomies', $plugin_admin, 'get_ticket_taxonomies');
 
         $this->loader->add_action('wp_ajax_get_problem_hardware', $plugin_admin, 'get_problem_hardware');
+        $this->loader->add_action('wp_ajax_get_hardware_term_and_parent', $plugin_admin, 'get_hardware_term_and_parent');
         $this->loader->add_action('wp_ajax_get_problem_software', $plugin_admin, 'get_problem_software');
+        $this->loader->add_action('wp_ajax_get_software_term_and_parent', $plugin_admin, 'get_software_term_and_parent');
 
         $this->loader->add_action('wp_ajax_get_agent_analytics', $plugin_admin, 'get_agent_analytics');
         $this->loader->add_action('wp_ajax_get_user_analytics', $plugin_admin, 'get_user_analytics');

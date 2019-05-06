@@ -271,15 +271,22 @@ function analytics_page()
             </div>
         </div>
         <div class="row">
-
             <div class="col-xl-6">
                 <div class="card card-body">
+                    <div class="d-flex d-flex justify-content-between">
+                        <h5 class="input-group-text">Hardware Tickets Submitted</h5>
+                        <button id="hardwarerange" class="btn date-button btn-outline-info"></button>
+                    </div>
                     <canvas id="hardware-chart"></canvas>
                 </div>
             </div>
 
             <div class="col-xl-6">
                 <div class="card card-body">
+                    <div class="d-flex d-flex justify-content-between">
+                        <h5 class="input-group-text">Software Tickets Submitted</h5>
+                        <button id="softwarerange" class="btn date-button btn-outline-info"></button>
+                    </div>
                     <canvas id="software-chart"></canvas>
                 </div>
             </div>
@@ -354,34 +361,34 @@ public function user_analytics()
     <br /><br />
     <table class="display compact cell-border">
         <thead>
-        <tr>
-            <th>User ID</th>
-            <th>User Name</th>
-            <th>View</th>
-        </tr>
+            <tr>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>View</th>
+            </tr>
         </thead>
         <tbody>
-        <?php
+            <?php
 
-        foreach ($results as $key => $value) {
-            echo "<tr>";
+            foreach ($results as $key => $value) {
+                echo "<tr>";
 
-            echo "<td>$value->id</td>";
-            echo "<td>$value->display_name</td>";
-            echo "<td><button class='btn btn-secondary' data-user='" . json_encode($value) . "' data-toggle='modal' data-target='#user_analytics_modal'>View</button></td>";
-            echo "</tr>";
-        }
-        ?>
+                echo "<td>$value->id</td>";
+                echo "<td>$value->display_name</td>";
+                echo "<td><button class='btn btn-secondary' data-user='" . json_encode($value) . "' data-toggle='modal' data-target='#user_analytics_modal'>View</button></td>";
+                echo "</tr>";
+            }
+            ?>
         </tbody>
     </table>
-    <?
+<?
 }
 
 function make_agent_analytics_modal()
 {
     ?>
     <div id="agent_analytics_modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg"  role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Viewing Graph for: <span id="agent-name"></span></h5>
@@ -406,37 +413,37 @@ function make_agent_analytics_modal()
 <?
 }
 
-    function make_user_analytics_modal()
-    {
-        ?>
-        <div id="user_analytics_modal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Viewing Graph for: <span id="user-name"></span></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+function make_user_analytics_modal()
+{
+    ?>
+    <div id="user_analytics_modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Viewing Graph for: <span id="user-name"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <button id="user-ticket-range" class="btn date-button btn-outline-info"></button>
+                    <div class="container">
+                        <div id="no-data" style="display: none;">No data found.</div>
+                        <canvas id="user-pie-chart"></canvas>
                     </div>
-                    <div class="modal-body">
-                        <button id="user-ticket-range" class="btn date-button btn-outline-info"></button>
-                        <div class="container">
-                            <div id="no-data" style="display: none;">No data found.</div>
-                            <canvas id="user-pie-chart"></canvas>
-                        </div>
 
-                        <div class="container">
-                            <canvas id="user-bar-chart"></canvas>
-                        </div>
+                    <div class="container">
+                        <canvas id="user-bar-chart"></canvas>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-        <?
-    }
+    </div>
+<?
+}
 }
 
 ?>

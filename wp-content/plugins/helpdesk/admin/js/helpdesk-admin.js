@@ -31,6 +31,7 @@
 
     $(document).ready(function () { $('body').bootstrapMaterialDesign(); });
     $(function () {
+
         var table = $('.display').dataTable();
         $("#timeoff_edit_modal").on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
@@ -256,7 +257,6 @@
             ranges: args.ranges ? args.ranges : {
                 'Last 7 Days': [moment().subtract(6, 'days'), moment()],
                 'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                 'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                 'Last 6 Months': [moment().subtract(6, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                 'Past Year': [moment().subtract(1, 'Year').startOf('month'), moment().subtract(1, 'month').endOf('month')],
@@ -270,21 +270,21 @@
     // Updates the charts data using newly selected dates
     function onTicketDateRangeChange(start, end, args) {
         const duration = moment.duration(end.diff(start));
-        if (duration.get('months') <= 1) {
+        if (duration.asMonths() <= 1) {
             args.ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(args.ticketMoments, start, end, 'days');
             args.ticketsChart.options.scales.xAxes[0].time = {
                 unit: 'day',
                 tooltipFormat: 'MMM D'
             };
         }
-        else if (duration.get('months') <= 6) {
+        else if (duration.asMonths() <= 6) {
             args.ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(args.ticketMoments, start, end, 'weeks');
             args.ticketsChart.options.scales.xAxes[0].time = {
                 unit: 'day',
                 tooltipFormat: 'MMM D'
             };
         }
-        else if (duration.get('years') <= 3) {
+        else if (duration.asYears() <= 3) {
             args.ticketsChart.data.datasets[0].data = generateChartDataBetweenMoments(args.ticketMoments, start, end, 'months');
             args.ticketsChart.options.scales.xAxes[0].time = {
                 unit: 'month',
@@ -304,7 +304,7 @@
     function initChartTickets(ticketMoments) {
         const ticketsChartElement = document.getElementById('chartTickets');
         if (!ticketsChartElement) return;
-        
+
 
         // Creates the base tickets chart
         const ticketsChart = new Chart(ticketsChartElement, {
@@ -365,94 +365,132 @@
         }
     }
 
-    const reliability_threshold = 10;
+    const baseHardwareReliabilityThreshold = 2;
+    const baseSoftwareReliabilityThreshold = 1;
 
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');
         if (!hardwareChartElement) return;
-
-        // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        jQuery.get(followed_object.ajax_url, { action: 'get_problem_hardware' }, response => {
-            const hardware = JSON.parse(response).map(data => { return data; });
-            // Get occurences of each piece of hardware and convert to array.
-            const hardwareInfo = Object.values(hardware.reduce((output, hardware) => {
-                if (output[hardware.name] === undefined) output[hardware.name] = { name: hardware.name, count: 1 };
-                else output[hardware.name].count += 1;
-                return output;
-            }, {}));
-
-            // Descending order sort.
-            hardwareInfo.sort((a, b) => { return b.count - a.count; });
-
-            new Chart(hardwareChartElement, {
+        Promise.all([fetch(`${followed_object.ajax_url}?action=get_problem_hardware`).then(response => response.json()), fetch(`${followed_object.ajax_url}?action=get_hardware_term_and_parent`).then(response => response.json())])
+        .then(([hardware, termIdParent]) => {
+            const chart = new Chart(hardwareChartElement, {
                 type: 'bar',
-                data: {
-                    labels: hardwareInfo.map((data) => { return data.name; }),
-                    datasets: [
-                        {
-                            data: Array.apply(null, new Array(hardwareInfo.length)).map(Number.prototype.valueOf, reliability_threshold),
-                            fill: false,
-                            radius: 0,
-                            borderColor: '#ff0000',
-                            type: 'line',
-                            label: "Reliability Threshold"
-                        },
-                        {
-                            label: 'Problems Submitted',
-                            data: hardwareInfo.map((data) => { return data.count; }),
-                            backgroundColor: barColours
-                        }]
-                },
                 options: {
-                    title: { display: true, text: 'Number of Hardware Tickets' },
                     legend: { display: false },
-                    scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
+                    scales: {
+                        xAxes: [{ stacked: true }],
+                        yAxes: [{ ticks: { beginAtZero: true } }]
+                    },
+                    tooltips: {
+                        displayColors: false
+                    }
                 }
             });
+
+            const ranges = {
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            };
+
+            addRangePicker('hardwarerange', onTermDateChange, { chart, term: hardware, termIdParent, baseReliabilityThreshold: baseHardwareReliabilityThreshold }, { start: moment().subtract(6, 'days'), ranges });
         });
+    }
+
+    function onTermDateChange(start, end, { chart, term, termIdParent, baseReliabilityThreshold }) {
+        const duration = moment.duration(end.diff(start));
+
+        if (duration.asMonths() <= 1) {
+            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
+        }
+        else if (duration.asMonths() <= 6) {
+            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
+        }
+        else if (duration.asYears() <= 3) {
+            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
+        }
+        else {
+            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
+        }
+        chart.update();
+    }
+
+    function generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end) {
+        const hardwareDated = term.filter(({ post_date }) => moment(post_date).isBetween(start, end));
+        // Get occurences of each piece of hardware and convert to array.
+        const termInfo = Object.values(hardwareDated.reduce((output, term) => {
+            
+            if (!output[term.name])
+            {
+                output[term.name] = { name: term.name, count: 1,  devices: termIdParent.filter(({parent}) => parent === term.term_id).length};
+            }
+            else output[term.name].count += 1;
+
+            return output;
+        }, {}));
+        console.log(termInfo);
+        // Descending order sort.
+        termInfo.sort((a, b) => b.count - a.count);
+
+        const duration = moment.duration(end.diff(start));
+
+        const dateAdjustedThreshold = baseReliabilityThreshold * duration.asDays();
+
+        return {
+            labels: termInfo.map(data => data.name),
+            datasets: [
+                {
+                    // End threshold is the baseReliabilityThreshold (how many tickets per device per day) * days spanned in graph * devices for the type.
+                    // i.e. how many tickets a device has per day
+                    data: termInfo.map(({devices}) => Math.ceil(devices * dateAdjustedThreshold)), 
+                    fill: false,
+                    radius: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: "#dc3545",
+                    borderWidth: {
+                        top: 2,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                    type: 'bar',
+                    label: "Reliability Threshold"
+                },
+                {
+                    label: 'Problems Submitted',
+                    data: termInfo.map(data => data.count),
+                    backgroundColor: barColours
+                }]
+        };
     }
 
     function initSoftwareChart() {
         const softwareChartElement = document.getElementById('software-chart');
         if (!softwareChartElement) return;
-
-        // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        jQuery.get(followed_object.ajax_url, { action: 'get_problem_software' }, response => {
-            const software = JSON.parse(response).map(data => { return data; });
-            // Get occurrences of each piece of software and convert to array.
-            const softwareInfo = Object.values(software.reduce((output, software) => {
-                if (output[software.name] === undefined) output[software.name] = { name: software.name, count: 1 };
-                else output[software.name].count += 1;
-                return output;
-            }, {}));
-
-            // Descending order sort.
-            softwareInfo.sort((a, b) => { return b.count - a.count; });
-
-            new Chart(softwareChartElement, {
+        Promise.all([fetch(`${followed_object.ajax_url}?action=get_problem_software`).then(response => response.json()), fetch(`${followed_object.ajax_url}?action=get_software_term_and_parent`).then(response => response.json())])
+        .then(([software, termIdParent]) => {
+            console.log(termIdParent);
+            const chart = new Chart(softwareChartElement, {
                 type: 'bar',
-                data: {
-                    labels: softwareInfo.map((data) => { return data.name; }),
-                    datasets: [
-                    {
-                        data: Array.apply(null, new Array(softwareInfo.length)).map(Number.prototype.valueOf, reliability_threshold),
-                        fill: false,
-                        radius: 0,
-                        borderColor: '#ff0000',
-                        type: 'line',
-                        label: "Reliability Threshold"
-                    },{
-                        label: 'Problems Submitted',
-                        data: softwareInfo.map((data) => { return data.count; }),
-                        backgroundColor: getNumberOfBarColours(100).slice(4)
-                    }]
-                },
                 options: {
-                    title: { display: true, text: 'Number of Software Tickets' },
                     legend: { display: false },
-                    scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
+                    scales: {
+                        xAxes: [{ stacked: true }],
+                        yAxes: [{ ticks: { beginAtZero: true } }]
+                    },
+                    tooltips: {
+                        displayColors: false
+                    }
                 }
             });
+
+            const ranges = {
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            };
+
+            addRangePicker('softwarerange', onTermDateChange, { chart, term: software, termIdParent, baseReliabilityThreshold: baseSoftwareReliabilityThreshold }, { start: moment().subtract(6, 'days'), ranges });
         });
     }
 
@@ -483,7 +521,6 @@
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
             'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         };
 
@@ -492,7 +529,7 @@
 
     // Updates the charts data using newly selected dates
     function onAgentTicketDateRangeChange(start, end, args) {
-        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => { return acc += day.y; }, 0);
         if (!args.agentPieChart.data.datasets[0].data[1]) {
             $('#agent-pie-chart').data('pie').destroy();
             $('#no-data').show();
@@ -528,7 +565,7 @@
 
         const common_problems = Object.values(user_object.common.reduce((output, problem) => {
             if (output[problem.name] === undefined) output[problem.name] = { name: problem.name, time: [moment(problem.time)], count: 1 };
-            else {output[problem.name].count += 1; output[problem.name].time.push(moment(problem.time));}
+            else { output[problem.name].count += 1; output[problem.name].time.push(moment(problem.time)); }
             return output;
         }, {}));
 
@@ -541,7 +578,7 @@
                 labels: common_problems.map((data) => { return data.name; }),
                 datasets: [
                     {
-                        data: Array.apply(null, new Array(common_problems.length)).map(Number.prototype.valueOf, reliability_threshold),
+                        data: Array.apply(null, new Array(common_problems.length)).map(Number.prototype.valueOf, base_reliability_threshold),
                         fill: false,
                         radius: 0,
                         borderColor: '#ff0000',
@@ -567,7 +604,6 @@
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
             'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         };
 
@@ -576,7 +612,7 @@
 
     // Updates the charts data using newly selected dates
     function onUserTicketDateRangeChange(start, end, args) {
-        args.userPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        args.userPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => { return acc += day.y; }, 0);
         if (!args.userPieChart.data.datasets[0].data[0] && !args.userPieChart.data.datasets[0].data[1]) {
             $('#user-pie-chart').data('pie').destroy();
             $('#no-data').show();
@@ -585,7 +621,7 @@
         args.userPieChart.update();
 
         let tempBarData = {};
-        args.common_problems.forEach(problem => tempBarData[problem.name] = {name: problem.name, time_count :generateChartDataBetweenMoments(problem.time, start, end, 'days').reduce((acc, day) => acc += day.y, 0)});
+        args.common_problems.forEach(problem => tempBarData[problem.name] = { name: problem.name, time_count: generateChartDataBetweenMoments(problem.time, start, end, 'days').reduce((acc, day) => acc += day.y, 0) });
         tempBarData = Object.values(tempBarData);
         tempBarData.sort((a, b) => b.time_count - a.time_count);
         args.userBarChart.data.labels = tempBarData.map(object => object.name);
