@@ -344,11 +344,10 @@
         const ticketsSubmittedWeekUpArrow = $('#tickets-submitted-week-up');
         const ticketsSubmittedWeekDownArrow = $('#tickets-submitted-week-down');
         const ticketsSubmittedWeekPercentage = $('#tickets-submitted-week-perc');
-        console.log(ticketMoments.filter(ticketMoment => moment().startOf('week').isSame(ticketMoment.clone().startOf('week'))));
+
         ticketsSubmittedToday.html(ticketMoments.filter(ticketMoment => moment().isSame(ticketMoment.clone(), 'day')).length);
-        const ticketsSubmittedWeek = ticketMoments.filter(ticketMoment => moment().isSame(ticketMoment.clone(), 'week')).length;
-        console.log(ticketMoments.filter(ticketMoment => moment().subtract(1, 'week').isSame(ticketMoment.clone())));
-        const ticketsSubmittedLastWeek = ticketMoments.filter(ticketMoment => moment().subtract(1, 'week').isSame(ticketMoment.clone(), 'week')).length;
+        const ticketsSubmittedWeek = ticketMoments.filter(ticketMoment => ticketMoment.isBetween(moment().startOf('isoWeek'), moment())).length;
+        const ticketsSubmittedLastWeek = ticketMoments.filter(ticketMoment => ticketMoment.isBetween(moment().subtract(1, 'week').startOf('isoWeek'), moment().subtract(1, 'week'))).length;
         ticketsSubmittedWeekNum.html(ticketsSubmittedWeek);
         const percentChange = Math.floor((ticketsSubmittedWeek - ticketsSubmittedLastWeek) / ticketsSubmittedWeek * 100);
         ticketsSubmittedWeekPercentage.html(percentChange.toString() + "%");
@@ -586,7 +585,7 @@
         args.userPieChart.update();
 
         let tempBarData = {};
-        args.common_problems.forEach(problem => tempBarData[problem.name] = {name: problem.name, time_count :(generateChartDataBetweenMoments(problem.time, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0))});
+        args.common_problems.forEach(problem => tempBarData[problem.name] = {name: problem.name, time_count :generateChartDataBetweenMoments(problem.time, start, end, 'days').reduce((acc, day) => acc += day.y, 0)});
         tempBarData = Object.values(tempBarData);
         tempBarData.sort((a, b) => b.time_count - a.time_count);
         args.userBarChart.data.labels = tempBarData.map(object => object.name);
