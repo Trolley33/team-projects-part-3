@@ -1,3 +1,6 @@
+
+let hide_duplicates = true;
+
 (function ($) {
     'use strict';
 
@@ -144,7 +147,7 @@
             rows[i].hidden = true;
             if (rows[i].searched === true){
                 shown++;
-                if (page*page_range <= shown && shown < (page+1)*page_range) {
+                if (page*page_range <= shown && shown <= (page+1)*page_range) {
                     rows[i].hidden = null;
                 }
             }
@@ -160,9 +163,11 @@
 
         for (let i = 0; i < rows.length; i++) {
             // Don't show duplicate tickets.
-            if (rows[i].cells[1].innerText.toLowerCase().includes("duplicate")) {
-                rows[i].searched = false;
-                continue;
+            if (hide_duplicates === true) {
+                if (rows[i].cells[1].innerText.toLowerCase().includes("duplicate")) {
+                    rows[i].searched = false;
+                    continue;
+                }
             }
             // Check right status is met.
             if (!rows[i].innerText.toLowerCase().includes(status)) {
@@ -170,6 +175,7 @@
                 continue;
             } else {
                 rows[i].searched = true;
+                continue;
             }
             // Do search term search.
             rows[i].searched = rows[i].innerText.toLowerCase().includes(terms);

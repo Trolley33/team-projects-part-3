@@ -13,6 +13,7 @@ function wpas_sc_client_account() {
 
 	/* Get the ticket content */
 	ob_start();
+    // echo "<script>show_duplicates = true;</script>";
 
 	/**
 	 * wpas_frontend_plugin_page_top is executed at the top
@@ -60,6 +61,8 @@ function wpas_sc_client_account() {
 	 */
 
 	$content = ob_get_clean();
+
+	echo "<script>hide_duplicates = false;</script>";
 
 	return $content;
 

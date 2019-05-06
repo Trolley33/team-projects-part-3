@@ -150,7 +150,7 @@
 
             // get ids
             var ticket_ids = [];
-            
+
             $('input[name="post[]"]:checked', this).each(function(i, el) {
                 ticket_ids[i] = $(el).val();
             });
