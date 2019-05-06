@@ -235,7 +235,7 @@ function analytics_page()
         <div class="row">
             <div class="col-xl-8">
                 <div class="card card-body">
-                    <div class="d-flex d-flex justify-content-between">
+                    <div class="d-flex flex-wrap justify-content-between">
                         <h5 class="input-group-text">Tickets Submitted</h5>
                         <button id="ticketsrange" class="btn date-button btn-outline-info"></button>
                     </div>
@@ -260,7 +260,7 @@ function analytics_page()
                     </div>
                     <div class="col-sm-6 col-xl-12">
                         <div class="card card-body">
-                            <div class="d-flex d-flex justify-content-between">
+                            <div class="d-flex flex-wrap justify-content-between">
                                 <h5 class="input-group-text">Placeholder Card</h5>
                             </div>
                             <canvas id="chart" style="background-color: rgb(232, 235, 238)"></canvas>
@@ -272,7 +272,7 @@ function analytics_page()
         <div class="row">
             <div class="col-xl-6">
                 <div class="card card-body">
-                    <div class="d-flex d-flex justify-content-between">
+                    <div class="d-flex flex-wrap justify-content-between">
                         <h5 class="input-group-text">Hardware Tickets Submitted</h5>
                         <button id="hardwarerange" class="btn date-button btn-outline-info"></button>
                     </div>
@@ -282,7 +282,7 @@ function analytics_page()
 
             <div class="col-xl-6">
                 <div class="card card-body">
-                    <div class="d-flex d-flex justify-content-between">
+                    <div class="d-flex flex-wrap justify-content-between">
                         <h5 class="input-group-text">Software Tickets Submitted</h5>
                         <button id="softwarerange" class="btn date-button btn-outline-info"></button>
                     </div>
