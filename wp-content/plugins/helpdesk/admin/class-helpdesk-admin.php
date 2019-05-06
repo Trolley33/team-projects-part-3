@@ -176,7 +176,7 @@ class Helpdesk_Admin
         die();
     }
 
-    public function get_problem_hardware_past_year()
+    public function get_problem_hardware()
     {
         global $wpdb;
         // TODO: REFACTOR.
@@ -188,14 +188,14 @@ class Helpdesk_Admin
                 JOIN `wp_terms`
                 ON wp_terms.term_id = wp_term_taxonomy.term_id
                 WHERE post_type = 'ticket' 
-                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH)
+                AND parent = 0
                 AND wp_term_taxonomy.taxonomy = 'hardware'");
         echo json_encode($time_stamps);
         die();
     }
 
 
-    public function get_problem_software_past_year()
+    public function get_problem_software()
     {
         global $wpdb;
         // TODO: REFACTOR.
@@ -207,7 +207,7 @@ class Helpdesk_Admin
                 JOIN `wp_terms`
                 ON wp_terms.term_id = wp_term_taxonomy.term_id
                 WHERE post_type = 'ticket' 
-                AND post_date >= DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1-DAY(CURDATE()) DAY), INTERVAL -12 MONTH) 
+                AND parent = 0
                 AND wp_term_taxonomy.taxonomy = 'software';
         ");
         echo json_encode($time_stamps);

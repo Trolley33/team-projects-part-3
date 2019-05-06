@@ -372,7 +372,7 @@
         if (!hardwareChartElement) return;
 
         // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        jQuery.get(followed_object.ajax_url, { action: 'get_problem_hardware_past_year' }, response => {
+        jQuery.get(followed_object.ajax_url, { action: 'get_problem_hardware' }, response => {
             const hardware = JSON.parse(response).map(data => { return data; });
             // Get occurences of each piece of hardware and convert to array.
             const hardwareInfo = Object.values(hardware.reduce((output, hardware) => {
@@ -417,7 +417,7 @@
         if (!softwareChartElement) return;
 
         // We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        jQuery.get(followed_object.ajax_url, { action: 'get_problem_software_past_year' }, response => {
+        jQuery.get(followed_object.ajax_url, { action: 'get_problem_software' }, response => {
             const software = JSON.parse(response).map(data => { return data; });
             // Get occurrences of each piece of software and convert to array.
             const softwareInfo = Object.values(software.reduce((output, software) => {
