@@ -1,3 +1,6 @@
+
+let hide_duplicates = true;
+
 (function ($) {
     'use strict';
 
@@ -55,10 +58,7 @@
             var list = document.getElementById('wpas_ticketlist');
             status_filter.addEventListener('change',
                 function (event) {
-                    var status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
-                    var search = search_bar.value.toLowerCase();
-
-                    filter_search(list, status, search);
+                    filter_search();
                 }, false);
 
             search_bar.addEventListener('keyup',
@@ -66,17 +66,15 @@
                     if (event.keyCode !== 13) {
                         return;
                     }
-                    var status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
-                    var search = this.value.toLowerCase();
 
-                    filter_search(list, status, search);
+                    filter_search();
                 }, false);
 
             var clear_filter = document.getElementsByClassName('wpas-clear-filter');
             if (clear_filter.length !== 0) {
                 clear_filter[0].addEventListener('click', function (event) {
-                    var status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
-                    filter_search(list, status, '');
+                    search_bar.value = "";
+                    filter_search();
                 }, false);
             }
 
@@ -96,7 +94,7 @@
                 rows = table.rows;
                 /* Loop through all table rows (except the
                 first, which contains table headers): */
-                for (i = 1; i < (rows.length - 1); i++) {
+                for (i = 1; i < rows.length - 1; i++) {
                     // Start by saying there should be no switching:
                     shouldSwitch = false;
                     /* Get the two elements you want to compare,
@@ -117,31 +115,72 @@
                     switching = true;
                 }
             }
+            page_filter(table);
+
+            $('#prev-page-button').click(function () {change_page(-1, table)});
+            $('#next-page-button').click(function () {change_page(1, table)});
         }
+
     }, false);
 
-    function filter_search(table_list, status, terms) {
-        var rows = table_list.children[1].children;
+
+    let page = 0;
+    const page_range = 10;
+
+    function change_page(amount) {
+        const rows = document.getElementById('wpas_ticketlist').children[1].children;
+        const max_shown = Array.from(rows).reduce((acc, row) => {if (row.searched) return acc += 1; else return acc;}, 0);
+        
+        if ((page+amount)*page_range < 0) {page = 0;}
+        else if ((page+amount)*page_range > max_shown) {page = Math.floor(max_shown/page_range);}
+        else {
+            page += amount;
+            page_filter();
+            $('#page-number').html(page + 1);
+        }
+    }
+
+    function page_filter() {
+        let rows = document.getElementById('wpas_ticketlist').children[1].children;
+        let shown = 0;
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].hidden = true;
+            if (rows[i].searched === true){
+                shown++;
+                if (page*page_range <= shown && shown <= (page+1)*page_range) {
+                    rows[i].hidden = null;
+                }
+            }
+
+        }
+    }
+
+    function filter_search() {
+        var rows = document.getElementById('wpas_ticketlist').children[1].children;
+        let terms = document.getElementById('wpas_filter').value.toLowerCase();
+        let status_filter = document.getElementById('status-filter');
+        let status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
+
         for (let i = 0; i < rows.length; i++) {
             // Don't show duplicate tickets.
-            if (rows[i].cells[1].innerText.toLowerCase().includes("duplicate")) {
-                rows[i].hidden = true;
-                continue;
+            if (hide_duplicates === true) {
+                if (rows[i].cells[1].innerText.toLowerCase().includes("duplicate")) {
+                    rows[i].searched = false;
+                    continue;
+                }
             }
             // Check right status is met.
             if (!rows[i].innerText.toLowerCase().includes(status)) {
-                rows[i].hidden = true;
+                rows[i].searched = false;
                 continue;
             } else {
-                rows[i].hidden = null;
+                rows[i].searched = true;
+                continue;
             }
             // Do search term search.
-            if (!rows[i].innerText.toLowerCase().includes(terms)) {
-                rows[i].hidden = true;
-            } else {
-                rows[i].hidden = null;
-            }
+            rows[i].searched = rows[i].innerText.toLowerCase().includes(terms);
         }
+        change_page(-page);
     }
 
 

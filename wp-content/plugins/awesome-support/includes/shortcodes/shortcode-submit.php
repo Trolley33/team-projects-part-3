@@ -101,7 +101,8 @@ function wpas_sc_submit_form() {
 						 * Keep in mind that if you allow agents to open ticket through the front-end, actions
 						 * will not be tracked.
 						 */
-						echo wpas_get_notification_markup( 'info', sprintf( __( 'Sorry, support team members cannot submit tickets from here. If you need to open a ticket, please go to your admin panel or <a href="%s">click here to open a new ticket</a>.', 'awesome-support' ), add_query_arg( array( 'post_type' => 'ticket' ), admin_url( 'post-new.php' ) ) ) );
+                        wpas_get_template( 'partials/ticket-navigation' );
+                        echo wpas_get_notification_markup( 'info', sprintf( __( 'Sorry, support team members cannot submit tickets from here. If you need to open a ticket, please go to your admin panel or <a href="%s">click here to open a new ticket</a>.', 'awesome-support' ), add_query_arg( array( 'post_type' => 'ticket' ), admin_url( 'post-new.php' ) ) ) );
 
 					/**
 					 * If the user is authorized to post a ticket, we display the submit form
