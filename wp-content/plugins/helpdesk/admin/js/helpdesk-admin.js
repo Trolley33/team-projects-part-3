@@ -322,9 +322,10 @@
         const ticketsSubmittedWeekUpArrow = $('#tickets-submitted-week-up');
         const ticketsSubmittedWeekDownArrow = $('#tickets-submitted-week-down');
         const ticketsSubmittedWeekPercentage = $('#tickets-submitted-week-perc');
-
+        console.log(ticketMoments.filter(ticketMoment => moment().startOf('week').isSame(ticketMoment.clone().startOf('week'))));
         ticketsSubmittedToday.html(ticketMoments.filter(ticketMoment => moment().isSame(ticketMoment.clone(), 'day')).length);
         const ticketsSubmittedWeek = ticketMoments.filter(ticketMoment => moment().isSame(ticketMoment.clone(), 'week')).length;
+        console.log(ticketMoments.filter(ticketMoment => moment().subtract(1, 'week').isSame(ticketMoment.clone())));
         const ticketsSubmittedLastWeek = ticketMoments.filter(ticketMoment => moment().subtract(1, 'week').isSame(ticketMoment.clone(), 'week')).length;
         ticketsSubmittedWeekNum.html(ticketsSubmittedWeek);
         const percentChange = Math.floor((ticketsSubmittedWeek - ticketsSubmittedLastWeek) / ticketsSubmittedWeek * 100);
@@ -412,7 +413,7 @@
                     datasets: [{
                         label: 'Problems Submitted',
                         data: softwareInfo.map((data) => { return data.count; }),
-                        backgroundColor: barColours
+                        backgroundColor: getNumberOfBarColours(100).slice(4)
                     }]
                 },
                 options: {

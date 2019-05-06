@@ -271,28 +271,19 @@ function analytics_page()
             </div>
         </div>
         <div class="row">
-            <div class="col-xl-4">
-                <div class="card">
-                    <div class="card-body">
-                        <small class="text-muted">Dummy Card</small>
-                        <h1>##</h1>
-                        <hr />
-                        <small class="text-muted">Dummy Card</small>
-                        <h5 class="card-title"><span>##</span> <span>##</span></h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-8">
-                <div class="card">
+
+            <div class="col-xl-6">
+                <div class="card card-body">
                     <canvas id="hardware-chart"></canvas>
                 </div>
             </div>
 
+            <div class="col-xl-6">
+                <div class="card card-body">
+                    <canvas id="software-chart"></canvas>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="container">
-        <canvas id="software-chart"></canvas>
     </div>
 <?php
 }
