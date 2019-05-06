@@ -355,7 +355,7 @@ public function user_analytics()
 
     $this->make_user_analytics_modal()
     ?>
-    <h1>Agent Analytics</h1>
+    <h1>User Analytics</h1>
     <hr />
     <br /><br />
     <table class="display compact cell-border">
@@ -399,8 +399,11 @@ function make_agent_analytics_modal()
 
                     <button id="agent-ticket-range" class="btn date-button btn-outline-info"></button>
                     <div class="container">
-                        <div id="no-data" hidden>No data found.</div>
-                        <canvas id="agent-pie-chart"></canvas>
+                        <canvas id="agent-ticket-pie-chart"></canvas>
+                    </div>
+
+                    <div class="container">
+                        <canvas id="agent-reassign-pie-chart"></canvas>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -430,7 +433,11 @@ function make_user_analytics_modal()
                         <div id="no-data" style="display: none;">No data found.</div>
                         <canvas id="user-pie-chart"></canvas>
                     </div>
-
+                    <div class="modal-body">
+                        <button id="user-ticket-range" class="btn date-button btn-outline-info"></button>
+                        <div class="container">
+                            <canvas id="user-pie-chart"></canvas>
+                        </div>
                     <div class="container">
                         <canvas id="user-bar-chart"></canvas>
                     </div>

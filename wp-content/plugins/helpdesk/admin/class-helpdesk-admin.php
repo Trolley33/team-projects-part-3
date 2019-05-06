@@ -285,16 +285,56 @@ class Helpdesk_Admin
               AND b.meta_value = 'closed'
               AND c.meta_key = '_ticket_closed_on';
         ";
+    
+        $solo = "SELECT c.meta_value FROM wp_postmeta a
+            JOIN wp_postmeta b
+              ON a.post_id = b.post_id
+            JOIN wp_postmeta c
+              ON b.post_id = c.post_id
+            WHERE 
+              a.meta_key = '_wpas_assignee'
+              AND a.meta_value = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'closed'
+              AND c.meta_key = '_ticket_closed_on'
+              AND NOT EXISTS (
+                  SELECT meta_key FROM wp_postmeta d
+                  WHERE 
+                    (meta_key = '_wpas_secondary_assignee'
+                    OR meta_key = '_wpas_tertiary_assignee')
+                    AND post_id = a.post_id
+              );
+        ";
 
-    $open_column = $wpdb->get_col($open_query)[0];
-    $closed_column = $wpdb->get_col($closed_query);
+        $reassigned = "SELECT c.meta_value FROM wp_postmeta a
+            JOIN wp_postmeta b
+              ON a.post_id = b.post_id
+            JOIN wp_postmeta c
+              ON b.post_id = c.post_id
+            JOIN wp_postmeta d
+              ON c.post_id = d.post_id
+            WHERE 
+              a.meta_key = '_wpas_assignee'
+              AND a.meta_value = '$id'
+              AND b.meta_key = '_wpas_status'
+              AND b.meta_value = 'closed'
+              AND c.meta_key = '_ticket_closed_on'
+              AND (d.meta_key = '_wpas_secondary_assignee');
+        ";
 
-    $output = new stdClass();
-    $output->open_tickets = intval($open_column);
-    $output->closed_tickets = $closed_column;
-    echo json_encode($output);
-    die();
-  }
+        $open_column = $wpdb->get_col($open_query)[0];
+        $closed_column = $wpdb->get_col($closed_query);
+        $solo_column = $wpdb->get_col($solo);
+        $reassigned_column = $wpdb->get_col($reassigned);
+
+        $output = new stdClass();
+        $output->open_tickets = intval($open_column);
+        $output->closed_tickets = $closed_column;
+        $output->solo = $solo_column;
+        $output->reassigned = $reassigned_column;
+        echo json_encode($output);
+        die();
+    }
 
   public function get_user_analytics()
   {

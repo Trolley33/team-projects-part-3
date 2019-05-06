@@ -495,28 +495,45 @@
     }
 
     function initAgentChart(agent_object) {
-        const agentPieChartElement = $('#agent-pie-chart');
-        if (!agentPieChartElement) return;
+        const agentTicketPieChartElement = $('#agent-ticket-pie-chart');
+        const agentReassignedPieChartElement = $('#agent-reassign-pie-chart');
+        if (!agentTicketPieChartElement || !agentReassignedPieChartElement) return;
 
-        if (agentPieChartElement.data('pie')) {
-            agentPieChartElement.data('pie').destroy();
-        }
+        if (agentTicketPieChartElement.data('ticket-pie'))  agentTicketPieChartElement.data('ticket-pie').destroy();;
+        if (agentReassignedPieChartElement.data('reassign-pie')) agentReassignedPieChartElement.data('reassign-pie').destroy();
 
         const closed_moments = agent_object.closed_tickets.map(dateString => moment(dateString));
 
-        const agentPieChart = new Chart(agentPieChartElement, {
+        const agentTicketPieChart = new Chart(agentTicketPieChartElement, {
             type: 'pie',
             data: {
                 labels: ["Ticket Unresolved", "Tickets Resolved"],
                 datasets: [{
-                    data: [agent_object.open_tickets, agent_object.closed_tickets],
+                    data: [],
                     backgroundColor: ['rgb(62, 150, 81)',
                         'rgb(204, 37, 41)']
                 }]
             }
         });
 
-        agentPieChartElement.data('pie', agentPieChart);
+        agentTicketPieChartElement.data('ticket-pie', agentTicketPieChart);
+
+        const solo_moments = agent_object.solo.map(dateString => moment(dateString));
+        const reassign_moments = agent_object.reassigned.map(dateString => moment(dateString));
+        
+        const agentReassignPieChart = new Chart(agentReassignedPieChartElement, {
+            type: 'pie',
+            data: {
+                labels: ["Tickets Solved Individually", "Tickets Solved Collaboratively"],
+                datasets: [{
+                    data: [],
+                    backgroundColor: ['rgb(50, 225, 255)',
+                        'rgb(240, 240, 50)']
+                }]
+            }
+        });
+
+        agentReassignedPieChartElement.data('reassign-pie', agentReassignPieChart);
 
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -524,18 +541,24 @@
             'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         };
 
-        addRangePicker('agent-ticket-range', onAgentTicketDateRangeChange, { agentPieChart, closed_moments }, { start: moment().subtract(6, 'days'), ranges });
+        addRangePicker('agent-ticket-range', onAgentTicketDateRangeChange, { agentTicketPieChart, closed_moments, agentReassignPieChart, solo_moments, reassign_moments }, { start: moment().subtract(6, 'days'), ranges });
     }
 
     // Updates the charts data using newly selected dates
     function onAgentTicketDateRangeChange(start, end, args) {
-        args.agentPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => { return acc += day.y; }, 0);
-        if (!args.agentPieChart.data.datasets[0].data[1]) {
-            $('#agent-pie-chart').data('pie').destroy();
-            $('#no-data').show();
-            return;
-        }
-        args.agentPieChart.update();
+        const newAgentTicketData = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        if (newAgentTicketData === 0) args.agentTicketPieChart.data.datasets[0].data[1] = undefined;
+        else args.agentTicketPieChart.data.datasets[0].data[1] = newAgentTicketData;
+        args.agentTicketPieChart.update();
+
+        let newAgentSoloData = generateChartDataBetweenMoments(args.solo_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        let newAgentReassignData = generateChartDataBetweenMoments(args.reassign_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+
+        if (newAgentSoloData === 0) newAgentSoloData = undefined;
+        if (newAgentReassignData === 0) newAgentReassignData = undefined;
+
+        args.agentReassignPieChart.data.datasets[0].data = [newAgentSoloData, newAgentReassignData]
+        args.agentReassignPieChart.update();
     }
 
     function initUserChart(user_object) {
@@ -545,10 +568,9 @@
 
         if (userPieChartElement.data('pie') || userPieChartElement.data('bar')) {
             userPieChartElement.data('pie').destroy();
-            userPieChartElement.data('bar').destroy();
+            userBarChartElement.data('bar').destroy();
         }
 
-        $('#no-data').hide();
         const closed_moments = user_object.closed_tickets.map(dateString => moment(dateString));
 
         const userPieChart = new Chart(userPieChartElement, {
@@ -556,7 +578,7 @@
             data: {
                 labels: ["Tickets Unresolved", "Tickets Resolved"],
                 datasets: [{
-                    data: [user_object.open_tickets, user_object.closed_tickets],
+                    data: [],
                     backgroundColor: ['rgb(62, 150, 81)',
                         'rgb(204, 37, 41)']
                 }]
@@ -587,7 +609,7 @@
                     },
                     {
                         label: 'Problems Submitted',
-                        data: common_problems.map((data) => { return data.count; }),
+                        data: [],
                         backgroundColor: barColours
                     }]
             },
@@ -599,7 +621,7 @@
         });
 
         userPieChartElement.data('pie', userPieChart);
-        userPieChartElement.data('bar', userBarChart);
+        userBarChartElement.data('bar', userBarChart);
 
         const ranges = {
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -612,12 +634,9 @@
 
     // Updates the charts data using newly selected dates
     function onUserTicketDateRangeChange(start, end, args) {
-        args.userPieChart.data.datasets[0].data[1] = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => { return acc += day.y; }, 0);
-        if (!args.userPieChart.data.datasets[0].data[0] && !args.userPieChart.data.datasets[0].data[1]) {
-            $('#user-pie-chart').data('pie').destroy();
-            $('#no-data').show();
-            return;
-        }
+        const newUserTicketData = generateChartDataBetweenMoments(args.closed_moments, start, end, 'days').reduce((acc, day) => {return acc += day.y;}, 0);
+        if (newUserTicketData === 0) args.userPieChart.data.datasets[0].data[1] = undefined;
+        else args.userPieChart.data.datasets[0].data[1] = newUserTicketData;
         args.userPieChart.update();
 
         let tempBarData = {};
