@@ -172,6 +172,21 @@ class Helpdesk
 
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+        
+        $this->loader->add_action('wp_ajax_get_tickets_past_year', $plugin_admin, 'get_tickets_past_year');
+        $this->loader->add_action('wp_ajax_get_tickets_past_month', $plugin_admin, 'get_tickets_past_month');
+        $this->loader->add_action('wp_ajax_get_tickets_full', $plugin_admin, 'get_tickets_full');
+        $this->loader->add_action('wp_ajax_get_tickets', $plugin_admin, 'get_tickets');
+        $this->loader->add_action('wp_ajax_get_ticket_taxonomies', $plugin_admin, 'get_ticket_taxonomies');
+
+        $this->loader->add_action('wp_ajax_get_problem_hardware', $plugin_admin, 'get_problem_hardware');
+        $this->loader->add_action('wp_ajax_get_hardware_term_and_parent', $plugin_admin, 'get_hardware_term_and_parent');
+        $this->loader->add_action('wp_ajax_get_problem_software', $plugin_admin, 'get_problem_software');
+        $this->loader->add_action('wp_ajax_get_software_term_and_parent', $plugin_admin, 'get_software_term_and_parent');
+
+        $this->loader->add_action('wp_ajax_get_agent_analytics', $plugin_admin, 'get_agent_analytics');
+        $this->loader->add_action('wp_ajax_get_user_analytics', $plugin_admin, 'get_user_analytics');
+
 
         $plugin_settings = new Helpdesk_Settings(new Helpdesk_Settings_Api(), new Helpdesk_Settings_Callbacks());
 

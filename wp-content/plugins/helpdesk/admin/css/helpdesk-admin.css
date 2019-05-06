@@ -2,3 +2,37 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+
+.date-button {
+    color: #08c !important;
+    border-color: #08c !important;
+}
+
+.card {
+    max-width: 100% !important;
+}
+
+.arrow-up {
+    display: inline-block;
+    position:relative;
+    top:-0.25em;
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    
+    border-bottom: 5px solid #4caf50 !important;
+  }
+
+.arrow-down {
+    display: inline-block;
+    position:relative;
+    top:-0.25em;
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    
+    border-top: 5px solid #f44336 !important;;
+  }
