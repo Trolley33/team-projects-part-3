@@ -78,7 +78,7 @@ let hide_duplicates = true;
                 }, false);
             }
 
-            filter_search(list, "", "");
+            filter_search();
         }
 
         // If the table exists, sort by ratings.
@@ -160,7 +160,6 @@ let hide_duplicates = true;
         let terms = document.getElementById('wpas_filter').value.toLowerCase();
         let status_filter = document.getElementById('status-filter');
         let status = status_filter.options[status_filter.selectedIndex].value.toLowerCase();
-
         for (let i = 0; i < rows.length; i++) {
             // Don't show duplicate tickets.
             if (hide_duplicates === true) {
@@ -173,12 +172,12 @@ let hide_duplicates = true;
             if (!rows[i].innerText.toLowerCase().includes(status)) {
                 rows[i].searched = false;
                 continue;
-            } else {
-                rows[i].searched = true;
+            } else if (!rows[i].innerText.toLowerCase().includes(terms)){
+                rows[i].searched = false;
                 continue;
             }
-            // Do search term search.
-            rows[i].searched = rows[i].innerText.toLowerCase().includes(terms);
+
+	    rows[i].searched = true;
         }
         change_page(-page);
     }
