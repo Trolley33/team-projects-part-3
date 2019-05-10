@@ -41,11 +41,17 @@ function wpas_toolbar_tickets_link( $wp_admin_bar ) {
 		$agent         = new WPAS_Member_Agent( $current_user->ID );
 		$tickets_count = $agent->open_tickets();
 
-	} else {
-		$tickets_count = count( wpas_get_tickets( 'open', $args ) );
-	}
+    } else {
+        global $current_user;
 
-	if ( true === $hide ) {
+        $agent         = new WPAS_Member_Agent( $current_user->ID );
+        $tickets_count = $agent->open_tickets();
+    }
+
+    $args['assignee'] = get_current_user_id();
+
+
+    if ( true === $hide ) {
 		$args['wpas_status'] = 'open';
 	}
 
