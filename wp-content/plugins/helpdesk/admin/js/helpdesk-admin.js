@@ -419,7 +419,7 @@
     function generateChartParentTermDataSet(term, baseReliabilityThreshold, start, end) {
         const termDated = term.filter(({ post_date }) => moment(post_date).isBetween(start, end));
         // Get occurences of each piece of hardware and convert to array.
-        const termInfo = Object.values(termDated.reduce((output, term) => {
+        let termInfo = Object.values(termDated.reduce((output, term) => {
             if (!output[term.parent_name])
             {
                 output[term.parent_name] = { name: term.parent_name, count: 1, items: [term.parent_name]};
@@ -435,6 +435,7 @@
         }, {}));
         // Descending order sort.
         termInfo.sort((a, b) => b.count - a.count);
+        termInfo = termInfo.slice(0, 5);
 
         const duration = moment.duration(end.diff(start));
 
@@ -471,7 +472,7 @@
     function generateChartSingleTermDataSet(term, baseReliabilityThreshold, start, end) {
         const termDated = term.filter(({ post_date }) => moment(post_date).isBetween(start, end));
         // Get occurences of each piece of hardware and convert to array.
-        const termInfo = Object.values(termDated.reduce((output, term) => {
+        let termInfo = Object.values(termDated.reduce((output, term) => {
             if (!output[term.child_name])
             {
                 output[term.child_name] = { name: term.child_name, count: 1, items: []};
@@ -484,7 +485,7 @@
         }, {}));
         // Descending order sort.
         termInfo.sort((a, b) => b.count - a.count);
-
+        termInfo = termInfo.slice(0, 5);
         const duration = moment.duration(end.diff(start));
 
         const dateAdjustedThreshold = baseReliabilityThreshold * duration.asDays();
