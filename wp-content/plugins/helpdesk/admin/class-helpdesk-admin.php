@@ -176,57 +176,48 @@ class Helpdesk_Admin
     die();
   }
 
-  public function get_hardware_term_and_parent()
-  {
-    global $wpdb;
-    $time_stamps = $wpdb->get_results("SELECT term_id, parent FROM `wp_term_taxonomy` WHERE taxonomy = 'hardware'");
-    echo json_encode($time_stamps);
-    die();
-  }
-
-
   public function get_problem_hardware()
   {
     global $wpdb;
     // TODO: REFACTOR.
-    $time_stamps = $wpdb->get_results("SELECT wp_terms.term_id, wp_terms.name, post_date FROM `wp_posts` 
-                JOIN `wp_term_relationships` 
-                ON wp_posts.ID = wp_term_relationships.object_id 
-                JOIN wp_term_taxonomy  
-                ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
-                JOIN `wp_terms`
-                ON wp_terms.term_id = wp_term_taxonomy.term_id
-                WHERE post_type = 'ticket' 
-                AND parent = 0
-                AND wp_term_taxonomy.taxonomy = 'hardware'");
-    echo json_encode($time_stamps);
-    die();
-  }
-
-  public function get_software_term_and_parent()
-  {
-    global $wpdb;
-    $time_stamps = $wpdb->get_results("SELECT term_id, parent FROM `wp_term_taxonomy` WHERE taxonomy = 'software'");
+    $time_stamps = $wpdb->get_results(
+        "SELECT child_term.name as child_name, parent_term.term_id as parent_id, parent_term.name as parent_name, posts.post_date FROM `wp_posts` posts
+        JOIN `wp_term_relationships` rel
+        ON posts.ID = rel.object_id 
+        JOIN `wp_term_taxonomy` child_tax
+        ON rel.term_taxonomy_id = child_tax.term_taxonomy_id
+        JOIN `wp_term_taxonomy` parent_tax
+        ON child_tax.parent = parent_tax.term_id
+        JOIN `wp_terms` child_term
+        ON child_tax.term_id = child_term.term_id
+        JOIN `wp_terms` parent_term
+        ON parent_tax.term_id = parent_term.term_id
+        WHERE post_type = 'ticket' 
+        AND child_tax.taxonomy = 'hardware'");
     echo json_encode($time_stamps);
     die();
   }
 
   public function get_problem_software()
   {
-    global $wpdb;
-    // TODO: REFACTOR.
-    $time_stamps = $wpdb->get_results("SELECT wp_terms.term_id, wp_terms.name, post_date FROM `wp_posts` 
-        JOIN `wp_term_relationships` 
-        ON wp_posts.ID = wp_term_relationships.object_id 
-        JOIN wp_term_taxonomy  
-        ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
-        JOIN `wp_terms`
-        ON wp_terms.term_id = wp_term_taxonomy.term_id
-        WHERE post_type = 'ticket'
-        AND parent = 0
-        AND wp_term_taxonomy.taxonomy = 'software'");
-    echo json_encode($time_stamps);
-    die();
+      global $wpdb;
+      // TODO: REFACTOR.
+      $time_stamps = $wpdb->get_results(
+          "SELECT child_term.name as child_name, parent_term.term_id as parent_id, parent_term.name as parent_name, posts.post_date FROM `wp_posts` posts
+        JOIN `wp_term_relationships` rel
+        ON posts.ID = rel.object_id 
+        JOIN `wp_term_taxonomy` child_tax
+        ON rel.term_taxonomy_id = child_tax.term_taxonomy_id
+        JOIN `wp_term_taxonomy` parent_tax
+        ON child_tax.parent = parent_tax.term_id
+        JOIN `wp_terms` child_term
+        ON child_tax.term_id = child_term.term_id
+        JOIN `wp_terms` parent_term
+        ON parent_tax.term_id = parent_term.term_id
+        WHERE post_type = 'ticket' 
+        AND child_tax.taxonomy = 'software'");
+      echo json_encode($time_stamps);
+      die();
   }
 
   public function get_tickets_past_month()

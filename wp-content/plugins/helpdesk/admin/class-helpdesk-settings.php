@@ -79,8 +79,8 @@ class Helpdesk_Settings
         // Template for administration pages.
         $this->pages = [
             [
-                'page_title' => "Helpdesk Settings",
-                'menu_title' => "Helpdesk Settings",
+                'page_title' => "Helpdesk Options",
+                'menu_title' => "Helpdesk Options",
                 'capability' => "manage_options",
                 'menu_slug' => "helpdesk_dashboard",
                 'callback' => array($this->callbacks, 'dashboard'),
@@ -90,7 +90,7 @@ class Helpdesk_Settings
             [
                 'page_title' => "Helpdesk Analytics",
                 'menu_title' => "Helpdesk Analytics",
-                'capability' => "view_all_tickets",
+                'capability' => "assign_ticket",
                 'menu_slug' => "helpdesk_analytics",
                 'callback' => array($this->callbacks, 'analytics_page'),
                 'icon_url' => 'dashicons-chart-bar',
@@ -106,7 +106,7 @@ class Helpdesk_Settings
                 'parent_slug' => 'helpdesk_dashboard',
                 'page_title' => 'Time Off Manager',
                 'menu_title' => 'Time Off Manager',
-                'capability' => 'edit_ticket',
+                'capability' => 'assign_ticket',
                 'menu_slug' => 'helpdesk_tom',
                 'callback' => array($this->callbacks, 'timeoff_manager'),
             ],
@@ -114,7 +114,7 @@ class Helpdesk_Settings
                 'parent_slug' => 'helpdesk_analytics',
                 'page_title' => 'Agent Analytics',
                 'menu_title' => 'Agent Analytics',
-                'capability' => 'edit_ticket',
+                'capability' => 'assign_ticket',
                 'menu_slug' => 'helpdesk_agent_analytics',
                 'callback' => array($this->callbacks, 'agent_analytics'),
             ],
@@ -122,7 +122,7 @@ class Helpdesk_Settings
                 'parent_slug' => 'helpdesk_analytics',
                 'page_title' => 'User Analytics',
                 'menu_title' => 'User Analytics',
-                'capability' => 'edit_ticket',
+                'capability' => 'assign_ticket',
                 'menu_slug' => 'helpdesk_user_analytics',
                 'callback' => array($this->callbacks, 'user_analytics'),
             ],

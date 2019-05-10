@@ -273,9 +273,19 @@ function analytics_page()
             <div class="col-xl-6">
                 <div class="card card-body">
                     <div class="d-flex flex-wrap justify-content-between">
-                        <h5 class="input-group-text">Hardware Tickets Submitted</h5>
-                        <button id="hardwarerange" class="btn date-button btn-outline-info"></button>
+                        <div style="float: left;">
+                            <h5 class="input-group-text">Hardware Tickets Submitted</h5>
+                            <button id="hardwarerange" class="btn date-button btn-outline-info"></button>
+                        </div>
+                        <div  style="float: left;">
+                            <h5 class="input-group-text">Group Devices Into Categories</h5>
+                            <label class="switch" style="float: right;">
+                                <input id="device-slider" type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
+                    <br/>
                     <canvas id="hardware-chart"></canvas>
                 </div>
             </div>
@@ -283,9 +293,19 @@ function analytics_page()
             <div class="col-xl-6">
                 <div class="card card-body">
                     <div class="d-flex flex-wrap justify-content-between">
-                        <h5 class="input-group-text">Software Tickets Submitted</h5>
-                        <button id="softwarerange" class="btn date-button btn-outline-info"></button>
+                        <div style="float: left;">
+                            <h5 class="input-group-text">Software Tickets Submitted</h5>
+                            <button id="softwarerange" class="btn date-button btn-outline-info"></button>
+                        </div>
+                        <div  style="float: left;">
+                            <h5 class="input-group-text">Group Software Into Categories</h5>
+                            <label class="switch" style="float: right;">
+                                <input id="software-slider" type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     </div>
+                    <br/>
                     <canvas id="software-chart"></canvas>
                 </div>
             </div>

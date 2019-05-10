@@ -192,6 +192,7 @@
                 }
             });
         });
+
         retrieveTicketMoments().then(ticketMoments => {
             initChartTickets(ticketMoments);
             initInfoBoxTickets(ticketMoments);
@@ -365,15 +366,16 @@
         }
     }
 
-    const baseHardwareReliabilityThreshold = 2;
-    const baseSoftwareReliabilityThreshold = 1;
-    const baseUserTrainingThreshold = 1;
+    const baseHardwareReliabilityThreshold = 0.6;
+    const baseSoftwareReliabilityThreshold = 0.6;
+    const baseUserTrainingThreshold = 0.6;
 
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');
         if (!hardwareChartElement) return;
-        Promise.all([fetch(`${followed_object.ajax_url}?action=get_problem_hardware`).then(response => response.json()), fetch(`${followed_object.ajax_url}?action=get_hardware_term_and_parent`).then(response => response.json())])
-        .then(([hardware, termIdParent]) => {
+
+        Promise.all([fetch(`${followed_object.ajax_url}?action=get_problem_hardware`).then(response => response.json()),])
+        .then(([parents,]) => {
             const chart = new Chart(hardwareChartElement, {
                 type: 'bar',
                 options: {
@@ -394,42 +396,94 @@
                 'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
             };
 
-            addRangePicker('hardwarerange', onTermDateChange, { chart, term: hardware, termIdParent, baseReliabilityThreshold: baseHardwareReliabilityThreshold }, { start: moment().subtract(6, 'days'), ranges });
+            const device_slider = $('#device-slider');
+
+            addRangePicker('hardwarerange', onTermDateChange, { chart, slider: device_slider, term: parents, baseReliabilityThreshold: baseHardwareReliabilityThreshold }, { start: moment().subtract(6, 'days'), ranges });
         });
     }
 
-    function onTermDateChange(start, end, { chart, term, termIdParent, baseReliabilityThreshold }) {
-        const duration = moment.duration(end.diff(start));
+    function onTermDateChange(start, end, { chart, slider, term, baseReliabilityThreshold }) {
+        // group into categories
+        if (slider.is(':checked')) {
+            chart.data = generateChartParentTermDataSet(term, baseReliabilityThreshold, start, end);
+        } else {
+            chart.data = generateChartSingleTermDataSet(term, baseReliabilityThreshold, start, end);
+        }
 
-        if (duration.asMonths() <= 1) {
-            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
-        }
-        else if (duration.asMonths() <= 6) {
-            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
-        }
-        else if (duration.asYears() <= 3) {
-            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
-        }
-        else {
-            chart.data = generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end);
-        }
         chart.update();
+
+        slider.unbind('change');
+        slider.change(e => {onTermDateChange(start, end, { chart, slider, term, baseReliabilityThreshold});})
     }
 
-    function generateChartTermDatasets(term, termIdParent, baseReliabilityThreshold, start, end) {
-        const hardwareDated = term.filter(({ post_date }) => moment(post_date).isBetween(start, end));
+    function generateChartParentTermDataSet(term, baseReliabilityThreshold, start, end) {
+        const termDated = term.filter(({ post_date }) => moment(post_date).isBetween(start, end));
         // Get occurences of each piece of hardware and convert to array.
-        const termInfo = Object.values(hardwareDated.reduce((output, term) => {
-            
-            if (!output[term.name])
+        const termInfo = Object.values(termDated.reduce((output, term) => {
+            if (!output[term.parent_name])
             {
-                output[term.name] = { name: term.name, count: 1,  devices: termIdParent.filter(({parent}) => parent === term.term_id).length};
+                output[term.parent_name] = { name: term.parent_name, count: 1, items: [term.parent_name]};
             }
-            else output[term.name].count += 1;
+            else {
+                output[term.parent_name].count += 1;
+                if (output[term.parent_name].items.indexOf(term.child_name) === -1) {
+                    output[term.parent_name].items.push(term.child_name);
+                }
+            }
 
             return output;
         }, {}));
+        // Descending order sort.
+        termInfo.sort((a, b) => b.count - a.count);
         console.log(termInfo);
+
+        const duration = moment.duration(end.diff(start));
+
+        const dateAdjustedThreshold = baseReliabilityThreshold * duration.asDays();
+        console.log(dateAdjustedThreshold);
+
+        return {
+            labels: termInfo.map(data => data.name),
+            datasets: [
+                {
+                    // End threshold is the baseReliabilityThreshold (how many tickets per device per day) * days spanned in graph * items for the type.
+                    // i.e. how many tickets a device has per day
+                    data: termInfo.map(({items}) => Math.ceil(items.length * dateAdjustedThreshold)),
+                    fill: false,
+                    radius: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: "#dc3545",
+                    borderWidth: {
+                        top: 2,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                    type: 'bar',
+                    label: "Reliability Threshold"
+                },
+                {
+                    label: 'Problems Submitted',
+                    data: termInfo.map(data => data.count),
+                    backgroundColor: barColours
+                }]
+        };
+    }
+
+    function generateChartSingleTermDataSet(term, baseReliabilityThreshold, start, end) {
+        const termDated = term.filter(({ post_date }) => moment(post_date).isBetween(start, end));
+        // Get occurences of each piece of hardware and convert to array.
+        const termInfo = Object.values(termDated.reduce((output, term) => {
+            if (!output[term.child_name])
+            {
+                output[term.child_name] = { name: term.child_name, count: 1, items: []};
+            }
+            else {
+                output[term.child_name].count += 1;
+            }
+
+            return output;
+        }, {}));
         // Descending order sort.
         termInfo.sort((a, b) => b.count - a.count);
 
@@ -441,9 +495,9 @@
             labels: termInfo.map(data => data.name),
             datasets: [
                 {
-                    // End threshold is the baseReliabilityThreshold (how many tickets per device per day) * days spanned in graph * devices for the type.
+                    // End threshold is the baseReliabilityThreshold (how many tickets per device per day) * days spanned in graph * items for the type.
                     // i.e. how many tickets a device has per day
-                    data: termInfo.map(({devices}) => Math.ceil(devices * dateAdjustedThreshold)), 
+                    data: termInfo.map(() => Math.ceil(dateAdjustedThreshold)),
                     fill: false,
                     radius: 0,
                     backgroundColor: 'transparent',
@@ -469,8 +523,7 @@
         const softwareChartElement = document.getElementById('software-chart');
         if (!softwareChartElement) return;
         Promise.all([fetch(`${followed_object.ajax_url}?action=get_problem_software`).then(response => response.json()), fetch(`${followed_object.ajax_url}?action=get_software_term_and_parent`).then(response => response.json())])
-        .then(([software, termIdParent]) => {
-            console.log(termIdParent);
+        .then(([parents]) => {
             const chart = new Chart(softwareChartElement, {
                 type: 'bar',
                 options: {
@@ -491,7 +544,9 @@
                 'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
             };
 
-            addRangePicker('softwarerange', onTermDateChange, { chart, term: software, termIdParent, baseReliabilityThreshold: baseSoftwareReliabilityThreshold }, { start: moment().subtract(6, 'days'), ranges });
+            const software_slider = $('#software-slider');
+
+            addRangePicker('softwarerange', onTermDateChange, { chart, slider: software_slider, term: parents, baseReliabilityThreshold: baseSoftwareReliabilityThreshold }, { start: moment().subtract(6, 'days'), ranges });
         });
     }
 
