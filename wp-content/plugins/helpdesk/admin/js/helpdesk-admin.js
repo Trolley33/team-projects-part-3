@@ -435,12 +435,10 @@
         }, {}));
         // Descending order sort.
         termInfo.sort((a, b) => b.count - a.count);
-        console.log(termInfo);
 
         const duration = moment.duration(end.diff(start));
 
         const dateAdjustedThreshold = baseReliabilityThreshold * duration.asDays();
-        console.log(dateAdjustedThreshold);
 
         return {
             labels: termInfo.map(data => data.name),
