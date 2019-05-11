@@ -368,7 +368,7 @@
 
     const baseHardwareReliabilityThreshold = 0.6;
     const baseSoftwareReliabilityThreshold = 0.6;
-    const baseUserTrainingThreshold = 0.6;
+    const baseUserTrainingThreshold = 2;
 
     function initHardwareChart() {
         const hardwareChartElement = document.getElementById('hardware-chart');

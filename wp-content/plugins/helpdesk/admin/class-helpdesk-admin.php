@@ -372,11 +372,12 @@ class Helpdesk_Admin
             JOIN wp_term_taxonomy tt
               ON r.term_taxonomy_id = tt.term_taxonomy_id
             JOIN wp_terms t
-              ON tt.term_id = t.term_id 
+              ON tt.term_id = t.term_id
             WHERE
               a.post_author = '$id'
               AND b.meta_key = '_ticket_closed_on'
-              AND t.term_id > 20;
+              AND t.term_id > 20
+	      AND tt.parent = 0;
         ";
 
     $open_column = $wpdb->get_col($open_query)[0];
